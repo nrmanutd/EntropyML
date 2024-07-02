@@ -14,70 +14,66 @@ from pandas.plotting import parallel_coordinates
 
 import numpy as np
 
-def showIris():
-    # fetch dataset
-    iris = fetch_ucirepo(id=53)
+def showCircles(elements):
+    dataSet = np.zeros((elements, 2))
+    target = np.zeros(elements)
 
-    # data (as pandas dataframes)
-    y = iris.data.targets
-
-    X1 = np.array(iris.data.features)
-    idx1 = np.arange(0, 50)
-    idx2 = np.arange(50, 100)
-    idx3 = np.arange(100, 150)
-
-    cl = np.array([idx1, idx2, idx3])
-    calcAndVisualize(X1, cl)
-
-#showIris()
-
-def showCircles():
-
-    elements = 100
-
-    N = 100
-    r0 = 0.6
-    x = 0.9 * np.random.rand(N)
-    y = 0.9 * np.random.rand(N)
-    area = (20 * np.random.rand(N)) ** 2
-    c = np.sqrt(area)
-
-    dataSet = np.zeros((elements, 4))
     for i in np.arange(elements):
-        radious = (6 if i >= elements / 2 else 4)
+        radious = (10 if i >= elements / 2 else 5)
 
-        value = np.random.uniform(-radious, radious)
-        dataSet[i, 0] = value
-        dataSet[i, 1] = 2 if value > 0 else -2 #math.sqrt(radious*radious - value*value) * (1 if value >= np.random.uniform(-1, 1) else -1)
-        #dataSet[i, 2] = 1 if radious == 6 else -1
-        dataSet[i, 2] = value #np.random.uniform(-radious, radious)
-        dataSet[i, 3] = 1 if value > 0 else -1
+        value = np.random.uniform(0, 1)
+        dataSet[i, 0] = radious * math.cos(value * 2*math.pi)
+        dataSet[i, 1] = radious * math.sin(value * 2*math.pi)
+        target[i] = 1 if i >= elements / 2 else -1
 
-    idx1 = np.arange(elements/2, dtype=int)
-    idx2 = np.arange(elements/2, elements, dtype=int)
-    cl = np.array([idx1, idx2])
-    df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
+    calculateAndVisualizeSeveralEntropies(dataSet, target)
 
-    parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
+    #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
+    #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
 
     # Hide the color scale that is useless in this case
     #fig.update_layout(coloraxis_showscale=False)
 
-    plt.show()
+    #plt.show()
 
     #calcAndVisualize(dataSet, cl, 10)
-#showCircles()
 
-def calculateMultiEntropyIris():
+
+def showRandom(elements, features):
+    dataSet = np.zeros((elements, features))
+    target = np.zeros(elements)
+
+    for i in np.arange(elements):
+        for f in np.arange(features):
+            dataSet[i, f] = np.random.uniform(-10, 10)
+
+        target[i] = 1 if np.random.uniform(-1, 1) > 0 else -1
+
+    calculateAndVisualizeSeveralEntropies(dataSet, target)
+
+    #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
+    #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
+
+    # Hide the color scale that is useless in this case
+    #fig.update_layout(coloraxis_showscale=False)
+
+    #plt.show()
+
+    #calcAndVisualize(dataSet, cl, 10)
+#showRandom()
+
+def showTaskFromUciById(id):
     # fetch dataset
-    iris = fetch_ucirepo(id=53)
+    set = fetch_ucirepo(id=id)
+    y = set.data.targets
 
-    # data (as pandas dataframes)
-    y = iris.data.targets
-    dataSet = np.array(iris.data.features)
-
+    dataSet = np.array(set.data.features)
     calculateAndVisualizeSeveralEntropies(dataSet, y)
 
-    return
-
-calculateMultiEntropyIris()
+#showRandom(150, 2)
+#showCircles(1500)
+#showTaskFromUciById(53) #iris
+#showTaskFromUciById(602) #dry bean
+#showTaskFromUciById(186) #wine quality
+#showTaskFromUciById(17) #breast cancer wisconsin
+showTaskFromUciById(54) #isolet

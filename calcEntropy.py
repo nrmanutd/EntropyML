@@ -60,8 +60,9 @@ def calcConditionalEntropy(dataSet, buckets, classIdx):
         for jClass in np.arange(nClasses):
             idx = np.digitize(dataSet[classIdx[jClass], iFeature], buckets[:, iFeature])
             v, c = np.unique(idx, return_counts=True)
-            val = c / sum(c)
-            conditionalEntropy += sum(c) / nObjects * entropy(c / sum(c))
+            ent = entropy(c / sum(c))
+            p = sum(c) / nObjects
+            conditionalEntropy += p * ent
 
     return conditionalEntropy
 def calcConditionalMultiVarianceEntropy(dataSet, objectBins, classIdx):
@@ -88,15 +89,16 @@ def calcMultiVarianceEntropy(dataSet, objectBins):
     for iFeature in np.arange(nFeatures):
         objectBinsIndexes[:, iFeature] = np.digitize(dataSet[:, iFeature], objectBins[:, iFeature])
 
-    objectBinsIndexes = 10 ** objectBinsIndexes
-    bucketIdx = np.zeros(nObjects)
+    #objectBinsIndexes = 2 ** objectBinsIndexes
+    bucketIdx = [''] * nObjects
 
     for iObject in np.arange(nObjects):
-        bucketIdx[iObject] = sum(objectBinsIndexes[iObject, :])
+        bucketIdx[iObject] = ''.join(str(x) for x in objectBinsIndexes[iObject, :])
 
     eBins, cBins = np.unique(bucketIdx, return_counts=True)
+    ent = entropy(cBins/sum(cBins))
 
-    return entropy(cBins/sum(cBins))
+    return ent
 
 def calculateAndVisualizeSeveralEntropies(dataSet, target):
     nFeatures = dataSet.shape[1]
@@ -111,8 +113,9 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
     # totalBins = math.ceil(nObjects ** (1 / nFeatures))
     # totalBins = 10
 
-    bins = np.arange(math.ceil(nObjects ** (1 / nFeatures)), 100)
-
+    #bins = np.arange(max(2, math.ceil(nObjects ** (1 / nFeatures)) - 10), math.ceil(nObjects ** (1 / nFeatures)) + 10)
+    bins = np.arange(5, 150)
+    #bins = [100]
     efficiency = np.zeros(len(bins), dtype=float)
     simple = np.zeros(len(bins), dtype=float)
     conditional = np.zeros(len(bins), dtype=float)
@@ -121,6 +124,10 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
 
     for iBins in np.arange(len(bins)):
         totalBins = bins[iBins]
+
+        if (totalBins %10 == 0):
+            print(totalBins)
+
         objectBins = np.zeros((totalBins + 1, nFeatures))
         simpleEntropy = np.zeros(nFeatures + 1, dtype=float)
 
@@ -150,10 +157,35 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
     fig, ax = plt.subplots(5, 1, sharex=True, tight_layout=True)
 
     ax[0].plot(bins, efficiency)
+    ax[0].title.set_text('Efficiency (simple conditional - multi conditional)')
+
+    ct = 0.0
+    for iClass in np.arange(len(cl)):
+        ct += -math.log(len(cl[iClass])/nObjects) * len(cl[iClass]) / nObjects
+
     ax[1].plot(bins, simple)
+    ax[1].plot(bins, np.ones(len(bins)) * (math.log(nObjects) * nFeatures + ct))
+    ax[1].plot(np.ones(len(bins))*(nObjects ** (1 / nFeatures)), simple)
+    ax[1].title.set_text('Simple entropy')
+
+    ct = 0.0
+    for iClass in np.arange(len(cl)):
+        ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
+
     ax[2].plot(bins, conditional)
+    ax[2].plot(bins, np.ones(len(bins)) * ct * nFeatures)
+    ax[2].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), conditional)
+    ax[2].title.set_text('Simple conditional entropy')
+
     ax[3].plot(bins, multiEntropy)
+    ax[3].plot(bins, np.ones(len(bins)) * math.log(nObjects))
+    ax[3].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), multiEntropy)
+    ax[3].title.set_text('Multi entropy')
+
     ax[4].plot(bins, multiConditionalEntropy)
+    ax[4].plot(bins, np.ones(len(bins)) * ct)
+    ax[4].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), multiConditionalEntropy)
+    ax[4].title.set_text('Multi conditional')
 
     # ax[3].plot(simple, conditional)
 
