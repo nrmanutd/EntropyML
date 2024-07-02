@@ -94,11 +94,12 @@ def calculateMultiEntropyIris():
 
     # data (as pandas dataframes)
     y = iris.data.targets
-    nClasses = len(np.unique(y))
+    entries, counts = np.unique(y, return_counts=True)
+    nClasses = len(entries)
 
     dataSet = np.array(iris.data.features)
-    nFeatures = dataSet.shape(1)
-    nObjects = dataSet.shape(0)
+    nFeatures = dataSet.shape[1]
+    nObjects = dataSet.shape[0]
 
     idx1 = np.arange(50)
     idx2 = np.arange(50, 100)
@@ -106,24 +107,55 @@ def calculateMultiEntropyIris():
 
     cl = np.array([idx1, idx2, idx3])
 
-    simpleEntropy = np.arange(nFeatures + 1)
-    conditionalEntropy = np.arange(nFeatures)
+    #totalBins = math.ceil(nObjects ** (1 / nFeatures))
+    # totalBins = 10
 
-    totalBins = nObjects ** (1 / nFeatures)
+    bins = np.arange(math.ceil(nObjects ** (1 / nFeatures)), 100)
+    efficiency = np.zeros(len(bins), dtype=float)
+    simple = np.zeros(len(bins), dtype=float)
+    conditional = np.zeros(len(bins), dtype=float)
 
-    for i in np.arange(nFeatures):
-        h = np.histogram(dataSet[:, i], bins=totalBins, density=True)
-        simpleEntropy[i] = entropy(h[0])
+    for iBins in np.arange(len(bins)):
+        totalBins = bins[iBins]
 
-        for jClass in np.arange(nClasses):
-            hConditional = np.histogram(dataSet[cl[jClass], i], bins=h[1], density=True)
-            conditionalEntropy[i] += 1 / len(cl[jClass]) * entropy(hConditional[0])
+        simpleEntropy = np.zeros(nFeatures + 1, dtype=float)
+        conditionalEntropy = np.zeros(nFeatures, dtype=float)
 
-    h = np.histogram(y, density=True)
-    simpleEntropy[nFeatures] = entropy(h[0])
+        for i in np.arange(nFeatures):
+            h = np.histogram(dataSet[:, i], bins=totalBins, density=True)
+            ent = entropy(h[0])
+            simpleEntropy[i] = ent
 
-    print('Simple entropy: ', simpleEntropy)
-    print('Conditional entropy: ', conditionalEntropy)
+            for jClass in np.arange(nClasses):
+                hConditional = np.histogram(dataSet[cl[jClass], i], bins=h[1], density=True)
+                conditionalEntropy[i] += len(cl[jClass]) / nObjects * entropy(hConditional[0])
+
+        simpleEntropy[nFeatures] = entropy(counts/nObjects)
+
+        #print('Total bins: ', totalBins)
+        #print('Simple entropy: ', simpleEntropy)
+        #print('Conditional entropy: ', conditionalEntropy)
+
+        #print('Simple number of letters: ', math.e ** simpleEntropy)
+        #print('Conditional number of letters: ', math.e ** conditionalEntropy)
+
+        simpleTotalWords = math.e ** sum(simpleEntropy)
+        conditionalTotalWords = math.e ** sum(conditionalEntropy)
+
+        efficiency[iBins] = simpleTotalWords/conditionalTotalWords
+        simple[iBins] = simpleTotalWords
+        conditional[iBins] = conditionalTotalWords
+
+        #print('Simple: {0: 5.1f}, Conditional: {1: 5.1f}, Efficiency: {2: 5.1f}'.format(simpleTotalWords, conditionalTotalWords, simpleTotalWords/conditionalTotalWords))
+
+    fig, ax = plt.subplots(1, 1, tight_layout=True)
+
+    ax.plot(bins, efficiency)
+    #ax[1].plot(bins, simple)
+    #ax[2].plot(bins, conditional)
+    #ax[3].plot(simple, conditional)
+
+    plt.show()
 
     return
 
