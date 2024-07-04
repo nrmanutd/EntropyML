@@ -2,8 +2,7 @@ import math
 
 import pandas as pd
 
-from calcEntropy import calcAndVisualize, calcSimpleEntropy, calcConditionalEntropy, calcMultiVarianceEntropy, \
-    calcConditionalMultiVarianceEntropy, calculateAndVisualizeSeveralEntropies
+from calcEntropy import calculateAndVisualizeSeveralEntropies
 from ucimlrepo import fetch_ucirepo
 from scipy.stats import norm, entropy
 import plotly.express as px
@@ -72,8 +71,8 @@ def showTaskFromUciById(id):
 
 #showRandom(150, 2)
 #showCircles(1500)
-#showTaskFromUciById(53) #iris
+showTaskFromUciById(53) #iris
 #showTaskFromUciById(602) #dry bean
 #showTaskFromUciById(186) #wine quality
 #showTaskFromUciById(17) #breast cancer wisconsin
-showTaskFromUciById(54) #isolet
+#showTaskFromUciById(54) #isolet

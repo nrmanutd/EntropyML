@@ -2,7 +2,9 @@ import math
 
 import numpy as np
 import matplotlib.pyplot as plt
-from math import log, e
+from scipy.stats import iqr
+
+import scipy
 from scipy.stats import entropy
 
 def calcAndVisualize(dataSet, cl):
@@ -77,9 +79,6 @@ def calcConditionalMultiVarianceEntropy(dataSet, objectBins, classIdx):
 
     return sum(conditionalMultiEntropy)
 
-def calcSimpleEntropy(variable, buckets):
-    return 1
-
 def calcMultiVarianceEntropy(dataSet, objectBins):
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
@@ -100,6 +99,16 @@ def calcMultiVarianceEntropy(dataSet, objectBins):
 
     return ent
 
+def getOptimalBinsCount(dataSet):
+    nFeatures = dataSet.shape[1]
+    nObjects = dataSet.shape[0]
+
+    bins = np.arange(nFeatures)
+    for i in np.arange(nFeatures):
+        width = min(2 * iqr(dataSet[:, i]) / nObjects ** (1/3), math.log(nObjects, 2) + 1)
+        bins[i] = math.ceil((max(dataSet[:, 0]) - min(dataSet[:, 0])) / width)
+    return bins
+
 def calculateAndVisualizeSeveralEntropies(dataSet, target):
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
@@ -110,12 +119,9 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
     for iClass in np.arange(0, len(entries)):
         cl.append(np.where(target == entries[iClass])[0])
 
-    # totalBins = math.ceil(nObjects ** (1 / nFeatures))
-    # totalBins = 10
+    upperBins = getOptimalBinsCount(dataSet) + 20
+    bins = np.arange(2, max(upperBins))
 
-    #bins = np.arange(max(2, math.ceil(nObjects ** (1 / nFeatures)) - 10), math.ceil(nObjects ** (1 / nFeatures)) + 10)
-    bins = np.arange(5, 150)
-    #bins = [100]
     efficiency = np.zeros(len(bins), dtype=float)
     simple = np.zeros(len(bins), dtype=float)
     conditional = np.zeros(len(bins), dtype=float)
@@ -126,15 +132,16 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
         totalBins = bins[iBins]
 
         if (totalBins %10 == 0):
-            print(totalBins)
+            print('{0} of {1}'.format(totalBins, len(bins)))
 
         objectBins = np.zeros((totalBins + 1, nFeatures))
         simpleEntropy = np.zeros(nFeatures + 1, dtype=float)
 
         for i in np.arange(nFeatures):
-            h = np.histogram(dataSet[:, i], bins=totalBins, density=True)
+            h = np.histogram(dataSet[:, i], bins=totalBins)
+            dens = h[0]
             objectBins[:, i] = h[1]
-            simpleEntropy[i] = entropy(h[0])
+            simpleEntropy[i] = entropy(h[0]/sum(h[0]))
 
         simpleEntropy[nFeatures] = entropy(counts / nObjects)
         # print('Total bins: ', totalBins)
