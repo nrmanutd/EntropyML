@@ -18,7 +18,7 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
 
     plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
-    fig, ax = plt.subplots(nFeatures, nClasses + 1, sharey=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
+    fig, ax = plt.subplots(nFeatures, nClasses + 1, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     for iFeature in np.arange(nFeatures):
         h = np.histogram(dataSet[:, iFeature], bins=binsPerFeature[iFeature], density=False)

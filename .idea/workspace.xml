@@ -5,29 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added entropy calculation">
-      <change afterPath="$PROJECT_DIR$/Dry Bean_13611_16_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dry Bean_13611_16_histogramms.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Iris_150_4_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Iris_150_4_histogramms.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Wine Quality_6497_11_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Wine Quality_6497_11_histogramms.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/circles_1500_2_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/circles_1500_2_histogramms.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/circles_150_2_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/circles_150_2_histogramms.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/random_150_2_entropies.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/random_150_2_histogramms.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ISOLET_7797_617.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Iris_150_4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/calcEntropy.py" beforeDir="false" afterPath="$PROJECT_DIR$/calcEntropy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1500_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_150_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/random_150_2.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,7 +150,23 @@
       <option name="project" value="LOCAL" />
       <updated>1720814294655</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="added entropy calculation">
+      <option name="closed" value="true" />
+      <created>1720815904988</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1720815904988</updated>
+    </task>
+    <task id="LOCAL-00013" summary="added entropy calculation">
+      <option name="closed" value="true" />
+      <created>1720815932255</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1720815932255</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -193,6 +188,11 @@
           <url>file://$PROJECT_DIR$/main.py</url>
           <line>66</line>
           <option name="timeStamp" value="61" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/calcEntropy.py</url>
+          <line>52</line>
+          <option name="timeStamp" value="62" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
