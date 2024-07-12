@@ -7,25 +7,26 @@ from scipy.stats import iqr
 import scipy
 from scipy.stats import entropy
 
-def calcAndVisualize(dataSet, cl):
+def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
     """
 
     :type totalBins: int
     """
+    nObjects = dataSet.shape[0]
     nClasses = cl.shape[0]
     nFeatures = dataSet.shape[1]
-    totalBins = math.ceil(dataSet.shape[0] ** (1/nFeatures))
 
-    print (totalBins)
 
     # changing the style of the histogram bars just to make it
     # very clear where the boundaries of the bins are:
     style = {'facecolor': 'none', 'edgecolor': 'C0', 'linewidth': 3}
 
+    plt.figure()
+
     fig, ax = plt.subplots(nFeatures, nClasses + 1, sharey=True, tight_layout=True)
 
     for iFeature in np.arange(nFeatures):
-        h = np.histogram(dataSet[:, iFeature], bins=totalBins, density=False)
+        h = np.histogram(dataSet[:, iFeature], bins=binsPerFeature[iFeature], density=False)
         entBase = entropy(h[0])
         buckets = h[1]
 
@@ -46,10 +47,12 @@ def calcAndVisualize(dataSet, cl):
 
     # plot the xdata locations on the x axis:
 
-    fig.text(0.5, 0, 'Классы', ha='center')
+    fig.text(0.5, 0, 'Классы ({0})'.format(taskName), ha='center')
     fig.text(0, 0.5, 'Признаки', va='center', rotation='vertical')
 
-    plt.show()
+    plt.savefig('{0}_{1}_{2}.png'.format(taskName, nObjects, nFeatures), format='png')
+    plt.savefig()
+    plt.close()
 
 def calcConditionalEntropy(dataSet, buckets, classIdx):
     nObjects = dataSet.shape[0]
@@ -170,57 +173,71 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
     multiConditionalEntropy = multiConditionalEntropy[idx]
     efficiency = efficiency[idx]
 
-    binToDisplay = max(bins)
+    SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditionalEntropy, efficiency, taskName, nObjects, nFeatures, ct)
+    SaveDistributionsToFigure(dataSet, cl)
+
+    return
+
+def SaveDistributionsToFigure():
+
+    return
+
+def SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditionalEntropy, efficiency, taskName, nObjects, nFeatures, ct):
+
+    plt.figure()
+    # binToDisplay = max(bins)
     px = 1 / plt.rcParams['figure.dpi']
-    fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1024*px, 1024*px))
+    fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1024 * px, 1024 * px))
 
     ax[0].plot(bins, efficiency)
     ax[0].title.set_text('Efficiency (simple conditional - multi conditional)')
     ax[0].grid()
 
-    #ct = 0.0
-    #for iClass in np.arange(len(cl)):
+    # ct = 0.0
+    # for iClass in np.arange(len(cl)):
     #    ct += -math.log(len(cl[iClass])/nObjects) * len(cl[iClass]) / nObjects
 
-    #ax[1].plot(bins, simple)
-    #ax[1].plot(bins, np.ones(len(bins)) * (math.log(nObjects) * nFeatures + ct))
-    #ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
-    #ax[1].title.set_text('Simple entropy')
+    # ax[1].plot(bins, simple)
+    # ax[1].plot(bins, np.ones(len(bins)) * (math.log(nObjects) * nFeatures + ct))
+    # ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
+    # ax[1].title.set_text('Simple entropy')
 
-    #ct = 0.0
-    #for iClass in np.arange(len(cl)):
+    # ct = 0.0
+    # for iClass in np.arange(len(cl)):
     #    ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
 
-    #ax[2].plot(bins, conditional)
-    #ax[2].plot(bins, np.ones(len(bins)) * ct * nFeatures)
-    #ax[2].plot(np.ones(len(bins)) * (binToDisplay), conditional)
-    #ax[2].title.set_text('Simple conditional entropy')
+    # ax[2].plot(bins, conditional)
+    # ax[2].plot(bins, np.ones(len(bins)) * ct * nFeatures)
+    # ax[2].plot(np.ones(len(bins)) * (binToDisplay), conditional)
+    # ax[2].title.set_text('Simple conditional entropy')
 
-    #ax[3].plot(bins, multiEntropy)
-    #ax[3].plot(bins, np.ones(len(bins)) * math.log(nObjects))
-    #ax[3].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
-    #ax[3].title.set_text('Multi entropy')
+    # ax[3].plot(bins, multiEntropy)
+    # ax[3].plot(bins, np.ones(len(bins)) * math.log(nObjects))
+    # ax[3].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
+    # ax[3].title.set_text('Multi entropy')
 
-    #ax[4].plot(bins, multiConditionalEntropy)
-    #ax[4].plot(bins, np.ones(len(bins)) * ct)
-    #ax[4].plot(np.ones(len(bins)) * (binToDisplay), multiConditionalEntropy)
-    #ax[4].title.set_text('Multi conditional')
+    # ax[4].plot(bins, multiConditionalEntropy)
+    # ax[4].plot(bins, np.ones(len(bins)) * ct)
+    # ax[4].plot(np.ones(len(bins)) * (binToDisplay), multiConditionalEntropy)
+    # ax[4].title.set_text('Multi conditional')
 
     ax[1].plot(bins, simple)
     ax[1].plot(bins, conditional)
-    #ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
-    #ax[1].plot(bins, np.ones(len(bins)) * ct * nFeatures)
+    # ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
+    # ax[1].plot(bins, np.ones(len(bins)) * ct * nFeatures)
     ax[1].title.set_text('Simple and conditional entropy')
-    ax[1].text(bins[0], 2/3 * max(simple) + 1/3 * simple[0], 'Task: {0}\nObjects: {1}\nFeatures: {2}\nUpper: {3:3.2f}'.format(taskName, nObjects, nFeatures, ct * nFeatures))
+    ax[1].text(bins[0], 2 / 3 * max(simple) + 1 / 3 * simple[0],
+               'Task: {0}\nObjects: {1}\nFeatures: {2}\nUpper: {3:3.2f}'.format(taskName, nObjects, nFeatures,                                                                                 ct * nFeatures))
     ax[1].grid()
 
     ax[2].plot(bins, multiEntropy)
     ax[2].plot(bins, multiConditionalEntropy)
-    #ax[2].plot(bins, np.ones(len(bins)) * ct)
-    #ax[2].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
+    # ax[2].plot(bins, np.ones(len(bins)) * ct)
+    # ax[2].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
     ax[2].text(bins[0], 2 / 3 * max(multiEntropy) + 1 / 3 * multiEntropy[0], 'Upper: {0:3.2f}'.format(ct))
     ax[2].title.set_text('Simple and conditional multi entropy')
     ax[2].grid()
 
     plt.savefig('{0}_{1}_{2}.png'.format(taskName, nObjects, nFeatures), format='png')
+
     return
