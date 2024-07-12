@@ -13,23 +13,19 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
     :type totalBins: int
     """
     nObjects = dataSet.shape[0]
-    nClasses = cl.shape[0]
+    nClasses = len(cl)
     nFeatures = dataSet.shape[1]
 
-
-    # changing the style of the histogram bars just to make it
-    # very clear where the boundaries of the bins are:
-    style = {'facecolor': 'none', 'edgecolor': 'C0', 'linewidth': 3}
-
     plt.figure()
-
-    fig, ax = plt.subplots(nFeatures, nClasses + 1, sharey=True, tight_layout=True)
+    px = 1 / plt.rcParams['figure.dpi']
+    fig, ax = plt.subplots(nFeatures, nClasses + 1, sharey=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     for iFeature in np.arange(nFeatures):
         h = np.histogram(dataSet[:, iFeature], bins=binsPerFeature[iFeature], density=False)
         entBase = entropy(h[0])
         buckets = h[1]
 
+        style = {'facecolor': 'none', 'edgecolor': 'C0', 'linewidth': 3}
         axAll = ax[iFeature, 0]
         axAll.hist(dataSet[:, iFeature], bins=buckets, **style)
         axAll.text(0.8, 0.8, "{0:2.1f}, {1:2.1f}".format(entBase, math.e ** entBase), horizontalalignment='center', verticalalignment='center',
@@ -38,20 +34,20 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
             axTemp = ax[iFeature, jClass + 1]
             data = dataSet[cl[jClass], iFeature]
 
+            style = {'facecolor': 'none', 'edgecolor': 'C{0}'.format((jClass + 1) % 10), 'linewidth': 3}
             axTemp.hist(data, bins=buckets, **style)
             h = np.histogram(data, bins=buckets, density=False)
 
             ent = entropy(h[0])
-            axTemp.text(0.8, 0.8, "{0:2.1f}, {1:2.1f}".format(ent, math.e ** ent),
+            axTemp.text(0.6, 0.8, "{0:2.1f}, {1:2.1f}, {2}".format(ent, math.e ** ent, len(cl[jClass])),
                         horizontalalignment='center', verticalalignment='center', transform=axTemp.transAxes)
 
     # plot the xdata locations on the x axis:
 
-    fig.text(0.5, 0, 'Классы ({0})'.format(taskName), ha='center')
+    fig.text(0.5, 0, 'Классы ({0}_{1}_{2})'.format(taskName, nObjects, nFeatures), ha='center')
     fig.text(0, 0.5, 'Признаки', va='center', rotation='vertical')
 
-    plt.savefig('{0}_{1}_{2}.png'.format(taskName, nObjects, nFeatures), format='png')
-    plt.savefig()
+    plt.savefig('{0}_{1}_{2}_histogramms.png'.format(taskName, nObjects, nFeatures), format='png')
     plt.close()
 
 def calcConditionalEntropy(dataSet, buckets, classIdx):
@@ -111,7 +107,7 @@ def getOptimalBinsCount(dataSet):
         if nObjects > 1000:
             bins[i] = math.ceil(math.log(nObjects, 2) + 1)
         else:
-            width = 2 * iqr(dataSet[:, i]) / nObjects
+            width = 2 * iqr(dataSet[:, i]) /(nObjects ** (1/3))
             bins[i] = math.ceil((max(dataSet[:, i]) - min(dataSet[:, i])) / width)
     return bins
 
@@ -174,11 +170,7 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
     efficiency = efficiency[idx]
 
     SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditionalEntropy, efficiency, taskName, nObjects, nFeatures, ct)
-    SaveDistributionsToFigure(dataSet, cl)
-
-    return
-
-def SaveDistributionsToFigure():
+    calcAndVisualize(dataSet, cl, upperBins, taskName)
 
     return
 
@@ -187,7 +179,7 @@ def SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditio
     plt.figure()
     # binToDisplay = max(bins)
     px = 1 / plt.rcParams['figure.dpi']
-    fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1024 * px, 1024 * px))
+    fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     ax[0].plot(bins, efficiency)
     ax[0].title.set_text('Efficiency (simple conditional - multi conditional)')
@@ -238,6 +230,6 @@ def SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditio
     ax[2].title.set_text('Simple and conditional multi entropy')
     ax[2].grid()
 
-    plt.savefig('{0}_{1}_{2}.png'.format(taskName, nObjects, nFeatures), format='png')
+    plt.savefig('{0}_{1}_{2}_entropies.png'.format(taskName, nObjects, nFeatures), format='png')
 
     return
