@@ -60,7 +60,7 @@ def calcConditionalEntropy(dataSet, buckets, classIdx):
 
     for iFeature in np.arange(nFeatures):
         for jClass in np.arange(nClasses):
-            idx = np.digitize(dataSet[classIdx[jClass], iFeature], buckets[:, iFeature])
+            idx = np.digitize(dataSet[classIdx[jClass], iFeature], buckets[iFeature])
             v, c = np.unique(idx, return_counts=True)
             ent = entropy(c / sum(c))
             p = sum(c) / nObjects
@@ -86,7 +86,7 @@ def calcMultiVarianceEntropy(dataSet, objectBins):
     objectBinsIndexes = np.zeros((nObjects, nFeatures))
 
     for iFeature in np.arange(nFeatures):
-        objectBinsIndexes[:, iFeature] = np.digitize(dataSet[:, iFeature], objectBins[:, iFeature])
+        objectBinsIndexes[:, iFeature] = np.digitize(dataSet[:, iFeature], objectBins[iFeature])
 
     #objectBinsIndexes = 2 ** objectBinsIndexes
     bucketIdx = [''] * nObjects
@@ -105,11 +105,16 @@ def getOptimalBinsCount(dataSet):
 
     bins = np.arange(nFeatures)
     for i in np.arange(nFeatures):
-        width = min(2 * iqr(dataSet[:, i]) / nObjects ** (1/3), math.log(nObjects, 2) + 1)
-        bins[i] = math.ceil((max(dataSet[:, 0]) - min(dataSet[:, 0])) / width)
+        if nObjects > 1000:
+            bins[i] = math.ceil(math.log(nObjects, 2) + 1)
+        else:
+            width = 2 * iqr(dataSet[:, i]) / nObjects
+            bins[i] = math.ceil((max(dataSet[:, i]) - min(dataSet[:, i])) / width)
     return bins
 
-def calculateAndVisualizeSeveralEntropies(dataSet, target):
+def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
+    print('Starting task: {0}'.format(taskName))
+
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
 
@@ -119,8 +124,8 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
     for iClass in np.arange(0, len(entries)):
         cl.append(np.where(target == entries[iClass])[0])
 
-    upperBins = getOptimalBinsCount(dataSet) + 20
-    bins = np.arange(2, max(upperBins))
+    upperBins = getOptimalBinsCount(dataSet)
+    bins = np.arange(2, max(upperBins) + 1)
 
     efficiency = np.zeros(len(bins), dtype=float)
     simple = np.zeros(len(bins), dtype=float)
@@ -128,73 +133,94 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target):
     multiEntropy = np.zeros(len(bins), dtype=float)
     multiConditionalEntropy = np.zeros(len(bins), dtype=float)
 
+    ct = 0.0
+    for iClass in np.arange(len(cl)):
+        ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
+
     for iBins in np.arange(len(bins)):
-        totalBins = bins[iBins]
+        if (bins[iBins] %10 == 0):
+            print('{2}: {0} of {1}'.format(bins[iBins], len(bins), taskName))
 
-        if (totalBins %10 == 0):
-            print('{0} of {1}'.format(totalBins, len(bins)))
-
-        objectBins = np.zeros((totalBins + 1, nFeatures))
+        objectBins = []
         simpleEntropy = np.zeros(nFeatures + 1, dtype=float)
 
         for i in np.arange(nFeatures):
-            h = np.histogram(dataSet[:, i], bins=totalBins)
-            dens = h[0]
-            objectBins[:, i] = h[1]
+            iFeatureBin = min(bins[iBins], upperBins[i])
+            h = np.histogram(dataSet[:, i], bins=iFeatureBin)
+            objectBins.append(h[1])
             simpleEntropy[i] = entropy(h[0]/sum(h[0]))
 
         simpleEntropy[nFeatures] = entropy(counts / nObjects)
-        # print('Total bins: ', totalBins)
-        # print('Simple entropy: ', simpleEntropy)
-        # print('Conditional entropy: ', conditionalEntropy)
-
-        # print('Simple number of letters: ', math.e ** simpleEntropy)
-        # print('Conditional number of letters: ', math.e ** conditionalEntropy)
 
         simple[iBins] = sum(simpleEntropy)
         conditional[iBins] = calcConditionalEntropy(dataSet, objectBins, cl)
         multiEntropy[iBins] = calcMultiVarianceEntropy(dataSet, objectBins)
         multiConditionalEntropy[iBins] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, cl)
-
-        # efficiency[iBins] = math.e ** sum(simpleEntropy) / math.e ** sum(conditionalEntropy)
         efficiency[iBins] = conditional[iBins] - multiConditionalEntropy[iBins]
 
-        # print('Simple: {0: 5.1f}, Conditional: {1: 5.1f}, Efficiency: {2: 5.1f}'.format(simpleTotalWords, conditionalTotalWords, simpleTotalWords/conditionalTotalWords))
+        if abs(multiConditionalEntropy[iBins]/ct - 1) < 0.01:
+            break
 
-    fig, ax = plt.subplots(5, 1, sharex=True, tight_layout=True)
+    idx = np.where(multiConditionalEntropy != 0)[0]
+
+    bins = bins[idx]
+    simple = simple[idx]
+    conditional = conditional[idx]
+    multiEntropy = multiEntropy[idx]
+    multiConditionalEntropy = multiConditionalEntropy[idx]
+    efficiency = efficiency[idx]
+
+    binToDisplay = max(bins)
+    px = 1 / plt.rcParams['figure.dpi']
+    fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1024*px, 1024*px))
 
     ax[0].plot(bins, efficiency)
     ax[0].title.set_text('Efficiency (simple conditional - multi conditional)')
+    ax[0].grid()
 
-    ct = 0.0
-    for iClass in np.arange(len(cl)):
-        ct += -math.log(len(cl[iClass])/nObjects) * len(cl[iClass]) / nObjects
+    #ct = 0.0
+    #for iClass in np.arange(len(cl)):
+    #    ct += -math.log(len(cl[iClass])/nObjects) * len(cl[iClass]) / nObjects
+
+    #ax[1].plot(bins, simple)
+    #ax[1].plot(bins, np.ones(len(bins)) * (math.log(nObjects) * nFeatures + ct))
+    #ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
+    #ax[1].title.set_text('Simple entropy')
+
+    #ct = 0.0
+    #for iClass in np.arange(len(cl)):
+    #    ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
+
+    #ax[2].plot(bins, conditional)
+    #ax[2].plot(bins, np.ones(len(bins)) * ct * nFeatures)
+    #ax[2].plot(np.ones(len(bins)) * (binToDisplay), conditional)
+    #ax[2].title.set_text('Simple conditional entropy')
+
+    #ax[3].plot(bins, multiEntropy)
+    #ax[3].plot(bins, np.ones(len(bins)) * math.log(nObjects))
+    #ax[3].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
+    #ax[3].title.set_text('Multi entropy')
+
+    #ax[4].plot(bins, multiConditionalEntropy)
+    #ax[4].plot(bins, np.ones(len(bins)) * ct)
+    #ax[4].plot(np.ones(len(bins)) * (binToDisplay), multiConditionalEntropy)
+    #ax[4].title.set_text('Multi conditional')
 
     ax[1].plot(bins, simple)
-    ax[1].plot(bins, np.ones(len(bins)) * (math.log(nObjects) * nFeatures + ct))
-    ax[1].plot(np.ones(len(bins))*(nObjects ** (1 / nFeatures)), simple)
-    ax[1].title.set_text('Simple entropy')
+    ax[1].plot(bins, conditional)
+    #ax[1].plot(np.ones(len(bins)) * (binToDisplay), simple)
+    #ax[1].plot(bins, np.ones(len(bins)) * ct * nFeatures)
+    ax[1].title.set_text('Simple and conditional entropy')
+    ax[1].text(bins[0], 2/3 * max(simple) + 1/3 * simple[0], 'Task: {0}\nObjects: {1}\nFeatures: {2}\nUpper: {3:3.2f}'.format(taskName, nObjects, nFeatures, ct * nFeatures))
+    ax[1].grid()
 
-    ct = 0.0
-    for iClass in np.arange(len(cl)):
-        ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
+    ax[2].plot(bins, multiEntropy)
+    ax[2].plot(bins, multiConditionalEntropy)
+    #ax[2].plot(bins, np.ones(len(bins)) * ct)
+    #ax[2].plot(np.ones(len(bins)) * (binToDisplay), multiEntropy)
+    ax[2].text(bins[0], 2 / 3 * max(multiEntropy) + 1 / 3 * multiEntropy[0], 'Upper: {0:3.2f}'.format(ct))
+    ax[2].title.set_text('Simple and conditional multi entropy')
+    ax[2].grid()
 
-    ax[2].plot(bins, conditional)
-    ax[2].plot(bins, np.ones(len(bins)) * ct * nFeatures)
-    ax[2].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), conditional)
-    ax[2].title.set_text('Simple conditional entropy')
-
-    ax[3].plot(bins, multiEntropy)
-    ax[3].plot(bins, np.ones(len(bins)) * math.log(nObjects))
-    ax[3].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), multiEntropy)
-    ax[3].title.set_text('Multi entropy')
-
-    ax[4].plot(bins, multiConditionalEntropy)
-    ax[4].plot(bins, np.ones(len(bins)) * ct)
-    ax[4].plot(np.ones(len(bins)) * (nObjects ** (1 / nFeatures)), multiConditionalEntropy)
-    ax[4].title.set_text('Multi conditional')
-
-    # ax[3].plot(simple, conditional)
-
-    plt.show()
+    plt.savefig('{0}_{1}_{2}.png'.format(taskName, nObjects, nFeatures), format='png')
     return

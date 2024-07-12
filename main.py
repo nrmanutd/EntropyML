@@ -25,7 +25,7 @@ def showCircles(elements):
         dataSet[i, 1] = radious * math.sin(value * 2*math.pi)
         target[i] = 1 if i >= elements / 2 else -1
 
-    calculateAndVisualizeSeveralEntropies(dataSet, target)
+    calculateAndVisualizeSeveralEntropies(dataSet, target, 'circles')
 
     #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
     #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
@@ -48,7 +48,7 @@ def showRandom(elements, features):
 
         target[i] = 1 if np.random.uniform(-1, 1) > 0 else -1
 
-    calculateAndVisualizeSeveralEntropies(dataSet, target)
+    calculateAndVisualizeSeveralEntropies(dataSet, target, 'random')
 
     #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
     #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
@@ -67,12 +67,13 @@ def showTaskFromUciById(id):
     y = set.data.targets
 
     dataSet = np.array(set.data.features)
-    calculateAndVisualizeSeveralEntropies(dataSet, y)
+    calculateAndVisualizeSeveralEntropies(dataSet, y, set.metadata.name)
 
-#showRandom(150, 2)
-#showCircles(1500)
+showRandom(150, 2)
+showCircles(150)
+showCircles(1500)
 showTaskFromUciById(53) #iris
-#showTaskFromUciById(602) #dry bean
-#showTaskFromUciById(186) #wine quality
-#showTaskFromUciById(17) #breast cancer wisconsin
-#showTaskFromUciById(54) #isolet
+showTaskFromUciById(602) #dry bean
+showTaskFromUciById(186) #wine quality
+showTaskFromUciById(17) #breast cancer wisconsin
+showTaskFromUciById(54) #isolet
