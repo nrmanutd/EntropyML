@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import iqr
 from sklearn.preprocessing import LabelEncoder
 
-import scipy
 from scipy.stats import entropy
-from numpy import loadtxt
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -24,6 +22,9 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
 
     figure = plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
+    if nFeatures > 20:
+        return
+
     fig, ax = plt.subplots(nFeatures, nClasses + 1, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     for iFeature in np.arange(nFeatures):
