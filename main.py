@@ -66,13 +66,13 @@ def showTaskFromUciById(id):
 
     calculateAndVisualizeSeveralEntropies(dataSet, target, set.metadata.name)
 
-#showRandom(150, 2)
-#showCircles(150, 2)
-#showCircles(1500, 2)
-#showCircles(154, 4)
-#showCircles(1504, 4)
-#showTaskFromUciById(53) #iris
-#showTaskFromUciById(186) #wine quality
-#showTaskFromUciById(17) #breast cancer wisconsin
-#showTaskFromUciById(602) #dry bean
+showRandom(150, 2)
+showCircles(150, 2)
+showCircles(1500, 2)
+showCircles(154, 4)
+showCircles(1504, 4)
+showTaskFromUciById(53) #iris
+showTaskFromUciById(186) #wine quality
+showTaskFromUciById(17) #breast cancer wisconsin
+showTaskFromUciById(602) #dry bean
 showTaskFromUciById(54) #isolet

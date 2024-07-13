@@ -14,6 +14,7 @@ def saveFeaturesToClassesDistribution(dataSet, cl, binsPerFeature, taskName):
 
     figure = plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
+
     if nFeatures > 20:
         return
 
