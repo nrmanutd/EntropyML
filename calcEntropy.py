@@ -22,7 +22,7 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
     nClasses = len(cl)
     nFeatures = dataSet.shape[1]
 
-    plt.figure()
+    figure = plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
     fig, ax = plt.subplots(nFeatures, nClasses + 1, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
@@ -54,7 +54,9 @@ def calcAndVisualize(dataSet, cl, binsPerFeature, taskName):
     fig.text(0, 0.5, 'Признаки', va='center', rotation='vertical')
 
     plt.savefig('{0}_{1}_{2}_histogramms.png'.format(taskName, nObjects, nFeatures), format='png')
-    plt.close()
+    plt.close(figure)
+
+    return
 
 def calcConditionalEntropy(dataSet, buckets, classIdx):
     nObjects = dataSet.shape[0]
@@ -93,7 +95,6 @@ def calcMultiVarianceEntropy(dataSet, objectBins):
     for iFeature in np.arange(nFeatures):
         objectBinsIndexes[:, iFeature] = np.digitize(dataSet[:, iFeature], objectBins[iFeature])
 
-    #objectBinsIndexes = 2 ** objectBinsIndexes
     bucketIdx = [''] * nObjects
 
     for iObject in np.arange(nObjects):
@@ -107,6 +108,8 @@ def calcMultiVarianceEntropy(dataSet, objectBins):
 def getOptimalBinsCount(dataSet):
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
+
+    return np.ones(nFeatures, dtype=int) * 20
 
     bins = np.arange(nFeatures)
     for i in np.arange(nFeatures):
@@ -126,19 +129,127 @@ def getPermutation(target):
 
 def getClassesIndex(target):
     entries = np.unique(target)
+    classes = {}
 
     cl = []
     for iClass in np.arange(0, len(entries)):
         cl.append(np.where(target == entries[iClass])[0])
+        classes[entries[iClass]] = iClass
 
-    return cl
+    return {'classes':classes, 'classesIndexes':cl}
+
+
+def getDistribution(dataSet, objectBins):
+    nObjects = dataSet.shape[0]
+    nFeatures = dataSet.shape[1]
+
+    objectBinsIndexes = np.zeros((nObjects, nFeatures))
+
+    for iFeature in np.arange(nFeatures):
+        objectBinsIndexes[:, iFeature] = np.digitize(dataSet[:, iFeature], objectBins[iFeature])
+
+    bucketIdx = [''] * nObjects
+
+    for iObject in np.arange(nObjects):
+        bucketIdx[iObject] = ''.join(str(x) for x in objectBinsIndexes[iObject, :])
+
+    eBins, cBins = np.unique(bucketIdx, return_counts=True)
+
+    result = {}
+
+    if(sum(cBins) != nObjects):
+        raise Exception('Incorrect number of elements')
+
+    for iElement in np.arange(len(eBins)):
+        result[eBins[iElement]] = cBins[iElement]/nObjects
+
+    return result
+
+
+def calcComparisonConcrete(dataSet, objectBins, currentTrueClassIndex, comparingClassIndex, comparisonType):
+
+    trueDistribution = getDistribution(dataSet[currentTrueClassIndex, :], objectBins)
+    oppositeDistribution = getDistribution(dataSet[comparingClassIndex, :], objectBins)
+
+    binsKeys = list(trueDistribution.keys())
+
+    result = 0.0
+
+    for iBin in np.arange(len(binsKeys)):
+        bucket = binsKeys[iBin]
+        if bucket in oppositeDistribution:
+            if comparisonType == 'bc':
+                result += math.sqrt(trueDistribution[bucket] * oppositeDistribution[bucket])
+            elif comparisonType == 'ce':
+                result -= trueDistribution[bucket] * math.log(oppositeDistribution[bucket])
+            else:
+                raise Exception('Incorrect parameter: ' + comparisonType)
+    return result
+
+
+def calcComparison(dataSet, objectBins, trueClassIndex, regressionClassesIndex, comparisonType):
+    nObjects = dataSet.shape[0]
+
+    trueClasses = trueClassIndex['classes']
+    comparingClasses = regressionClassesIndex['classes']
+
+    trueClassesLables = list(trueClasses.keys())
+    resultComparison = 0.0
+
+    for iClass in np.arange(len(trueClassesLables)):
+        currentClass = trueClassesLables[iClass]
+        currentTrueClassIndex = trueClassIndex['classesIndexes'][trueClasses[currentClass]]
+        if currentClass in comparingClasses:
+            comparingClassIndex = regressionClassesIndex['classesIndexes'][comparingClasses[currentClass]]
+
+            cc = calcComparisonConcrete(dataSet, objectBins, currentTrueClassIndex, comparingClassIndex, comparisonType)
+            resultComparison += trueClasses[currentClass] / nObjects * cc
+        else:
+            pass
+
+    return resultComparison
+
+def SaveComparisonResults(bins, comparisonResults, mlResults, taskName, nObjects,
+                          nFeatures):
+
+    figure = plt.figure()
+    px = 1 / plt.rcParams['figure.dpi']
+    fig, ax = plt.subplots(2, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
+
+    permutations = comparisonResults.shape[1]
+    for iPermutation in np.arange(permutations):
+        color = 'C{0}'.format(iPermutation % 10)
+        ax[0].plot(bins, comparisonResults[:, iPermutation, 0], color)
+        ax[1].plot(bins, comparisonResults[:, iPermutation, 1], color)
+
+    ax[0].title.set_text('Comparison Bhattacharyya (new target to baseline)')
+    ax[0].grid()
+
+    markers = 'o*'
+    mlKeys = list(mlResults.keys())
+    for iKey in np.arange(len(mlKeys)):
+        ax[0].plot(bins, mlResults[mlKeys[iKey]][:, 0], 'C{0}:{1}'.format((iKey + 1) % 10, markers[iKey % 2]), linewidth=2,
+                   label=mlKeys[iKey])
+        ax[1].plot(bins, mlResults[mlKeys[iKey]][:, 1], 'C{0}:{1}'.format((iKey + 1) % 10, markers[iKey % 2]), linewidth=2,
+                   label=mlKeys[iKey])
+
+    ax[1].title.set_text('Comparison Cross entropy (new target to baseline)')
+    ax[1].grid()
+    ax[1].legend()
+    ax[0].legend()
+
+    plt.savefig('{0}_{1}_{2}_comparisons.png'.format(taskName, nObjects, nFeatures), format='png')
+    plt.close(fig)
+    plt.close(figure)
+
+    return
+
 
 def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
-
     enc = LabelEncoder()
-    target = enc.fit_transform(target)
+    target = enc.fit_transform(np.ravel(target))
 
-    permutations = 20
+    permutations = 50
     print('Starting task: {0}'.format(taskName))
 
     nFeatures = dataSet.shape[1]
@@ -146,28 +257,43 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
 
     entries, counts = np.unique(target, return_counts=True)
 
-    cl = []
-    for iClass in np.arange(0, len(entries)):
-        cl.append(np.where(target == entries[iClass])[0])
+    cl = getClassesIndex(target)
 
     upperBins = getOptimalBinsCount(dataSet)
     bins = np.arange(2, max(upperBins) + 1)
 
     simple = np.zeros(len(bins), dtype=float)
-    conditional = np.zeros((len(bins), permutations + 1), dtype=float)
     multiEntropy = np.zeros(len(bins), dtype=float)
+
+    conditional = np.zeros((len(bins), permutations + 1), dtype=float)
     multiConditionalEntropy = np.zeros((len(bins), permutations + 1), dtype=float)
     efficiency = np.zeros((len(bins), permutations + 1), dtype=float)
+
     logitResults = np.zeros(len(bins), dtype=float)
     xgboostResults = np.zeros(len(bins), dtype=float)
 
+    #по числу разбиений, по числу перестановок, 2 - Bhattacharyya, Cross-Entropy
+    comparisonResults = np.zeros((len(bins), permutations, 2), dtype=float)
+    logitComparisonResults = np.zeros((len(bins), 2))
+    xgBoostComparisonResults = np.zeros((len(bins), 2))
+
     ct = 0.0
-    for iClass in np.arange(len(cl)):
-        ct += math.log(len(cl[iClass])) * len(cl[iClass]) / nObjects
+    ccl = cl['classesIndexes']
+    for iClass in np.arange(len(ccl)):
+        ct += math.log(len(ccl[iClass])) * len(ccl[iClass]) / nObjects
+
+    print('Training logit...')
+    regressionTarget = TrainLogit(dataSet, target)
+    regressionAccuracy = accuracy_score(target, regressionTarget)
+    regressionClassesIndex = getClassesIndex(regressionTarget)
+
+    print('Training xgboost...')
+    xgBoostTarget = TrainXGBoost(dataSet, target)
+    xgBoostAccuracy = accuracy_score(target, xgBoostTarget)
+    xbBoostClassesIndex = getClassesIndex(xgBoostTarget)
 
     for iBins in np.arange(len(bins)):
-        if (bins[iBins] %10 == 0):
-            print('{2}: {0} of {1}'.format(bins[iBins], len(bins), taskName))
+        print('{2}: {0} of {1}'.format(iBins, len(bins), taskName))
 
         objectBins = []
         simpleEntropy = np.zeros(nFeatures + 1, dtype=float)
@@ -183,36 +309,28 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
         simple[iBins] = sum(simpleEntropy)
         multiEntropy[iBins] = calcMultiVarianceEntropy(dataSet, objectBins)
 
-        conditional[iBins, 0] = calcConditionalEntropy(dataSet, objectBins, cl)
-        multiConditionalEntropy[iBins, 0] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, cl)
+        conditional[iBins, 0] = calcConditionalEntropy(dataSet, objectBins, cl['classesIndexes'])
+        multiConditionalEntropy[iBins, 0] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, cl['classesIndexes'])
         efficiency[iBins, 0] = conditional[iBins, 0] - multiConditionalEntropy[iBins, 0]
 
         for iPermutation in np.arange(1, permutations + 1):
             clPermutation = getPermutation(target)
 
-            conditional[iBins, iPermutation] = calcConditionalEntropy(dataSet, objectBins, clPermutation)
-            multiConditionalEntropy[iBins, iPermutation] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, clPermutation)
+            conditional[iBins, iPermutation] = calcConditionalEntropy(dataSet, objectBins, clPermutation['classesIndexes'])
+            multiConditionalEntropy[iBins, iPermutation] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, clPermutation['classesIndexes'])
             efficiency[iBins, iPermutation] = conditional[iBins, iPermutation] - multiConditionalEntropy[iBins, iPermutation]
 
-        #logregression
-        seed = 7
-        test_size = 0.25
-        X_train, X_test, y_train, y_test = train_test_split(dataSet, target, test_size=test_size, random_state=seed)
-        logit = LogisticRegression(random_state=0).fit(X_train, y_train)
-        regressionTarget = logit.predict(dataSet)
-        regressionClassesIndex = getClassesIndex(regressionTarget)
+            comparisonResults[iBins, iPermutation - 1, 0] = calcComparison(dataSet, objectBins, cl, clPermutation, 'bc')
+            comparisonResults[iBins, iPermutation - 1, 1] = calcComparison(dataSet, objectBins, cl, clPermutation, 'ce')
 
-        logitResults[iBins] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, regressionClassesIndex)
+        logitResults[iBins] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, regressionClassesIndex['classesIndexes'])
+        xgboostResults[iBins] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, xbBoostClassesIndex['classesIndexes'])
 
-        #xgboost
-        seed = 7
-        test_size = 0.25
-        X_train, X_test, y_train, y_test = train_test_split(dataSet, target, test_size=test_size, random_state=seed)
+        logitComparisonResults[iBins, 0] = calcComparison(dataSet, objectBins, cl, regressionClassesIndex, 'bc')
+        logitComparisonResults[iBins, 1] = calcComparison(dataSet, objectBins, cl, regressionClassesIndex, 'ce')
 
-        model = XGBClassifier().fit(X_train, y_train)
-        xgBoostTarget = model.predict(dataSet)
-        xbBoostClassesIndex = getClassesIndex(xgBoostTarget)
-        xgboostResults[iBins] = calcConditionalMultiVarianceEntropy(dataSet, objectBins, xbBoostClassesIndex)
+        xgBoostComparisonResults[iBins, 0] = calcComparison(dataSet, objectBins, cl, xbBoostClassesIndex, 'bc')
+        xgBoostComparisonResults[iBins, 1] = calcComparison(dataSet, objectBins, cl, xbBoostClassesIndex, 'ce')
 
         if abs(multiConditionalEntropy[iBins, 0]/ct - 1) < 0.01:
             break
@@ -230,17 +348,38 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
     logitResults = logitResults[idx]
     xgboostResults = xgboostResults[idx]
 
-    mlResults = {'logit': logitResults, 'xgBoost': xgboostResults}
+    comparisonResults = comparisonResults[idx, :, :]
+    logitComparisonResults = logitComparisonResults[idx, :]
+    xgBoostComparisonResults = xgBoostComparisonResults[idx, :]
 
+    mlResults = {'logit {0:1.2f}'.format(regressionAccuracy): logitResults, 'xgBoost {0:1.2f}'.format(xgBoostAccuracy): xgboostResults}
+    comparisonMLResults = {'logit {0:1.2f}'.format(regressionAccuracy): logitComparisonResults, 'xgBoost {0:1.2f}'.format(xgBoostAccuracy): xgBoostComparisonResults}
+
+    SaveComparisonResults(bins, comparisonResults, comparisonMLResults, taskName, nObjects, nFeatures)
     SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditionalEntropy, efficiency, mlResults, taskName, nObjects, nFeatures, ct)
-    calcAndVisualize(dataSet, cl, upperBins, taskName)
+    calcAndVisualize(dataSet, cl['classesIndexes'], upperBins, taskName)
 
     return
 
+def TrainLogit(dataSet, target):
+    seed = 7
+    test_size = 0.25
+    X_train, X_test, y_train, y_test = train_test_split(dataSet, target, test_size=test_size, random_state=seed)
+    logit = LogisticRegression(random_state=0, max_iter=1000).fit(X_train, np.ravel(y_train))
+
+    return logit.predict(dataSet)
+
+def TrainXGBoost(dataSet, target):
+    seed = 7
+    test_size = 0.25
+    X_train, X_test, y_train, y_test = train_test_split(dataSet, target, test_size=test_size, random_state=seed)
+    model = XGBClassifier().fit(X_train, np.ravel(y_train))
+
+    return model.predict(dataSet)
+
 def SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditionalEntropy, efficiency, mlResults, taskName, nObjects, nFeatures, ct):
 
-    plt.figure()
-    # binToDisplay = max(bins)
+    figure = plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
     fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
@@ -267,14 +406,18 @@ def SaveEntropiesToFigure(bins, simple, conditional, multiEntropy, multiConditio
     ax[2].plot(bins, multiEntropy, 'C0--', linewidth=2)
     ax[2].plot(bins, multiConditionalEntropy[:, 0], 'C0-.', linewidth=3)
 
+    markers = 'o*'
     mlKeys = list(mlResults.keys())
     for iKey in np.arange(len(mlKeys)):
-        ax[2].plot(bins, mlResults[mlKeys[iKey]], 'C0:', linewidth=2, label=mlKeys[iKey])
+        ax[2].plot(bins, mlResults[mlKeys[iKey]], 'C{0}:{1}'.format((iKey + 1) % 10, markers[iKey%2]), linewidth=2, label=mlKeys[iKey])
 
     ax[2].text(bins[0], 2 / 3 * max(multiEntropy) + 1 / 3 * multiEntropy[0], 'Upper: {0:3.2f}'.format(ct))
     ax[2].title.set_text('Simple and conditional multi entropy')
     ax[2].grid()
+    ax[2].legend()
 
     plt.savefig('{0}_{1}_{2}_entropies.png'.format(taskName, nObjects, nFeatures), format='png')
+    plt.close(fig)
+    plt.close(figure)
 
     return

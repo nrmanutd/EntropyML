@@ -1,29 +1,25 @@
 import math
-
 import pandas as pd
-
 from calcEntropy import calculateAndVisualizeSeveralEntropies
 from ucimlrepo import fetch_ucirepo
-from scipy.stats import norm, entropy
-import plotly.express as px
-
-import pandas
-import matplotlib.pyplot as plt
-from pandas.plotting import parallel_coordinates
-
 import numpy as np
 
-def showCircles(elements):
+def showCircles(elements, nClasses):
     dataSet = np.zeros((elements, 2))
     target = np.zeros(elements)
+    bucket = math.floor(elements / nClasses)
+    currentClass = 0;
 
     for i in np.arange(elements):
-        radious = (10 if i >= elements / 2 else 5)
+        if math.floor(i / bucket) > currentClass:
+            currentClass += 1
+
+        radious = (10 - currentClass * (10 - 5) / nClasses)
 
         value = np.random.uniform(0, 1)
         dataSet[i, 0] = radious * math.cos(value * 2*math.pi)
         dataSet[i, 1] = radious * math.sin(value * 2*math.pi)
-        target[i] = 1 if i >= elements / 2 else -1
+        target[i] = currentClass%2
 
     calculateAndVisualizeSeveralEntropies(dataSet, target, 'circles')
 
@@ -64,16 +60,19 @@ def showRandom(elements, features):
 def showTaskFromUciById(id):
     # fetch dataset
     set = fetch_ucirepo(id=id)
-    y = set.data.targets
 
     dataSet = np.array(set.data.features)
-    calculateAndVisualizeSeveralEntropies(dataSet, y, set.metadata.name)
+    target = np.array(set.data.targets)
+
+    calculateAndVisualizeSeveralEntropies(dataSet, target, set.metadata.name)
 
 showRandom(150, 2)
-showCircles(150)
-showCircles(1500)
+showCircles(150, 2)
+showCircles(1500, 2)
+showCircles(154, 4)
+showCircles(1504, 4)
 showTaskFromUciById(53) #iris
-showTaskFromUciById(602) #dry bean
 showTaskFromUciById(186) #wine quality
-#showTaskFromUciById(17) #breast cancer wisconsin
-#showTaskFromUciById(54) #isolet
+showTaskFromUciById(17) #breast cancer wisconsin
+showTaskFromUciById(602) #dry bean
+showTaskFromUciById(54) #isolet
