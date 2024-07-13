@@ -40,7 +40,7 @@ def showCircles(elements):
 
 def showRandom(elements, features):
     dataSet = np.zeros((elements, features))
-    target = np.zeros(elements)
+    target = np.zeros(elements, dtype=int)
 
     for i in np.arange(elements):
         for f in np.arange(features):
