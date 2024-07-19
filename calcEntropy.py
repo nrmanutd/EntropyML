@@ -98,6 +98,9 @@ def calculateAndVisualizeSeveralEntropies(dataSet, target, taskName):
         logitComparisonResults[iBins, 0] = calcComparison(dataSet, objectBins, cl, regressionClassesIndex, 'bc')
         logitComparisonResults[iBins, 1] = calcComparison(dataSet, objectBins, cl, regressionClassesIndex, 'ce')
 
+        #logitComparisonResults[iBins, 0] = calcComparison(dataSet, objectBins, cl, cl, 'bc')
+        #logitComparisonResults[iBins, 1] = calcComparison(dataSet, objectBins, cl, cl, 'ce')
+
         xgBoostComparisonResults[iBins, 0] = calcComparison(dataSet, objectBins, cl, xbBoostClassesIndex, 'bc')
         xgBoostComparisonResults[iBins, 1] = calcComparison(dataSet, objectBins, cl, xbBoostClassesIndex, 'ce')
 

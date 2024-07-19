@@ -65,7 +65,7 @@ def calcComparison(dataSet, objectBins, trueClassIndex, regressionClassesIndex, 
             comparingClassIndex = regressionClassesIndex['classesIndexes'][comparingClasses[currentClass]]
 
             cc = calcComparisonConcrete(dataSet, objectBins, currentTrueClassIndex, comparingClassIndex, comparisonType)
-            resultComparison += trueClasses[currentClass] / nObjects * cc
+            resultComparison += len(currentTrueClassIndex) / nObjects * cc
         else:
             pass
 

@@ -10,6 +10,8 @@ def showCircles(elements, nClasses):
     bucket = math.floor(elements / nClasses)
     currentClass = 0;
 
+    transformedDataSet = np.zeros((elements, 2))
+
     for i in np.arange(elements):
         if math.floor(i / bucket) > currentClass:
             currentClass += 1
@@ -19,9 +21,14 @@ def showCircles(elements, nClasses):
         value = np.random.uniform(0, 1)
         dataSet[i, 0] = radious * math.cos(value * 2*math.pi)
         dataSet[i, 1] = radious * math.sin(value * 2*math.pi)
+
+        transformedDataSet[i, 0] = radious
+        transformedDataSet[i, 1] = value * 2 * math.pi
+
         target[i] = currentClass%2
 
     calculateAndVisualizeSeveralEntropies(dataSet, target, 'circles')
+    calculateAndVisualizeSeveralEntropies(transformedDataSet, target, 'circles_radian')
 
     #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
     #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
@@ -46,16 +53,6 @@ def showRandom(elements, features):
 
     calculateAndVisualizeSeveralEntropies(dataSet, target, 'random')
 
-    #df = pd.DataFrame(dataSet, columns=['X1', 'X2', 'X3', 'Y'])
-    #parallel_coordinates(df, class_column='Y', colormap=plt.get_cmap("Set2"))
-
-    # Hide the color scale that is useless in this case
-    #fig.update_layout(coloraxis_showscale=False)
-
-    #plt.show()
-
-    #calcAndVisualize(dataSet, cl, 10)
-#showRandom()
 
 def showTaskFromUciById(id):
     # fetch dataset
@@ -69,10 +66,10 @@ def showTaskFromUciById(id):
 showRandom(150, 2)
 showCircles(150, 2)
 showCircles(1500, 2)
-showCircles(154, 4)
-showCircles(1504, 4)
+#showCircles(154, 4)
+#showCircles(1504, 4)
 showTaskFromUciById(53) #iris
 showTaskFromUciById(186) #wine quality
-showTaskFromUciById(17) #breast cancer wisconsin
-showTaskFromUciById(602) #dry bean
-showTaskFromUciById(54) #isolet
+#showTaskFromUciById(17) #breast cancer wisconsin
+#showTaskFromUciById(602) #dry bean
+#showTaskFromUciById(54) #isolet
