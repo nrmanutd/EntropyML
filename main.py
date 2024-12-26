@@ -4,6 +4,9 @@ from calcEntropy import calculateAndVisualizeSeveralEntropies
 from ucimlrepo import fetch_ucirepo
 import numpy as np
 
+from showRademacherDistribution import showRademacherDistirbution
+
+
 def showCircles(elements, nClasses):
     dataSet = np.zeros((elements, 2))
     target = np.zeros(elements)
@@ -63,13 +66,26 @@ def showTaskFromUciById(id):
 
     calculateAndVisualizeSeveralEntropies(dataSet, target, set.metadata.name)
 
-showRandom(150, 2)
-showCircles(150, 2)
-showCircles(1500, 2)
+#showRandom(150, 2)
+#showCircles(150, 2)
+#showCircles(1500, 2)
 #showCircles(154, 4)
 #showCircles(1504, 4)
-showTaskFromUciById(53) #iris
-showTaskFromUciById(186) #wine quality
+#showTaskFromUciById(53) #iris
+#showTaskFromUciById(186) #wine quality
 #showTaskFromUciById(17) #breast cancer wisconsin
 #showTaskFromUciById(602) #dry bean
 #showTaskFromUciById(54) #isolet
+
+
+def rademacherTest():
+
+    nDimension = 10
+    nVectors = 10
+    nTimes = 100
+
+    showRademacherDistirbution(nDimension, nVectors, nTimes)
+
+    return
+
+rademacherTest()
