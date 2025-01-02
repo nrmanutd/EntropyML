@@ -1,10 +1,8 @@
-import math
-import pandas as pd
+import numpy as np
+from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from calcEntropy import calculateAndVisualizeSeveralEntropies
-from ucimlrepo import fetch_ucirepo
-import numpy as np
+
 
 #showRandom(150, 2)
 #showCircles(150, 2)
@@ -28,4 +26,18 @@ def empiricalDistributionById(id):
 
     return
 
-empiricalDistributionById(53)
+empiricalDistributionById(53) #iris
+#empiricalDistributionById(186) #wine
+
+#todo
+#1. вывод в файл графиков (2 картинки)
+#2. сохранение в файл данных (посмотреть на датафрейм). Посмотреть, как можно append делать в файл.
+#3. сделать симуляцию на модельных экспериментах двух типов: простой с разделяющей гиперплоскостью с хорошей разделимостью и плохой. Идея - посмотреть на то, как меняется функционал по оценке эмпирической функции распределения, качество алгоритма от степени перемешивания объектов
+#4. оптимизировать расчет радемахеровской сложности через сортировку данных
+#5. добавить другие задачи
+#6. сделать рандомизацию по разным подмножествам для оценки общей радемахеровской сложности
+
+#гипотеза:
+# 1. лосс прогнозируется как следствие флуктуаций функции распределения
+# 2. accuracy прогнозируется флуктуацией функцией распределения
+# 3. чтобы оценить обобщающую способность, не нужно прогонять тысячи итераций обучения, нужно посмотреть насколько переменна эмпирическая функция распределения

@@ -1,3 +1,4 @@
+import random
 import statistics
 from scipy.stats import bernoulli
 import numpy as np
@@ -55,8 +56,12 @@ def calculateVector(subSet, point, halfObjects):
         curObject = subSet[iObject, :]
 
         if(isLowerOrEqual(curObject, point)):
-            rr = res[iObject % halfObjects] + 1
-            res[iObject % halfObjects] = rr % 2
+            idx = iObject % halfObjects
+
+            if iObject < halfObjects:
+                res[idx] = res[idx] + 1
+            else:
+                res[idx] = res[idx] - 1
 
     return res
 
@@ -83,6 +88,16 @@ def calcRademacherComplexity(vectors, nAttempts):
     return avg, sigma
 
 
+def calculateSimpleVector(iVector, halfObjects):
+
+    v = np.zeros(halfObjects, dtype=int)
+
+    for i in np.arange(iVector):
+        v[i%halfObjects] = 1
+
+    return v
+
+
 def calcRademacher(subSet, nAttempts):
 
     nObjects = subSet.shape[0]
@@ -95,6 +110,7 @@ def calcRademacher(subSet, nAttempts):
 
     for iVector in np.arange(nObjects):
         v = calculateVector(subSet, subSet[iVector, :], halfObjects)
+        #v = calculateSimpleVector(iVector, halfObjects)
 
         prevLen = len(vList)
         vList.add(''.join(str(x) for x in v))
@@ -107,6 +123,8 @@ def calcRademacher(subSet, nAttempts):
     #if len(vList) != nObjects:
     #    print('Total objects: {0}, unique: {1}'.format(nObjects, len(vList)))
 
+    #print(vList)
+
     sumVector = sumVector / len(vList)
     maxNorm = np.zeros(len(vectors))
 
@@ -114,14 +132,67 @@ def calcRademacher(subSet, nAttempts):
         vectors[iVector] = vectors[iVector] - sumVector
         maxNorm[iVector] = LA.norm(vectors[iVector])
 
-    avg2 = max(maxNorm) * np.sqrt(2 * np.log(len(vectors))) / halfObjects
+    normUpper = max(maxNorm)
+    upperRad = normUpper * np.sqrt(2 * np.log(len(vectors))) / halfObjects
+    upperRad2 = np.sqrt(halfObjects) * np.sqrt(2 * np.log(len(vectors))) / halfObjects
     avg, sigma = calcRademacherComplexity(vectors, nAttempts)
 
-    print('Rademacher monte-carlo vs estimation {0} {1}'.format(avg, avg2))
-    return avg, sigma, avg2
+    print('Rademacher monte-carlo vs estimation {0} {1}'.format(avg, upperRad))
+    return {'rad': avg, 'sigma': sigma, 'upperRad': upperRad, 'upperRad2': upperRad2}
 
 
-def calculateRademacherComplexity(dataSet, nObjects, nAttempts, target):
+def calcConcreteModel(dataSet, nObjects, target):
+    enc = LabelEncoder()
+    target = enc.fit_transform(np.ravel(target))
+
+    totalObjects = dataSet.shape[0]
+    mask = np.zeros(totalObjects)
+    mask[np.arange(nObjects)] = 1
+
+    mask = np.random.permutation(mask)
+    idx = np.where(mask > 0)[0]
+
+    testIdx = np.where(mask == 0)[0]
+
+    u, indexes = np.unique(target, return_index=True)
+    s = set(np.concatenate((idx, indexes)))
+    idx = list(s)
+
+    subSet = dataSet[idx, :]
+    subTarget = target[idx]
+
+    train_idx = np.arange(nObjects, dtype=int)
+
+    u, indexes = np.unique(subTarget, return_index=True)
+    s = set(np.concatenate((train_idx, indexes)))
+    train_idx = list(s)
+
+    X_train = subSet[train_idx]
+    Y_train = subTarget[train_idx]
+
+    X_test = dataSet[testIdx]
+    Y_test = target[testIdx]
+
+    model = XGBClassifier().fit(X_train, Y_train)
+
+    predict = model.predict(X_test)
+    accuracy = accuracy_score(Y_test, predict)
+
+    return accuracy
+
+def calcModel(dataSet, nObjects, nAttempts, target):
+    accuracy = np.zeros(nAttempts)
+
+    for i in np.arange(nAttempts):
+        accuracy[i] = calcConcreteModel(dataSet, nObjects, target)
+
+    acc = np.mean(accuracy)
+    sigma = np.std(accuracy)
+
+    return {'accuracy': acc, 'modelSigma': sigma}
+
+
+def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, target):
 
     totalObjects = dataSet.shape[0]
     mask = np.zeros(totalObjects)
@@ -129,25 +200,16 @@ def calculateRademacherComplexity(dataSet, nObjects, nAttempts, target):
 
     mask = np.random.permutation(mask)
     idx = np.where(mask > 0)[0]
-    subSet = dataSet[idx, :]
-
-    rad, sigma, rad2 = calcRademacher(subSet, nAttempts)
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
-    train_idx = np.arange(nObjects, dtype=int)
-    X_train = subSet[train_idx]
-    Y_train = target[idx][train_idx]
+    subSet = dataSet[idx, :]
+    subTarget = target[idx]
+    subTarget = np.reshape(subTarget, (len(subTarget), 1))
+    subSet = np.hstack((subSet, subTarget))
 
-    test_idx = np.arange(nObjects, 2*nObjects, dtype=int)
-    X_test = subSet[test_idx]
-    Y_test = target[idx][test_idx]
+    radResult = calcRademacher(subSet, nAttempts)
+    modelResult = calcModel(dataSet, nObjects, modelAttempts, target)
 
-    model = XGBClassifier().fit(X_train, np.ravel(Y_train))
-
-    #model = XGBClassifier().fit(dataSet, np.ravel(target))
-    predict = model.predict(X_test)
-    accuracy = accuracy_score(Y_test, predict)
-
-    return rad, sigma, rad2, accuracy
+    return {'radResult': radResult, 'modelResult': modelResult}
