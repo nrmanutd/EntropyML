@@ -73,13 +73,17 @@ def checkRandom(l, f):
 def checkHyperPlane(l):
     elements = l
 
-    dataSet = np.zeros((l, 2))
+    dataSet = np.zeros((elements, 3))
     target = np.zeros(elements, dtype=int)
 
     for i in np.arange(elements):
         x = np.random.uniform(-10, 10)
         y = np.random.uniform(-10, 10)
         z = np.random.uniform(-10, 10)
+
+        dataSet[i, 0] = x
+        dataSet[i, 1] = y
+        dataSet[i, 2] = z
 
         target[i] = 1 if x + y + z > 0 else -1
 
@@ -96,7 +100,7 @@ def checkTask(task, *args, **kwargs):
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None))
 
-lObj = 1000
+lObj = 300
 
 #checkTask('circles', l=100, c=2)
 #checkTask('circles', l=100, c=4)
@@ -110,8 +114,8 @@ lObj = 1000
 #checkTask('random', l=lObj, f=4)
 #checkTask('hyperPlane', l=lObj)
 
-#checkTask(53, t=20)
-checkTask(186, t=5)
+checkTask(53, t=20)
+checkTask(186, t=10)
 
 #todo
 #+1. вывод в файл графиков (2 картинки)

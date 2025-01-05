@@ -27,7 +27,7 @@ def calcModel(dataSet, ratio, target):
 def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args, **kwargs):
 
     nAttempts = 20
-    nRadSets = 20
+    nRadSets = 1
     modelAttempts = 20
 
     probability = 0.95
@@ -48,11 +48,14 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
 
     avgDistributions = np.zeros(maxObjects - minObjects, dtype=float)
     avgDistributions2 = np.zeros(maxObjects - minObjects, dtype=float)
+    avgDistributionsA = np.zeros(maxObjects - minObjects, dtype=float)
+    avgDistributions2A = np.zeros(maxObjects - minObjects, dtype=float)
     avgDistributions3 = np.zeros(maxObjects - minObjects, dtype=float)
     accuracy = np.zeros(maxObjects - minObjects, dtype=float)
     modelSigma = np.zeros(maxObjects - minObjects, dtype=float)
 
     sigmas = np.zeros(maxObjects - minObjects, dtype=float)
+    sigmasA = np.zeros(maxObjects - minObjects, dtype=float)
     mcDiarmids = np.zeros(maxObjects - minObjects, dtype=float)
 
     objectsIterator = np.arange(minObjects, maxObjects, dtype=int)
@@ -71,6 +74,11 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
         avgDistributions[iDistribution] = radResult['rad']
         sigmas[iDistribution] = radResult['sigma']
         avgDistributions2[iDistribution] = radResult['upperRad']
+
+        avgDistributionsA[iDistribution] = radResult['radA']
+        sigmasA[iDistribution] = radResult['sigmaA']
+        avgDistributions2A[iDistribution] = radResult['upperRadA']
+
         #avgDistributions3[iDistribution] = radResult['upperRad2']
 
         accuracy[iDistribution] = modelResult['accuracy']
@@ -80,7 +88,7 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
 
     data = {'xLabels': xLabels, 'rad': avgDistributions,
             'upperRad': avgDistributions2, 'accuracy': accuracy, 'modelSigma': modelSigma,
-            'mcDiarmid': mcDiarmids}
+            'mcDiarmid': mcDiarmids, 'radA': avgDistributionsA, 'upperRadA': avgDistributions2A}
 
     task = {'name': taskName, 'nObjects': nObjects, 'nFeatures': nFeatures, 'nAttempts': nAttempts,
             'modelAttempts': modelAttempts, 'step': step, 'prob': probability, 'totalPoints': totalPoints,

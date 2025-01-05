@@ -11,7 +11,12 @@ def SaveRademacherResults(data, task):
     accuracy = data['accuracy']
     rad = data['rad']
     upperRad = data['upperRad']
+
+    radA = data['radA']
+    upperRadA = data['upperRadA']
+
     modelSigma = data['modelSigma']
+
     mcDiarmid = data['mcDiarmid']
     lastIdx = len(upperRad) - 1
 
@@ -21,6 +26,8 @@ def SaveRademacherResults(data, task):
     #plot values
     ax[0].plot(xLabels, rad, label="Rad")
     ax[0].plot(xLabels, upperRad, label="Upper Rad")
+    ax[0].plot(xLabels, radA, label="RadA", ls=':')
+    ax[0].plot(xLabels, upperRadA, label="Upper RadA", ls=':')
     ax[0].plot(xLabels, 1 - accuracy, label="Loss", ls='-.')
     ax[0].plot(xLabels, accuracy, label="Accuracy", ls='-.')
     ax[0].plot(xLabels, modelSigma, label="ModelSigma", ls='-.')
@@ -44,7 +51,10 @@ def SaveRademacherResults(data, task):
 
     ax[1].plot(xLabels, np.log(rad), label="Log Rad", linewidth=2)
     ax[1].plot(xLabels, np.log(upperRad),
-             label="Log Upper Rad", linewidth=2)
+               label="Log Upper Rad", linewidth=2)
+    ax[1].plot(xLabels, np.log(radA), label="Log RadA", linewidth=2, ls=':')
+    ax[1].plot(xLabels, np.log(upperRadA),
+               label="Log Upper RadA", linewidth=2, ls=':')
     ax[1].plot(xLabels, np.log(1 - accuracy) - deltaLogLoss,
              label="Log Loss", ls='-.', linewidth=2)
     ax[1].plot(xLabels, np.log(1 / accuracy) - deltaLogAccuracy,
@@ -61,7 +71,7 @@ def SaveRademacherResults(data, task):
     #plot power law
     ax[2].title.set_text('Power law dependency')
     ax[2].grid()
-    ax[2].plot(xLabels, (np.log(upperRad) + np.log(xLabels) - 0.5 * np.log(np.log(2 * 2 * xLabels)))/np.log(xLabels),
+    ax[2].plot(xLabels, np.exp((np.log(upperRad) - 0.5 * np.log(np.log(2 * 2 * xLabels)) + 0.5 * np.log(xLabels))),
                label="Log Upper Rad", linewidth=2)
 
     ax[2].legend()
@@ -72,3 +82,34 @@ def SaveRademacherResults(data, task):
                                                                        task['nRadSets'], task['totalPoints'], task['nClasses']), format='png')
     plt.close(fig)
 
+    fig, ax = plt.subplots(2, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
+    ax[0].title.set_text('Comparison values')
+    ax[0].grid()
+    ax[1].grid()
+
+    ax[0].title.set_text('Rad values')
+
+    ax[0].plot(xLabels, rad, label="Rad", linewidth=2)
+    ax[0].plot(xLabels, upperRad,
+               label="Upper Rad", linewidth=2)
+    ax[0].plot(xLabels, radA, label="RadA", linewidth=2, ls=':')
+    ax[0].plot(xLabels, upperRadA,
+               label="Upper RadA", linewidth=2, ls=':')
+
+    ax[1].title.set_text('Log Rad values')
+    ax[1].plot(xLabels, np.log(rad), label="Log Rad", linewidth=2)
+    ax[1].plot(xLabels, np.log(upperRad),
+               label="Log Upper Rad", linewidth=2)
+    ax[1].plot(xLabels, np.log(radA), label="Log RadA", linewidth=2, ls=':')
+    ax[1].plot(xLabels, np.log(upperRadA),
+               label="Log Upper RadA", linewidth=2, ls=':')
+
+    ax[1].legend()
+    ax[0].legend()
+
+    plt.savefig(
+        'Figures\\Rads_{0}_{1}_{2}_{7}_a{3}_ma{4}_rs{5}_{6}.png'.format(task['name'], task['nObjects'], task['nFeatures'],
+                                                                   task['nAttempts'], task['modelAttempts'],
+                                                                   task['nRadSets'], task['totalPoints'],
+                                                                   task['nClasses']), format='png')
+    plt.close(fig)
