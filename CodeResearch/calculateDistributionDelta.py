@@ -12,7 +12,6 @@ from xgboost import XGBClassifier
 
 from CodeResearch.calcSupremum import calcSupremum
 
-
 def calculateDistributionDelta(dataSet, nObjects, nAttempts):
 
     totalObjects = dataSet.shape[0]
@@ -38,7 +37,6 @@ def calculateDistributionDelta(dataSet, nObjects, nAttempts):
 
     return avg, sigma
 
-
 def isLowerOrEqual(curObject, point):
 
     for i in np.arange(len(curObject)):
@@ -46,7 +44,6 @@ def isLowerOrEqual(curObject, point):
             return False
 
     return True
-
 
 def calculateVector(subSet, point, halfObjects):
 
@@ -166,7 +163,7 @@ def calcRademacherVectorsFast(subSet):
     vList = set()
     
     for iVector in np.arange(nObjects):
-        v = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet, subSet)
+        v = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
 
         prevLen = len(vList)
         vList.add(''.join(str(x) for x in v))
@@ -231,7 +228,7 @@ def calcRademacher(subSet, nAttempts):
 
     upperRad = normUpper * np.sqrt(np.log(2 * 2 * len(vectors))) / halfObjects
     avg, sigma = calcRademacherComplexity(vectors, nAttempts)
-    return {'rad': avg, 'sigma': sigma, 'upperRad': upperRad}
+    return {'rad': avg, 'sigma': sigma, 'upperRad': upperRad, 'alpha': normUpper**2/halfObjects}
 
 
 def calcConcreteModel(dataSet, nObjects, target):
@@ -291,10 +288,12 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
     upperRad = np.zeros(nRadSets)
     rad = np.zeros(nRadSets)
     sigmas = np.zeros(nRadSets)
+    upperRadAlpha = np.zeros(nRadSets)
 
     upperRadA = np.zeros(nRadSets)
     radA = np.zeros(nRadSets)
     sigmasA = np.zeros(nRadSets)
+    upperRadAAlpha = np.zeros(nRadSets)
 
     for i in np.arange(nRadSets):
         mask = np.zeros(totalObjects)
@@ -324,12 +323,14 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
         rad[i] = res['rad']
         upperRad[i] = res['upperRad']
         sigmas[i] = res['sigma']
+        upperRadAlpha[i] = res['alpha']
 
         radA[i] = resA['rad']
         upperRadA[i] = resA['upperRad']
-        sigmas[i] = res['sigma']
+        sigmas[i] = resA['sigma']
+        upperRadAAlpha[i] = resA['alpha']
 
-    return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas), 'radA': np.mean(radA), 'upperRadA': np.mean(upperRadA), 'sigmaA': np.mean(sigmasA)}
+    return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas), 'radA': np.mean(radA), 'upperRadA': np.mean(upperRadA), 'sigmaA': np.mean(sigmasA), 'alpha': np.mean(upperRadAlpha), 'alphaA': np.mean(upperRadAAlpha)}
 
 
 def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, nRadSets, target):

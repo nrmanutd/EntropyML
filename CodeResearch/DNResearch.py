@@ -90,6 +90,30 @@ def checkHyperPlane(l):
     calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane')
 
 
+def checkHyperPlaneWithIntersection(l, alpha):
+    elements = l - l%2
+
+    dataSet = np.zeros((elements, 3))
+    target = np.zeros(elements, dtype=int)
+    a = 10
+    center = 2 * a * alpha
+
+    for i in np.arange(elements):
+
+        c = 0 if i < elements/2 else center
+
+        x = np.random.uniform(-a + c, c + a)
+        y = np.random.uniform(-a, a)
+        z = np.random.uniform(-a, a)
+
+        dataSet[i, 0] = x
+        dataSet[i, 1] = y
+        dataSet[i, 2] = z
+
+        target[i] = 1 if i < elements/2 else -1
+
+    calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
+
 def checkTask(task, *args, **kwargs):
     if task == 'circles':
         checkCircles(kwargs.get('l', None), kwargs.get('c', None))
@@ -97,10 +121,19 @@ def checkTask(task, *args, **kwargs):
         checkRandom(kwargs.get('l', None), kwargs.get('f', None))
     elif task == 'hyperPlane':
         checkHyperPlane(kwargs.get('l', None))
+    elif task == 'hyperPlaneI':
+        checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None))
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None))
 
 lObj = 300
+
+checkTask('hyperPlaneI', l=lObj, alpha=0)
+checkTask('hyperPlaneI', l=lObj, alpha=0.5)
+checkTask('hyperPlaneI', l=lObj, alpha=1)
+checkTask('hyperPlaneI', l=lObj, alpha=2)
+
+#checkTask('circles', l=100, c=2)
 
 #checkTask('circles', l=100, c=2)
 #checkTask('circles', l=100, c=4)
@@ -114,8 +147,8 @@ lObj = 300
 #checkTask('random', l=lObj, f=4)
 #checkTask('hyperPlane', l=lObj)
 
-checkTask(53, t=20)
-checkTask(186, t=10)
+#checkTask(53, t=20)
+#checkTask(186, t=10)
 
 #todo
 #+1. вывод в файл графиков (2 картинки)

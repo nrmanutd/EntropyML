@@ -41,7 +41,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.DNResearch.executor": "Debug",
+    "Python.DNResearch.executor": "Run",
     "Python.calcEntropy.executor": "Debug",
     "Python.car.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
@@ -311,7 +311,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736081556822</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="added entropy calculation">
+      <option name="closed" value="true" />
+      <created>1736112967552</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1736112967552</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -338,11 +346,6 @@
           <url>file://$PROJECT_DIR$/showRademacherDistribution.py</url>
           <line>47</line>
           <option name="timeStamp" value="90" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>168</line>
-          <option name="timeStamp" value="190" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

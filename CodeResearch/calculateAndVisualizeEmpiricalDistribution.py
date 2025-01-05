@@ -10,20 +10,6 @@ from xgboost import XGBClassifier
 from CodeResearch.SaveRademacherResults import SaveRademacherResults
 from CodeResearch.calculateDistributionDelta import calculateRademacherComplexity
 
-
-def calcModel(dataSet, ratio, target):
-
-    enc = LabelEncoder()
-    target = enc.fit_transform(np.ravel(target))
-
-    test_size = 0.8 * (1 - ratio) + 0.1 * ratio
-    X_train, X_test, y_train, y_test = train_test_split(dataSet, target, test_size=test_size,
-                                                        random_state=random.randint(1, 1000))
-    model = XGBClassifier().fit(X_train, np.ravel(y_train))
-    return accuracy_score(y_test, model.predict(X_test))
-
-
-
 def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args, **kwargs):
 
     nAttempts = 20
@@ -74,12 +60,11 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
         avgDistributions[iDistribution] = radResult['rad']
         sigmas[iDistribution] = radResult['sigma']
         avgDistributions2[iDistribution] = radResult['upperRad']
+        avgDistributions3[iDistribution] = radResult['alpha']
 
         avgDistributionsA[iDistribution] = radResult['radA']
         sigmasA[iDistribution] = radResult['sigmaA']
         avgDistributions2A[iDistribution] = radResult['upperRadA']
-
-        #avgDistributions3[iDistribution] = radResult['upperRad2']
 
         accuracy[iDistribution] = modelResult['accuracy']
         modelSigma[iDistribution] = modelResult['modelSigma']
@@ -88,7 +73,7 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
 
     data = {'xLabels': xLabels, 'rad': avgDistributions,
             'upperRad': avgDistributions2, 'accuracy': accuracy, 'modelSigma': modelSigma,
-            'mcDiarmid': mcDiarmids, 'radA': avgDistributionsA, 'upperRadA': avgDistributions2A}
+            'mcDiarmid': mcDiarmids, 'radA': avgDistributionsA, 'upperRadA': avgDistributions2A, 'alpha': avgDistributions3}
 
     task = {'name': taskName, 'nObjects': nObjects, 'nFeatures': nFeatures, 'nAttempts': nAttempts,
             'modelAttempts': modelAttempts, 'step': step, 'prob': probability, 'totalPoints': totalPoints,
