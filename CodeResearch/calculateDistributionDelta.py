@@ -1,5 +1,9 @@
+import bisect
+import math
 import random
 import statistics
+import time
+
 from scipy.stats import bernoulli
 import numpy as np
 from numpy import linalg as LA
@@ -68,22 +72,44 @@ def calculateVector(subSet, point, halfObjects):
 
 def calcRademacherComplexity(vectors, nAttempts):
 
-    res = np.zeros(nAttempts)
     nDimension = len(vectors[0])
     nVectors = len(vectors)
 
-    for i in np.arange(nAttempts):
-        b = 2 * (bernoulli.rvs(0.5, size=nDimension) - 0.5)
+    vs = np.array(vectors)
+    bs = np.zeros((nDimension, nAttempts))
+    rs = np.zeros((nVectors, nAttempts))
 
-        maxProd = sum(k[0] * k[1] for k in zip(vectors[0], b))
-        for j in np.arange(1, nVectors):
-            curProd = sum(k[0] * k[1] for k in zip(vectors[j], b))
+    for i in np.arange(nAttempts):
+        bs[:, i] = 2 * (bernoulli.rvs(0.5, size=nDimension) - 0.5)
+
+    prod = np.matmul(vs, bs, rs)
+    res1 = np.amax(prod, axis=0)/nDimension
+    resMean = np.mean(res1)
+    resSigma = np.std(res1)
+
+    #print('r: {0}, s: {1}', resMean, resSigma)
+
+    return resMean, resSigma
+
+    #multiplication without matrices - for memory
+    idx = np.arange(1, nVectors)
+    res = np.zeros(nAttempts)
+
+    for i in np.arange(nAttempts):
+        #b = 2 * (bernoulli.rvs(0.5, size=nDimension) - 0.5)
+        b = bs[:, i]
+
+        maxProd = abs(sum(k[0] * k[1] for k in zip(vectors[0], b)))
+        for j in idx:
+            curProd = abs(sum(k[0] * k[1] for k in zip(vectors[j], b)))
             maxProd = max(curProd, maxProd)
 
         res[i] = maxProd/nDimension
 
     avg = np.mean(res)
     sigma = np.std(res)
+
+    #print('r: {0}, s: {1}', avg, sigma)
 
     return avg, sigma
 
@@ -98,19 +124,78 @@ def calculateSimpleVector(iVector, halfObjects):
     return v
 
 
-def calcRademacher(subSet, nAttempts):
+def calculateVectorFast(point, sortedSetIdx, sortedSet):
+
+    nObjects = sortedSet.shape[0]
+    halfObjects = math.floor(nObjects/2)
+    nFeatures = sortedSet.shape[1]
+
+    v = np.zeros(halfObjects, dtype=int)
+    curSet = set()
+
+    for iFeature in np.arange(nFeatures):
+        idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
+        curFeaturesLessIdx = sortedSetIdx[np.arange(idx), iFeature]
+
+        if iFeature == 0:
+            curSet.update(curFeaturesLessIdx)
+        else:
+            curSet = curSet.intersection(curFeaturesLessIdx)
+
+    for nIdx in curSet:
+        if nIdx < halfObjects:
+            v[nIdx] += 1
+        else:
+            v[nIdx%halfObjects] += -1
+
+    return v
+
+
+def calcRademacherVectorsFast(subSet):
 
     nObjects = subSet.shape[0]
-    halfObjects = (int) (nObjects / 2)
+    nFeatures = subSet.shape[1]
+    
+    sortedSetIdx = np.zeros((nObjects, nFeatures), dtype=int)
+    sortedSet = np.zeros((nObjects, nFeatures))
+    
+    for iFeature in np.arange(nFeatures):
+        sIdx = np.argsort(subSet[:, iFeature])
+        sortedSetIdx[:, iFeature] = sIdx
+        sortedSet[:, iFeature] = subSet[sIdx, iFeature]
 
+    vectors = []
+    vList = set()
+    
+    for iVector in np.arange(nObjects):
+        v = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
+        # v = calculateSimpleVector(iVector, halfObjects)
+        #v1 = calculateVector(subSet, subSet[iVector, :], halfObjects)
+
+        prevLen = len(vList)
+        vList.add(''.join(str(x) for x in v))
+        curLen = len(vList)
+
+        if curLen > prevLen:
+            vectors.append(v)
+
+    return vectors
+
+
+def calcRademacherVectors(subSet):
+    nObjects = subSet.shape[0]
+    halfObjects = math.floor(nObjects / 2)
+    
     vectors = []
     vList = set()
 
     sumVector = np.zeros(halfObjects)
 
+    #s = time.time()
+
     for iVector in np.arange(nObjects):
         v = calculateVector(subSet, subSet[iVector, :], halfObjects)
-        #v = calculateSimpleVector(iVector, halfObjects)
+        # v = calculateSimpleVector(iVector, halfObjects)
 
         prevLen = len(vList)
         vList.add(''.join(str(x) for x in v))
@@ -120,24 +205,59 @@ def calcRademacher(subSet, nAttempts):
             vectors.append(v)
             sumVector += v
 
-    #if len(vList) != nObjects:
+    # if len(vList) != nObjects:
     #    print('Total objects: {0}, unique: {1}'.format(nObjects, len(vList)))
 
-    #print(vList)
+    # print(vList)
+
+    #e = time.time()
+    #print('Created rademacher vectors...{:.2f}'.format(e - s))
 
     sumVector = sumVector / len(vList)
-    maxNorm = np.zeros(len(vectors))
 
     for iVector in np.arange(len(vectors)):
         vectors[iVector] = vectors[iVector] - sumVector
-        maxNorm[iVector] = LA.norm(vectors[iVector])
+    
+    return vectors
 
-    normUpper = max(maxNorm)
-    upperRad = normUpper * np.sqrt(2 * np.log(len(vectors))) / halfObjects
-    upperRad2 = np.sqrt(halfObjects) * np.sqrt(2 * np.log(len(vectors))) / halfObjects
+
+def calcRademacher(subSet, nAttempts):
+
+    nObjects = subSet.shape[0]
+    halfObjects = math.floor(nObjects / 2)
+
+    #s = time.time()
+    vectors = calcRademacherVectorsFast(subSet)
+    #d1 = time.time() - s
+
+    #s = time.time()
+    #vectors1 = calcRademacherVectors(subSet)
+    #d2 = time.time() - s
+
+    #if(len(vectors) != len(vectors1)):
+    #    print('Error in length')
+
+    #for iVector in np.arange(len(vectors)):
+    #    nf = len(vectors[iVector])
+    #    for iFeature in np.arange(nf):
+    #        if(vectors[iVector][iFeature] != vectors1[iVector][iFeature]):
+    #            print('error vector Idx {0}, value Idx {1}, v value {2} v1 value {3}'.format(iVector, iFeature, vectors[iVector][iFeature], vectors1[iVector][iFeature]))
+
+    #print('new: {:.2f}s, old {:.2f}s'.format(d1, d2))
+
+    normUpper = 0.0
+
+    for v in vectors:
+        normUpper = max(normUpper, LA.norm(v)) 
+
+    upperRad = normUpper * np.sqrt(np.log(2 * 2 * len(vectors))) / halfObjects
+    #upperRad2 = np.sqrt(halfObjects) * np.sqrt(2 * np.log(len(vectors))) / halfObjects
+    upperRad2 = 0.0
+
+    #s = time.time()
     avg, sigma = calcRademacherComplexity(vectors, nAttempts)
-
-    print('Rademacher monte-carlo vs estimation {0} {1}'.format(avg, upperRad))
+    #e = time.time()
+    #print('Calculated random rademacher complexity...{:.2f}'.format(e - s))
     return {'rad': avg, 'sigma': sigma, 'upperRad': upperRad, 'upperRad2': upperRad2}
 
 
@@ -192,24 +312,47 @@ def calcModel(dataSet, nObjects, nAttempts, target):
     return {'accuracy': acc, 'modelSigma': sigma}
 
 
-def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, target):
-
+def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
     totalObjects = dataSet.shape[0]
-    mask = np.zeros(totalObjects)
-    mask[np.arange(2*nObjects)] = 1
 
-    mask = np.random.permutation(mask)
-    idx = np.where(mask > 0)[0]
+    upperRad = np.zeros(nRadSets)
+    rad = np.zeros(nRadSets)
+    sigmas = np.zeros(nRadSets)
 
+    for i in np.arange(nRadSets):
+        mask = np.zeros(totalObjects)
+        mask[np.arange(2 * nObjects)] = 1
+
+        mask = np.random.permutation(mask)
+        idx = np.where(mask > 0)[0]
+
+        subSet = dataSet[idx, :]
+        subTarget = target[idx]
+        subTarget = np.reshape(subTarget, (len(subTarget), 1))
+        subSet = np.hstack((subSet, subTarget))
+        res = calcRademacher(subSet, nAttempts)
+
+        rad[i] = res['rad']
+        upperRad[i] = res['upperRad']
+        sigmas[i] = res['sigma']
+
+    #{'rad': avg, 'sigma': sigma, 'upperRad': upperRad, 'upperRad2': upperRad2}
+    return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas)}
+
+
+def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, nRadSets, target):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
-    subSet = dataSet[idx, :]
-    subTarget = target[idx]
-    subTarget = np.reshape(subTarget, (len(subTarget), 1))
-    subSet = np.hstack((subSet, subTarget))
+    print('Calculating Rademacher & Model scores...')
+    start = time.time()
+    radResult = calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target)
+    end = time.time()
+    print('Calculated Rademacher: {:.2f}s'.format(end - start))
 
-    radResult = calcRademacher(subSet, nAttempts)
+    start = time.time()
     modelResult = calcModel(dataSet, nObjects, modelAttempts, target)
+    end = time.time()
+    print('Calculated Model: {:.2f}s'.format(end - start))
 
     return {'radResult': radResult, 'modelResult': modelResult}

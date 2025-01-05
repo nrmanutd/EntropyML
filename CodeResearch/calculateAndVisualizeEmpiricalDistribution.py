@@ -24,20 +24,27 @@ def calcModel(dataSet, ratio, target):
 
 
 
-def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName):
+def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args, **kwargs):
 
     nAttempts = 20
+    nRadSets = 20
     modelAttempts = 20
+
     probability = 0.95
     delta = 1 - probability
-    step = 5
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
+    nClasses = len(np.unique(target))
+
+    totalPoints = kwargs.get('t', None)
+    totalPoints = 40 if totalPoints is None else totalPoints
+
+    step = math.floor(nObjects / 2 / totalPoints)
 
     print('Starting task: {0}. nAttempts: {1}, modelAttempts: {2}, objects: {3}'.format(taskName, nAttempts, modelAttempts, nObjects))
 
-    maxObjects = min(60, math.floor(nObjects/2/step))
-    minObjects = min(1, maxObjects)
+    maxObjects = totalPoints
+    minObjects = 1
 
     avgDistributions = np.zeros(maxObjects - minObjects, dtype=float)
     avgDistributions2 = np.zeros(maxObjects - minObjects, dtype=float)
@@ -56,7 +63,7 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName):
         print('Calculating for {0}'.format(currentObjects))
 
         mcDiarmids[iDistribution] = math.sqrt(math.log(1/delta) / currentObjects)
-        result = calculateRademacherComplexity(dataSet, currentObjects, nAttempts, modelAttempts, target)
+        result = calculateRademacherComplexity(dataSet, currentObjects, nAttempts, modelAttempts, nRadSets, target)
 
         radResult = result['radResult']
         modelResult = result['modelResult']
@@ -68,8 +75,6 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName):
 
         accuracy[iDistribution] = modelResult['accuracy']
         modelSigma[iDistribution] = modelResult['modelSigma']
-        #accuracy_full[iDistribution] = modelResult['accuracy_full']
-
 
     xLabels = np.arange(minObjects, maxObjects) * step
 
@@ -78,7 +83,8 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName):
             'mcDiarmid': mcDiarmids}
 
     task = {'name': taskName, 'nObjects': nObjects, 'nFeatures': nFeatures, 'nAttempts': nAttempts,
-            'modelAttempts': modelAttempts, 'step': step, 'prob': probability}
+            'modelAttempts': modelAttempts, 'step': step, 'prob': probability, 'totalPoints': totalPoints,
+            'nRadSets': nRadSets, 'nClasses': nClasses}
 
     SaveRademacherResults(data, task)
 
