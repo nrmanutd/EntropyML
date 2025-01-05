@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 def SaveRademacherResults(data, task):
-    figure = plt.figure()
     px = 1 / plt.rcParams['figure.dpi']
     fig, ax = plt.subplots(3, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
@@ -72,5 +71,4 @@ def SaveRademacherResults(data, task):
     plt.savefig('Figures\\{0}_{1}_{2}_{7}_a{3}_ma{4}_rs{5}_{6}.png'.format(task['name'], task['nObjects'], task['nFeatures'], task['nAttempts'], task['modelAttempts'],
                                                                        task['nRadSets'], task['totalPoints'], task['nClasses']), format='png')
     plt.close(fig)
-    plt.close(figure)
 

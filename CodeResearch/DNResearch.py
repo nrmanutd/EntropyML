@@ -104,14 +104,14 @@ lObj = 1000
 #checkTask('random', l=100, f=4)
 #checkTask('hyperPlane', l=100)
 
-checkTask('circles', l=lObj, c=2)
-checkTask('circles', l=lObj, c=4)
-checkTask('random', l=lObj, f=2)
-checkTask('random', l=lObj, f=4)
-checkTask('hyperPlane', l=lObj)
+#checkTask('circles', l=lObj, c=2)
+#checkTask('circles', l=lObj, c=4)
+#checkTask('random', l=lObj, f=2)
+#checkTask('random', l=lObj, f=4)
+#checkTask('hyperPlane', l=lObj)
 
-checkTask(53, t=20)
-checkTask(186, t=20)
+#checkTask(53, t=20)
+checkTask(186, t=5)
 
 #todo
 #+1. вывод в файл графиков (2 картинки)
