@@ -1,19 +1,15 @@
 import math
-import random
 
 import numpy as np
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
 
 from CodeResearch.SaveRademacherResults import SaveRademacherResults
 from CodeResearch.calculateDistributionDelta import calculateRademacherComplexity
 
+
 def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args, **kwargs):
 
     nAttempts = 20
-    nRadSets = 1
+    nRadSets = 20
     modelAttempts = 20
 
     probability = 0.95

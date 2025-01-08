@@ -126,12 +126,13 @@ def checkTask(task, *args, **kwargs):
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None))
 
-lObj = 300
+lObj = 500
 
-checkTask('hyperPlaneI', l=lObj, alpha=0)
-checkTask('hyperPlaneI', l=lObj, alpha=0.5)
-checkTask('hyperPlaneI', l=lObj, alpha=1)
-checkTask('hyperPlaneI', l=lObj, alpha=2)
+#checkTask('hyperPlaneI', l=lObj, alpha=0)
+#checkTask('hyperPlaneI', l=lObj, alpha=0.5)
+#checkTask('hyperPlaneI', l=lObj, alpha=1)
+#checkTask('hyperPlaneI', l=lObj, alpha=2)
+#checkTask('hyperPlaneI', l=lObj, alpha=5)
 
 #checkTask('circles', l=100, c=2)
 
@@ -141,14 +142,15 @@ checkTask('hyperPlaneI', l=lObj, alpha=2)
 #checkTask('random', l=100, f=4)
 #checkTask('hyperPlane', l=100)
 
+#checkTask(53, t=20)
+
 #checkTask('circles', l=lObj, c=2)
 #checkTask('circles', l=lObj, c=4)
-#checkTask('random', l=lObj, f=2)
-#checkTask('random', l=lObj, f=4)
-#checkTask('hyperPlane', l=lObj)
+checkTask('random', l=lObj, f=2)
+checkTask('random', l=lObj, f=4)
+checkTask('hyperPlane', l=lObj)
 
-#checkTask(53, t=20)
-#checkTask(186, t=10)
+checkTask(186, t=10)
 
 #todo
 #+1. вывод в файл графиков (2 картинки)

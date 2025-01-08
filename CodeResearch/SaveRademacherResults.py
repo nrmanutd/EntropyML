@@ -72,9 +72,13 @@ def SaveRademacherResults(data, task):
     # plt.plot(xNumberOfObjects, avgDistributions - sigmas, label="-s")
 
     #plot power law
+
+    iStart = math.floor(0.4 * len(alpha))
+    idx = np.arange(iStart, len(rad))
+
     ax[2].title.set_text('Power law dependency')
     ax[2].grid()
-    ax[2].plot(xLabels, alpha, label="Upper Rad alpha", linewidth=2)
+    ax[2].plot(xLabels, alpha, label="Upper Rad alpha {:.2f}".format(np.std(alpha[idx])), linewidth=2)
 
     ax[2].legend()
     ax[1].legend()

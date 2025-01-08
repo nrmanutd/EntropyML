@@ -332,7 +332,6 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
 
     return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas), 'radA': np.mean(radA), 'upperRadA': np.mean(upperRadA), 'sigmaA': np.mean(sigmasA), 'alpha': np.mean(upperRadAlpha), 'alphaA': np.mean(upperRadAAlpha)}
 
-
 def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, nRadSets, target):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))

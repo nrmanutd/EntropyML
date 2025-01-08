@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added entropy calculation">
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="improved visualization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/SaveRademacherResults.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SaveRademacherResults.py" afterDir="false" />
@@ -319,7 +319,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736112967552</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="improved visualization">
+      <option name="closed" value="true" />
+      <created>1736117732703</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1736117732703</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -327,7 +335,8 @@
     <MESSAGE value="added gitignore commit" />
     <MESSAGE value="added main.py file" />
     <MESSAGE value="added entropy calculation" />
-    <option name="LAST_COMMIT_MESSAGE" value="added entropy calculation" />
+    <MESSAGE value="improved visualization" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved visualization" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
