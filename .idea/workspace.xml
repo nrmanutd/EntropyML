@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="improved visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/calcModelAndRademacherComplexity.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/SaveRademacherResults.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SaveRademacherResults.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
     </list>
@@ -327,7 +330,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736117732703</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="improved visualization">
+      <option name="closed" value="true" />
+      <created>1736351058516</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1736351058516</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -355,6 +366,22 @@
           <url>file://$PROJECT_DIR$/showRademacherDistribution.py</url>
           <line>47</line>
           <option name="timeStamp" value="90" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py</url>
+          <line>51</line>
+          <option name="timeStamp" value="102" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py</url>
+          <line>25</line>
+          <option name="timeStamp" value="103" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <condition expression="currentObjects &gt;= 20" language="Python" />
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>44</line>
+          <option name="timeStamp" value="110" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

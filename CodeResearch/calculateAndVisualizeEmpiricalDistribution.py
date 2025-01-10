@@ -3,12 +3,12 @@ import math
 import numpy as np
 
 from CodeResearch.SaveRademacherResults import SaveRademacherResults
-from CodeResearch.calculateDistributionDelta import calculateRademacherComplexity
+from CodeResearch.calcModelAndRademacherComplexity import calculateRademacherComplexity
 
 
 def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args, **kwargs):
 
-    nAttempts = 20
+    nAttempts = 40
     nRadSets = 20
     modelAttempts = 20
 
@@ -19,7 +19,7 @@ def calculateAndVisualizeEmpiricalDistribution(dataSet, target, taskName, *args,
     nClasses = len(np.unique(target))
 
     totalPoints = kwargs.get('t', None)
-    totalPoints = 40 if totalPoints is None else totalPoints
+    totalPoints = 25 if totalPoints is None else totalPoints
 
     step = math.floor(nObjects / 2 / totalPoints)
 

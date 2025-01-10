@@ -3,6 +3,8 @@ import math
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
+from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta
+
 
 #showRandom(150, 2)
 #showCircles(150, 2)
@@ -16,26 +18,32 @@ from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAnd
 #showTaskFromUciById(54) #isolet
 
 
-def empiricalDistributionById(id, t):
+def empiricalDistributionById(id, t, m):
     set = fetch_ucirepo(id=id)
 
     dataSet = np.array(set.data.features)
     target = np.array(set.data.targets)
 
-    calculateAndVisualizeEmpiricalDistribution(dataSet, target, set.metadata.name, t=t)
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, set.metadata.name, t=t)
+    else:
+        calculateAndVisualizeEmpiricalDistribution(dataSet, target, set.metadata.name, t=t)
 
     return
 
 #empiricalDistributionById(53) #iris
 #empiricalDistributionById(186) #wine
 
-def checkCircles(l, c):
+def checkCircles(l, c, m):
 
     elements = l
     nClasses = c
 
     dataSet = np.zeros((elements, 2))
     target = np.zeros(elements)
+
+    transformedDataSet = np.zeros((elements, 2))
+
     bucket = math.floor(elements / nClasses)
     currentClass = 0
 
@@ -49,12 +57,20 @@ def checkCircles(l, c):
         dataSet[i, 0] = radius * math.cos(value * 2 * math.pi)
         dataSet[i, 1] = radius * math.sin(value * 2 * math.pi)
 
+        transformedDataSet[i, 0] = radius
+        transformedDataSet[i, 1] = value * 2 * math.pi
+
         target[i] = currentClass
 
-    calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'circles')
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'circles')
+        estimateAndVisualizeEmpiricalDistributionDelta(transformedDataSet, target, 'radian_circles')
+    else:
+        calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'circles')
+        calculateAndVisualizeEmpiricalDistribution(transformedDataSet, target, 'radian_circles')
 
 
-def checkRandom(l, f):
+def checkRandom(l, f, m):
     elements = l
     features = f
 
@@ -67,10 +83,13 @@ def checkRandom(l, f):
 
         target[i] = 1 if np.random.uniform(-1, 1) > 0 else -1
 
-    calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'random')
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'random')
+    else:
+        calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'random')
 
 
-def checkHyperPlane(l):
+def checkHyperPlane(l, m):
     elements = l
 
     dataSet = np.zeros((elements, 3))
@@ -87,10 +106,13 @@ def checkHyperPlane(l):
 
         target[i] = 1 if x + y + z > 0 else -1
 
-    calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane')
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'hyperPlane')
+    else:
+        calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane')
 
 
-def checkHyperPlaneWithIntersection(l, alpha):
+def checkHyperPlaneWithIntersection(l, alpha, m):
     elements = l - l%2
 
     dataSet = np.zeros((elements, 3))
@@ -112,29 +134,31 @@ def checkHyperPlaneWithIntersection(l, alpha):
 
         target[i] = 1 if i < elements/2 else -1
 
-    calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
+
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
+    else:
+        calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
 
 def checkTask(task, *args, **kwargs):
     if task == 'circles':
-        checkCircles(kwargs.get('l', None), kwargs.get('c', None))
+        checkCircles(kwargs.get('l', None), kwargs.get('c', None), m=kwargs.get('m', None))
     elif task == 'random':
-        checkRandom(kwargs.get('l', None), kwargs.get('f', None))
+        checkRandom(kwargs.get('l', None), kwargs.get('f', None), m=kwargs.get('m', None))
     elif task == 'hyperPlane':
-        checkHyperPlane(kwargs.get('l', None))
+        checkHyperPlane(kwargs.get('l', None), m=kwargs.get('m', None))
     elif task == 'hyperPlaneI':
-        checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None))
+        checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None), m=kwargs.get('m', None))
     else:
-        empiricalDistributionById(task, t=kwargs.get('t', None))
+        empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
 lObj = 500
 
-#checkTask('hyperPlaneI', l=lObj, alpha=0)
-#checkTask('hyperPlaneI', l=lObj, alpha=0.5)
-#checkTask('hyperPlaneI', l=lObj, alpha=1)
-#checkTask('hyperPlaneI', l=lObj, alpha=2)
-#checkTask('hyperPlaneI', l=lObj, alpha=5)
-
-#checkTask('circles', l=100, c=2)
+#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
 #checkTask('circles', l=100, c=2)
 #checkTask('circles', l=100, c=4)
@@ -142,24 +166,22 @@ lObj = 500
 #checkTask('random', l=100, f=4)
 #checkTask('hyperPlane', l=100)
 
-#checkTask(53, t=20)
+checkTask('circles', l=lObj, c=2, m='delta')
+checkTask('circles', l=lObj, c=4, m='delta')
+#checkTask('random', l=lObj, f=2, m='delta')
+#checkTask('random', l=lObj, f=4, m='delta')
+#checkTask('hyperPlane', l=lObj, m='delta')
 
-#checkTask('circles', l=lObj, c=2)
-#checkTask('circles', l=lObj, c=4)
-checkTask('random', l=lObj, f=2)
-checkTask('random', l=lObj, f=4)
-checkTask('hyperPlane', l=lObj)
-
-checkTask(186, t=10)
+#checkTask(17, t=25, m='delta') #wisconsin
+#checkTask(186, t=10, m='delta') #wine
+#checkTask(53, t=20, m='delta') #iris
 
 #todo
-#+1. вывод в файл графиков (2 картинки)
-#2. сохранение в файл данных (посмотреть на датафрейм). Посмотреть, как можно append делать в файл.
-#+3. сделать симуляцию на модельных экспериментах двух типов: простой с разделяющей гиперплоскостью с хорошей разделимостью и плохой. Идея - посмотреть на то, как меняется функционал по оценке эмпирической функции распределения, качество алгоритма от степени перемешивания объектов
-#+4. оптимизировать расчет радемахеровской сложности через сортировку данных
-#5. добавить другие задачи
-#+6. сделать рандомизацию по разным подмножествам для оценки общей радемахеровской сложности
-#7. Добавить еще несколько моделей (svm, логит, elastic net)
+#1. Сделать загрузку и анализ датасета с изображениями MNIST и CIFAR-10 https://habr.com/ru/companies/wunderfund/articles/314872/
+#+2. Сравнить с полярными координатами значения координат
+#3. Оптимизировать - сделать, чтобы сортировка не выполнялась каждый раз, а единожды делалась
+#4. Алгоритмы ML сделать разные, не только XGBoost
+#5. Добавить еще датасетов
 
 #гипотеза:
 # 1. лосс прогнозируется как следствие флуктуаций функции распределения

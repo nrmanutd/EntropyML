@@ -10,6 +10,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 
+from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.calcSupremum import calcSupremum
 
 def calculateDistributionDelta(dataSet, nObjects, nAttempts):
@@ -143,7 +144,9 @@ def calculateVectorFast(point, sortedSetIdx, sortedSet):
         else:
             v[nIdx % halfObjects] += -1
 
-    return v
+    nonZeroCoordinates = len(curSet)
+
+    return v, nonZeroCoordinates
 
 
 def calcRademacherVectorsFast(subSet):
@@ -163,7 +166,7 @@ def calcRademacherVectorsFast(subSet):
     vList = set()
     
     for iVector in np.arange(nObjects):
-        v = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
+        v, nzc = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
 
         prevLen = len(vList)
         vList.add(''.join(str(x) for x in v))
@@ -226,61 +229,9 @@ def calcRademacher(subSet, nAttempts):
     for i in np.arange(len(vectors)):
         normUpper = max(normUpper, LA.norm(vectors[i]))
 
-    upperRad = normUpper * np.sqrt(np.log(2 * 2 * len(vectors))) / halfObjects
+    upperRad = normUpper * np.sqrt(np.log(2 * len(vectors))) / halfObjects
     avg, sigma = calcRademacherComplexity(vectors, nAttempts)
     return {'rad': avg, 'sigma': sigma, 'upperRad': upperRad, 'alpha': normUpper**2/halfObjects}
-
-
-def calcConcreteModel(dataSet, nObjects, target):
-    enc = LabelEncoder()
-    target = enc.fit_transform(np.ravel(target))
-
-    totalObjects = dataSet.shape[0]
-    mask = np.zeros(totalObjects)
-    mask[np.arange(nObjects)] = 1
-
-    mask = np.random.permutation(mask)
-    idx = np.where(mask > 0)[0]
-
-    testIdx = np.where(mask == 0)[0]
-
-    u, indexes = np.unique(target, return_index=True)
-    s = set(np.concatenate((idx, indexes)))
-    idx = list(s)
-
-    subSet = dataSet[idx, :]
-    subTarget = target[idx]
-
-    train_idx = np.arange(nObjects, dtype=int)
-
-    u, indexes = np.unique(subTarget, return_index=True)
-    s = set(np.concatenate((train_idx, indexes)))
-    train_idx = list(s)
-
-    X_train = subSet[train_idx]
-    Y_train = subTarget[train_idx]
-
-    X_test = dataSet[testIdx]
-    Y_test = target[testIdx]
-
-    model = XGBClassifier().fit(X_train, Y_train)
-
-    predict = model.predict(X_test)
-    accuracy = accuracy_score(Y_test, predict)
-
-    return accuracy
-
-def calcModel(dataSet, nObjects, nAttempts, target):
-    accuracy = np.zeros(nAttempts)
-
-    for i in np.arange(nAttempts):
-        accuracy[i] = calcConcreteModel(dataSet, nObjects, target)
-
-    acc = np.mean(accuracy)
-    sigma = np.std(accuracy)
-
-    return {'accuracy': acc, 'modelSigma': sigma}
-
 
 def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
     totalObjects = dataSet.shape[0]
@@ -315,8 +266,6 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
             curSubIdx = np.where(subTarget == uTarget[iClass])[0]
             subDTarget[curSubIdx, iClass] = 1
 
-        #subTarget = np.reshape(subTarget, (len(subTarget), 1))
-        #subSet = np.hstack((subSet, subTarget))
         subSet = np.hstack((subSet, subDTarget))
         res = calcRademacher(subSet, nAttempts)
 
@@ -332,19 +281,156 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
 
     return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas), 'radA': np.mean(radA), 'upperRadA': np.mean(upperRadA), 'sigmaA': np.mean(sigmasA), 'alpha': np.mean(upperRadAlpha), 'alphaA': np.mean(upperRadAAlpha)}
 
-def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, nRadSets, target):
-    enc = LabelEncoder()
-    target = enc.fit_transform(np.ravel(target))
 
-    print('Calculating Rademacher & Model scores...')
-    start = time.time()
-    radResult = calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target)
-    end = time.time()
-    print('Calculated Rademacher: {:.2f}s'.format(end - start))
+def GetSortedData(subSet):
+    nObjects = subSet.shape[0]
+    nFeatures = subSet.shape[1]
 
-    start = time.time()
-    modelResult = calcModel(dataSet, nObjects, modelAttempts, target)
-    end = time.time()
-    print('Calculated Model: {:.2f}s'.format(end - start))
+    sortedSetIdx = np.zeros((nObjects, nFeatures), dtype=int)
+    sortedSet = np.zeros((nObjects, nFeatures))
 
-    return {'radResult': radResult, 'modelResult': modelResult}
+    for iFeature in np.arange(nFeatures):
+        sIdx = np.argsort(subSet[:, iFeature])
+        sortedSetIdx[:, iFeature] = sIdx
+        sortedSet[:, iFeature] = subSet[sIdx, iFeature]
+
+    return sortedSetIdx, sortedSet
+
+
+def ConvertVector(v, p1, p2):
+
+    res = np.zeros(len(v))
+    res[0] = v[0] * p1
+    idx = np.arange(1, len(v))
+    res[idx] = v[idx] * p2
+
+    return res
+
+
+def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
+    xObjects = subSetX.shape[0]
+    yObjects = subSetY.shape[0]
+
+    sortedSetIdxX, sortedSetX = GetSortedData(subSetX)
+    sortedSetIdxY, sortedSetY = GetSortedData(subSetY)
+
+    vectors = []
+
+    for iVector in np.arange(xObjects + yObjects):
+        curVector = subSetX[iVector, :] if iVector < xObjects else subSetY[iVector - xObjects, :]
+
+        vX, mX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX)
+        vY, mY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY)
+
+        k = len(vX)
+        m = len(vY)
+
+        v = np.zeros(1 + k + m)
+        v[0] = 0.5*(mX / k - mY / m)
+        v[np.arange(1, 1 + k + m)] = 0.5 * np.concatenate((vX / k, -vY / m))
+
+        v1 = ConvertVector(v, -1, 1)
+        v2 = ConvertVector(v, 1, -1)
+        v3 = ConvertVector(v, -1, -1)
+
+        vectors.append(v)
+        vectors.append(v1)
+        vectors.append(v2)
+        vectors.append(v3)
+
+    return vectors
+
+
+def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, nAttempts):
+
+    iIdx = np.where(target == iClass)[0]
+    jIdx = np.where(target == jClass)[0]
+
+    subSetX = subSet[iIdx, :]
+    subSetY = subSet[jIdx, :]
+
+    vectors = CalcRademacherDistributionDeltasXY(subSetX, subSetY)
+
+    normUpper = 0.0
+
+    for i in np.arange(len(vectors)):
+        normUpper = max(normUpper, LA.norm(vectors[i]))
+
+    upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
+    rad, sigma = calcRademacherComplexity(vectors, nAttempts)
+
+    multiplier = (len(iIdx) + len(jIdx))/2 + 1
+
+    return rad * multiplier, upperRad
+
+
+def GetObjectsPerClass(target, seekingClass, nObjects):
+    idx = np.where(target == seekingClass)[0]
+
+    mask = np.zeros(len(idx))
+    mask[np.arange(nObjects)] = 1
+
+    mask = np.random.permutation(mask)
+    idxM = np.where(mask > 0)[0]
+
+    return idx[idxM].tolist()
+
+
+def GetSubSet(dataSet, target, nObjects):
+    vClasses, parts = np.unique(target, return_counts=True)
+    parts = parts / len(target)
+
+    nParts = np.floor(nObjects * parts).astype(int)
+
+    objectsPerClass = 2 * np.maximum(np.ones(len(nParts), dtype=int), nParts)
+
+    subSetIdx = []
+
+    for iClass in np.arange(len(vClasses)):
+        idx = GetObjectsPerClass(target, vClasses[iClass], objectsPerClass[iClass])
+        subSetIdx = subSetIdx + idx
+
+    return dataSet[subSetIdx], target[subSetIdx]
+
+def calcRademacherDistributionDeltas(dataSet, nObjects, nAttempts, target):
+    nClasses = len(np.unique(target))
+
+    pairs = math.floor(nClasses * (nClasses - 1) / 2)
+    rad = np.zeros(pairs)
+    upperRad = np.zeros(pairs)
+
+    subSet, subTarget = GetSubSet(dataSet, target, nObjects)
+    curIdx = 0
+
+    for iClass in np.arange(nClasses):
+        for jClass in np.arange(iClass):
+            r, ur = CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, subTarget, nAttempts)
+
+            rad[curIdx] = r
+            upperRad[curIdx] = ur
+            curIdx += 1
+
+    return {'rad': rad, 'upperRad': upperRad}
+
+def calcRademacherDeltasForSets(dataSet, nObjects, nAttempts, nRadSets, target):
+    vClasses= np.unique(target)
+    nClasses = len(vClasses)
+    pairs = math.floor(nClasses * (nClasses - 1) / 2)
+
+    upperRad = np.zeros((pairs, nRadSets), dtype=float)
+    rad = np.zeros((pairs, nRadSets), dtype=float)
+
+    for i in np.arange(nRadSets):
+        res = calcRademacherDistributionDeltas(dataSet, nObjects, nAttempts, target)
+
+        rad[:, i] = res['rad']
+        upperRad[:, i] = res['upperRad']
+
+    resRad = np.zeros(pairs)
+    resUpperRad = np.zeros(pairs)
+
+    for i in np.arange(pairs):
+        resRad[i] = np.mean(rad[i, :])
+        resUpperRad[i] = np.mean(upperRad[i, :])
+
+    return {'rad': resRad, 'upperRad': resUpperRad}
