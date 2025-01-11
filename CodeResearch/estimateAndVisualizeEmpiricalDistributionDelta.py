@@ -4,13 +4,14 @@ import numpy as np
 
 from CodeResearch.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
+from CodeResearch.calculateDistributionDelta import prepareData
 
 
 def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
 
-    nAttempts = 40
-    nRadSets = 20
-    modelAttempts = 20
+    nAttempts = 10
+    nRadSets = 1
+    modelAttempts = 10
 
     probability = 0.95
     delta = 1 - probability
@@ -21,7 +22,7 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
     totalPoints = kwargs.get('t', None)
     totalPoints = 25 if totalPoints is None else totalPoints
 
-    step = math.floor(nObjects / 2 / totalPoints)
+    step = math.floor(min(nObjects / 2, 6000) / totalPoints)
 
     print('Starting delta task: {0}. nAttempts: {1}, modelAttempts: {2}, objects: {3}'.format(taskName, nAttempts, modelAttempts, nObjects))
 
@@ -33,8 +34,10 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
     radEstimations = np.zeros((classesPairs, maxObjects - minObjects), dtype=float)
     radUpperEstimations = np.zeros((classesPairs, maxObjects - minObjects), dtype=float)
 
-    accuracy = np.zeros(maxObjects - minObjects, dtype=float)
-    modelSigma = np.zeros(maxObjects - minObjects, dtype=float)
+    nModels = 2
+
+    accuracy = np.zeros((nModels, maxObjects - minObjects), dtype=float)
+    modelSigma = np.zeros((nModels, maxObjects - minObjects), dtype=float)
 
     mcDiarmids = np.zeros(maxObjects - minObjects, dtype=float)
 
@@ -54,8 +57,8 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
         radEstimations[:, iDistribution] = radResult['rad']
         radUpperEstimations[:, iDistribution] = radResult['upperRad']
 
-        accuracy[iDistribution] = modelResult['accuracy']
-        modelSigma[iDistribution] = modelResult['modelSigma']
+        accuracy[:, iDistribution] = modelResult['accuracy']
+        modelSigma[:, iDistribution] = modelResult['modelSigma']
 
     xLabels = np.arange(minObjects, maxObjects) * step
 

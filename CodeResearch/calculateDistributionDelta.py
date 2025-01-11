@@ -119,34 +119,64 @@ def calculateSimpleVector(iVector, halfObjects):
 
     return v
 
-
-def calculateVectorFast(point, sortedSetIdx, sortedSet):
+def calculateVectorFast(point, sortedSetIdx, sortedSet, featuresIdx):
 
     nObjects = sortedSet.shape[0]
     halfObjects = math.floor(nObjects/2)
     nFeatures = sortedSet.shape[1]
 
     v = np.zeros(halfObjects, dtype=int)
-    curSet = set()
 
-    for iFeature in np.arange(nFeatures):
+    idx = bisect.bisect_right(sortedSet[:, featuresIdx[0]], point[featuresIdx[0]])
+    curFeaturesLessIdx = sortedSetIdx[0:(idx - 1), featuresIdx[0]]
+    curSet = set(curFeaturesLessIdx)
+
+    searchDeltas = 0
+    intersectDeltas = 0
+
+    deltas = np.zeros(nFeatures)
+
+    for fNumber in range(1, len(featuresIdx)):
+        iFeature = featuresIdx[fNumber]
+        #s1 = time.time()
         idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
-        curFeaturesLessIdx = sortedSetIdx[np.arange(idx), iFeature]
+        curFeaturesLessIdx = sortedSetIdx[0:(idx - 1), iFeature]
+        #print('iFeature: {:}, len: {:}, curLen: {:}, delta: {:}'.format(iFeature, len(curFeaturesLessIdx), len(curSet), deltas[featuresIdx[fNumber - 1]]))
+        #e1 = time.time()
+        #searchDeltas += (e1 - s1)
 
-        if iFeature == 0:
-            curSet.update(curFeaturesLessIdx)
-        else:
-            curSet = curSet.intersection(curFeaturesLessIdx)
+        #s1 = time.time()
+        #tt = set()
+        #temp = set(curFeaturesLessIdx)
 
-    for nIdx in curSet:
-        if nIdx < halfObjects:
-            v[nIdx] += 1
-        else:
-            v[nIdx % halfObjects] += -1
+        #for i in curSet:
+        #    if i in temp:
+        #        tt.add(i)
+
+        #curSet = tt
+        prevLen = len(curSet)
+        curSet = curSet.intersection(curFeaturesLessIdx)
+        deltas[iFeature] = prevLen - len(curSet)
+
+        #e1 = time.time()
+        #intersectDeltas += (e1 - s1)
+
+        if (len(curSet)) == 0:
+            break
+
+    #for nIdx in curSet:
+    #    if nIdx < halfObjects:
+    #        v[nIdx] += 1
+    #    else:
+    #        v[nIdx % halfObjects] += -1
 
     nonZeroCoordinates = len(curSet)
+    nonZeroDeltas = np.sum(np.abs(v))
 
-    return v, nonZeroCoordinates
+    #print('Search: {:.2f}, intersection: {:.2f}, curLen: {:}'.format(searchDeltas, intersectDeltas, len(curSet)))
+
+    return v, nonZeroCoordinates, nonZeroDeltas, deltas
+    #return [], nonZeroCoordinates, -1, curSet, deltas
 
 
 def calcRademacherVectorsFast(subSet):
@@ -166,7 +196,7 @@ def calcRademacherVectorsFast(subSet):
     vList = set()
     
     for iVector in np.arange(nObjects):
-        v, nzc = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
+        v, nzc, nzd = calculateVectorFast(subSet[iVector, :], sortedSetIdx, sortedSet)
 
         prevLen = len(vList)
         vList.add(''.join(str(x) for x in v))
@@ -296,7 +326,6 @@ def GetSortedData(subSet):
 
     return sortedSetIdx, sortedSet
 
-
 def ConvertVector(v, p1, p2):
 
     res = np.zeros(len(v))
@@ -305,7 +334,6 @@ def ConvertVector(v, p1, p2):
     res[idx] = v[idx] * p2
 
     return res
-
 
 def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
     xObjects = subSetX.shape[0]
@@ -316,11 +344,22 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
 
     vectors = []
 
+    vList = set()
+
+    normUpper = 0.0
+    featuresIdxX = np.arange(sortedSetIdxX.shape[1])
+    featuresIdxY = np.arange(sortedSetIdxY.shape[1])
+
     for iVector in np.arange(xObjects + yObjects):
+
         curVector = subSetX[iVector, :] if iVector < xObjects else subSetY[iVector - xObjects, :]
 
-        vX, mX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX)
-        vY, mY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY)
+        #s1 = time.time()
+        vX, mX, nzdX, idxX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX, featuresIdxX)
+        featuresIdxX = np.flip(np.argsort(idxX))
+        vY, mY, nzdY, idxY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY, featuresIdxY)
+        featuresIdxY = np.flip(np.argsort(idxY))
+        #e1 = time.time()
 
         k = len(vX)
         m = len(vY)
@@ -329,32 +368,41 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
         v[0] = 0.5*(mX / k - mY / m)
         v[np.arange(1, 1 + k + m)] = 0.5 * np.concatenate((vX / k, -vY / m))
 
+        #n1 = (0.5*(mX / k - mY / m))**2
+        #nx = nzdX / (4 * k * k)
+        #ny = nzdY / (4 * m * m)
+
+        #nn = math.sqrt(n1 + nx + ny)
+        #nla = LA.norm(v)
+
+        normUpper = max(normUpper, LA.norm(v))
+        #normUpper = max(normUpper, nn)
+
         v1 = ConvertVector(v, -1, 1)
         v2 = ConvertVector(v, 1, -1)
         v3 = ConvertVector(v, -1, -1)
 
-        vectors.append(v)
-        vectors.append(v1)
-        vectors.append(v2)
-        vectors.append(v3)
+        vs = [v, v1, v2, v3]
 
-    return vectors
+        for vv in vs:
+            prevLen = len(vList)
+            vList.add(''.join(str(x) for x in vv))
+            curLen = len(vList)
+
+            if curLen > prevLen:
+                vectors.append(vv)
+
+    return vectors, normUpper
 
 
 def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, nAttempts):
-
     iIdx = np.where(target == iClass)[0]
     jIdx = np.where(target == jClass)[0]
 
     subSetX = subSet[iIdx, :]
     subSetY = subSet[jIdx, :]
 
-    vectors = CalcRademacherDistributionDeltasXY(subSetX, subSetY)
-
-    normUpper = 0.0
-
-    for i in np.arange(len(vectors)):
-        normUpper = max(normUpper, LA.norm(vectors[i]))
+    vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY)
 
     upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
     rad, sigma = calcRademacherComplexity(vectors, nAttempts)
@@ -421,6 +469,7 @@ def calcRademacherDeltasForSets(dataSet, nObjects, nAttempts, nRadSets, target):
     rad = np.zeros((pairs, nRadSets), dtype=float)
 
     for i in np.arange(nRadSets):
+        print('Calculating for rad set #{0} of {1}'.format(i, nRadSets))
         res = calcRademacherDistributionDeltas(dataSet, nObjects, nAttempts, target)
 
         rad[:, i] = res['rad']
@@ -434,3 +483,31 @@ def calcRademacherDeltasForSets(dataSet, nObjects, nAttempts, nRadSets, target):
         resUpperRad[i] = np.mean(upperRad[i, :])
 
     return {'rad': resRad, 'upperRad': resUpperRad}
+
+def prepareData(dataSet):
+    nObjects = dataSet.shape[0]
+    nFeatures = dataSet.shape[1]
+    resVectors = []
+
+    print('Preparing data...')
+    s1 = time.time()
+    sortedIdx, sortedValues = GetSortedData(dataSet)
+    e1 = time.time()
+    print('Data prepared...{:.2f}'.format(e1 - s1))
+
+    s1 = time.time()
+
+    featuresIdx = np.arange(nFeatures)
+
+    for iVector in range(0, nObjects):
+        curVector = dataSet[iVector, :]
+
+        #if iVector%100 == 0:
+        e1 = time.time()
+        print('Vector: {:}, time: {:.2f}'.format(iVector, e1-s1))
+
+        v, m, nzd, idx, deltas = calculateVectorFast(curVector, sortedIdx, sortedValues, featuresIdx)
+        featuresIdx = np.flip(np.argsort(deltas))
+        resVectors.append(idx)
+
+    return resVectors

@@ -1,22 +1,12 @@
-import numpy as np
 import math
+
+import numpy as np
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.utils import to_categorical
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta
-
-
-#showRandom(150, 2)
-#showCircles(150, 2)
-#showCircles(1500, 2)
-#showCircles(154, 4)
-#showCircles(1504, 4)
-#showTaskFromUciById(53) #iris
-#showTaskFromUciById(186) #wine quality
-#showTaskFromUciById(17) #breast cancer wisconsin
-#showTaskFromUciById(602) #dry bean
-#showTaskFromUciById(54) #isolet
-
 
 def empiricalDistributionById(id, t, m):
     set = fetch_ucirepo(id=id)
@@ -140,6 +130,36 @@ def checkHyperPlaneWithIntersection(l, alpha, m):
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
 
+
+def checkMnist(t, m):
+    num_train = 60000  # there are 60000 training examples in MNIST
+    num_test = 10000  # there are 10000 test examples in MNIST
+
+    height, width, depth = 28, 28, 1  # MNIST images are 28x28 and greyscale
+    num_classes = 10  # there are 10 classes (1 per digit)
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = mnist.load_data()
+    # reshape dataset to have a single channel
+
+    trainX = trainX.reshape(num_train, height * width)  # Flatten data to 1D
+    testX = testX.reshape(num_test, height * width)  # Flatten data to 1D
+    trainX = trainX.astype('float32')
+    testX = testX.astype('float32')
+    trainX /= 255  # Normalise data to [0, 1] range
+    testX /= 255  # Normalise data to [0, 1] range
+
+    #trainY = to_categorical(trainY, num_classes)  # One-hot encode the labels
+    #testY = to_categorical(testY, num_classes)  # One-hot encode the labels
+
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'mnist', t=t)
+    else:
+        calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'mnist', t=t)
+
+    pass
+
+
 def checkTask(task, *args, **kwargs):
     if task == 'circles':
         checkCircles(kwargs.get('l', None), kwargs.get('c', None), m=kwargs.get('m', None))
@@ -149,10 +169,14 @@ def checkTask(task, *args, **kwargs):
         checkHyperPlane(kwargs.get('l', None), m=kwargs.get('m', None))
     elif task == 'hyperPlaneI':
         checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None), m=kwargs.get('m', None))
+    elif task == 'mnist':
+        checkMnist(t=kwargs.get('t', None), m=kwargs.get('m', None))
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
 lObj = 500
+
+checkTask('mnist', t=10, m='delta')
 
 #checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
@@ -166,8 +190,8 @@ lObj = 500
 #checkTask('random', l=100, f=4)
 #checkTask('hyperPlane', l=100)
 
-checkTask('circles', l=lObj, c=2, m='delta')
-checkTask('circles', l=lObj, c=4, m='delta')
+#checkTask('circles', l=lObj, c=2, m='delta')
+#checkTask('circles', l=lObj, c=4, m='delta')
 #checkTask('random', l=lObj, f=2, m='delta')
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')

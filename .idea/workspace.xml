@@ -5,14 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="improved visualization">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/calcModelAndRademacherComplexity.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/digit_model.h5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Tricks/imagesTricks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +49,7 @@
     "Python.calcEntropy.executor": "Debug",
     "Python.car.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
+    "Python.imagesTricks.executor": "Run",
     "Python.main.executor": "Run",
     "Python.tricks.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -338,7 +340,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736351058516</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="improved visualization">
+      <option name="closed" value="true" />
+      <created>1736532556387</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1736532556387</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -369,19 +379,38 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py</url>
-          <line>51</line>
-          <option name="timeStamp" value="102" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py</url>
-          <line>25</line>
+          <line>26</line>
           <option name="timeStamp" value="103" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <condition expression="currentObjects &gt;= 20" language="Python" />
-          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>44</line>
-          <option name="timeStamp" value="110" />
+          <url>file://$PROJECT_DIR$/Tricks/imagesTricks.py</url>
+          <line>63</line>
+          <option name="timeStamp" value="113" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Tricks/imagesTricks.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="114" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
+          <line>25</line>
+          <option name="timeStamp" value="120" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
+          <line>22</line>
+          <option name="timeStamp" value="122" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
+          <line>181</line>
+          <option name="timeStamp" value="123" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
+          <line>510</line>
+          <option name="timeStamp" value="127" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
