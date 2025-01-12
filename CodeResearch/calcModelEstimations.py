@@ -12,8 +12,6 @@ from tensorflow.keras.utils import to_categorical
 
 def calcXGBoost(X_train, Y_train, X_test, Y_test):
 
-    return 0
-
     model = XGBClassifier().fit(X_train, Y_train)
 
     predict = model.predict(X_test)
@@ -22,8 +20,6 @@ def calcXGBoost(X_train, Y_train, X_test, Y_test):
     return accuracy
 
 def calcNN(X_train, Y_train, X_test, Y_test):
-
-    return 0
 
     nFeatures = X_train.shape[1]
     nClasses = len(np.unique(Y_train))

@@ -198,7 +198,7 @@ checkTask('mnist', t=10, m='delta')
 
 #checkTask(17, t=25, m='delta') #wisconsin
 #checkTask(186, t=10, m='delta') #wine
-#checkTask(53, t=20, m='delta') #iris
+#checkTask(53, t=25, m='delta') #iris
 
 #todo
 #1. Сделать загрузку и анализ датасета с изображениями MNIST и CIFAR-10 https://habr.com/ru/companies/wunderfund/articles/314872/

@@ -119,65 +119,48 @@ def calculateSimpleVector(iVector, halfObjects):
 
     return v
 
-def calculateVectorFast(point, sortedSetIdx, sortedSet, featuresIdx):
-
+def calculateVectorFast(point, sortedSetIdx, sortedSet):
     nObjects = sortedSet.shape[0]
     halfObjects = math.floor(nObjects/2)
     nFeatures = sortedSet.shape[1]
 
     v = np.zeros(halfObjects, dtype=int)
 
+    featuresIdx = np.zeros(nFeatures)
+
+    for iFeature in range(0, nFeatures):
+        idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
+        featuresIdx[iFeature] = idx
+
+    featuresIdx = np.argsort(featuresIdx)
+    #featuresIdx = np.arange(nFeatures)
+
     idx = bisect.bisect_right(sortedSet[:, featuresIdx[0]], point[featuresIdx[0]])
-    curFeaturesLessIdx = sortedSetIdx[0:(idx - 1), featuresIdx[0]]
+    curFeaturesLessIdx = sortedSetIdx[np.arange(idx), featuresIdx[0]]
     curSet = set(curFeaturesLessIdx)
-
-    searchDeltas = 0
-    intersectDeltas = 0
-
-    deltas = np.zeros(nFeatures)
 
     for fNumber in range(1, len(featuresIdx)):
         iFeature = featuresIdx[fNumber]
         #s1 = time.time()
         idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
-        curFeaturesLessIdx = sortedSetIdx[0:(idx - 1), iFeature]
-        #print('iFeature: {:}, len: {:}, curLen: {:}, delta: {:}'.format(iFeature, len(curFeaturesLessIdx), len(curSet), deltas[featuresIdx[fNumber - 1]]))
-        #e1 = time.time()
-        #searchDeltas += (e1 - s1)
-
-        #s1 = time.time()
-        #tt = set()
-        #temp = set(curFeaturesLessIdx)
-
-        #for i in curSet:
-        #    if i in temp:
-        #        tt.add(i)
-
-        #curSet = tt
-        prevLen = len(curSet)
+        curFeaturesLessIdx = sortedSetIdx[np.arange(idx), iFeature]
         curSet = curSet.intersection(curFeaturesLessIdx)
-        deltas[iFeature] = prevLen - len(curSet)
-
-        #e1 = time.time()
-        #intersectDeltas += (e1 - s1)
 
         if (len(curSet)) == 0:
             break
 
-    #for nIdx in curSet:
-    #    if nIdx < halfObjects:
-    #        v[nIdx] += 1
-    #    else:
-    #        v[nIdx % halfObjects] += -1
+    for nIdx in curSet:
+        if nIdx < halfObjects:
+            v[nIdx] += 1
+        else:
+            v[nIdx % halfObjects] += -1
 
     nonZeroCoordinates = len(curSet)
     nonZeroDeltas = np.sum(np.abs(v))
 
     #print('Search: {:.2f}, intersection: {:.2f}, curLen: {:}'.format(searchDeltas, intersectDeltas, len(curSet)))
 
-    return v, nonZeroCoordinates, nonZeroDeltas, deltas
-    #return [], nonZeroCoordinates, -1, curSet, deltas
-
+    return v, nonZeroCoordinates, nonZeroDeltas
 
 def calcRademacherVectorsFast(subSet):
 
@@ -343,22 +326,15 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
     sortedSetIdxY, sortedSetY = GetSortedData(subSetY)
 
     vectors = []
-
     vList = set()
-
     normUpper = 0.0
-    featuresIdxX = np.arange(sortedSetIdxX.shape[1])
-    featuresIdxY = np.arange(sortedSetIdxY.shape[1])
 
     for iVector in np.arange(xObjects + yObjects):
-
         curVector = subSetX[iVector, :] if iVector < xObjects else subSetY[iVector - xObjects, :]
 
         #s1 = time.time()
-        vX, mX, nzdX, idxX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX, featuresIdxX)
-        featuresIdxX = np.flip(np.argsort(idxX))
-        vY, mY, nzdY, idxY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY, featuresIdxY)
-        featuresIdxY = np.flip(np.argsort(idxY))
+        vX, mX, nzdX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX)
+        vY, mY, nzdY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY)
         #e1 = time.time()
 
         k = len(vX)
