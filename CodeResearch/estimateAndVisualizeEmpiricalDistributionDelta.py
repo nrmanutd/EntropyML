@@ -1,17 +1,37 @@
 import math
 
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
-from CodeResearch.calculateDistributionDelta import prepareData
-
 
 def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
 
-    nAttempts = 10
+    nClasses = np.unique(target)
+
+    enc = LabelEncoder()
+    target = enc.fit_transform(np.ravel(target))
+
+    if len(nClasses) > 2:
+        for iClass in nClasses:
+            cIdx = np.where(target == iClass)[0]
+            oIdx = np.where(target != iClass)[0]
+            curTarget = np.copy(target)
+
+            curTarget[cIdx] = iClass
+            curTarget[oIdx] = -1
+
+            estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, curTarget, '{0}_c{1}'.format(taskName, iClass), args, kwargs)
+    else:
+        estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, args, kwargs)
+
+    pass
+
+def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, *args, **kwargs):
+    nAttempts = 40
     nRadSets = 1
-    modelAttempts = 10
+    modelAttempts = 5
 
     probability = 0.95
     delta = 1 - probability
@@ -22,7 +42,7 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
     totalPoints = kwargs.get('t', None)
     totalPoints = 25 if totalPoints is None else totalPoints
 
-    step = math.floor(min(nObjects / 2, 6000) / totalPoints)
+    step = math.floor(min(nObjects / 2, 7000) / totalPoints)
 
     print('Starting delta task: {0}. nAttempts: {1}, modelAttempts: {2}, objects: {3}'.format(taskName, nAttempts, modelAttempts, nObjects))
 

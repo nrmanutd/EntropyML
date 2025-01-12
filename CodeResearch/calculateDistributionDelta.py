@@ -119,7 +119,7 @@ def calculateSimpleVector(iVector, halfObjects):
 
     return v
 
-def calculateVectorFast(point, sortedSetIdx, sortedSet):
+def calculateVectorFast(point, sortedSetIdx, sortedSet, isSelfVector):
     nObjects = sortedSet.shape[0]
     halfObjects = math.floor(nObjects/2)
     nFeatures = sortedSet.shape[1]
@@ -127,6 +127,8 @@ def calculateVectorFast(point, sortedSetIdx, sortedSet):
     v = np.zeros(halfObjects, dtype=int)
 
     featuresIdx = np.zeros(nFeatures)
+
+    minCount = 1 if isSelfVector else 0
 
     for iFeature in range(0, nFeatures):
         idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
@@ -136,17 +138,17 @@ def calculateVectorFast(point, sortedSetIdx, sortedSet):
     #featuresIdx = np.arange(nFeatures)
 
     idx = bisect.bisect_right(sortedSet[:, featuresIdx[0]], point[featuresIdx[0]])
-    curFeaturesLessIdx = sortedSetIdx[np.arange(idx), featuresIdx[0]]
+    curFeaturesLessIdx = sortedSetIdx[0:idx, featuresIdx[0]]
     curSet = set(curFeaturesLessIdx)
 
     for fNumber in range(1, len(featuresIdx)):
         iFeature = featuresIdx[fNumber]
         #s1 = time.time()
         idx = bisect.bisect_right(sortedSet[:, iFeature], point[iFeature])
-        curFeaturesLessIdx = sortedSetIdx[np.arange(idx), iFeature]
+        curFeaturesLessIdx = sortedSetIdx[0:idx, iFeature]
         curSet = curSet.intersection(curFeaturesLessIdx)
 
-        if (len(curSet)) == 0:
+        if len(curSet) == minCount:
             break
 
     for nIdx in curSet:
@@ -333,8 +335,12 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
         curVector = subSetX[iVector, :] if iVector < xObjects else subSetY[iVector - xObjects, :]
 
         #s1 = time.time()
-        vX, mX, nzdX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX)
-        vY, mY, nzdY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY)
+        if iVector < xObjects:
+            vX, mX, nzdX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX, True)
+            vY, mY, nzdY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY, False)
+        else:
+            vX, mX, nzdX = calculateVectorFast(curVector, sortedSetIdxX, sortedSetX, False)
+            vY, mY, nzdY = calculateVectorFast(curVector, sortedSetIdxY, sortedSetY, True)
         #e1 = time.time()
 
         k = len(vX)
@@ -352,6 +358,9 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
         #nla = LA.norm(v)
 
         normUpper = max(normUpper, LA.norm(v))
+        if abs(normUpper) < 0.00001:
+            print('Error: ', normUpper)
+
         #normUpper = max(normUpper, nn)
 
         v1 = ConvertVector(v, -1, 1)

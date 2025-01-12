@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.utils import to_categorical
 from ucimlrepo import fetch_ucirepo
 
@@ -156,9 +157,34 @@ def checkMnist(t, m):
         estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'mnist', t=t)
     else:
         calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'mnist', t=t)
-
     pass
 
+def checkCifar(t, m):
+    num_train = 50000  # there are 60000 training examples in CIFAR
+    num_test = 10000  # there are 10000 test examples in CIFAR
+
+    height, width, depth = 32, 32, 3  # MNIST images are 32x32 and greyscale
+    num_classes = 10  # there are 10 classes (1 per digit)
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = cifar10.load_data()
+    # reshape dataset to have a single channel
+
+    trainX = trainX.reshape(num_train, height * width * depth)  # Flatten data to 1D
+    testX = testX.reshape(num_test, height * width * depth)  # Flatten data to 1D
+    trainX = trainX.astype('float32')
+    testX = testX.astype('float32')
+    trainX /= 255  # Normalise data to [0, 1] range
+    testX /= 255  # Normalise data to [0, 1] range
+
+    # trainY = to_categorical(trainY, num_classes)  # One-hot encode the labels
+    # testY = to_categorical(testY, num_classes)  # One-hot encode the labels
+
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'cifar', t=t)
+    else:
+        calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'cifar', t=t)
+    pass
 
 def checkTask(task, *args, **kwargs):
     if task == 'circles':
@@ -171,18 +197,18 @@ def checkTask(task, *args, **kwargs):
         checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None), m=kwargs.get('m', None))
     elif task == 'mnist':
         checkMnist(t=kwargs.get('t', None), m=kwargs.get('m', None))
+    elif task == 'cifar':
+        checkCifar(t=kwargs.get('t', None), m=kwargs.get('m', None))
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
-lObj = 500
+lObj = 1000
 
-checkTask('mnist', t=10, m='delta')
-
-#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
 #checkTask('circles', l=100, c=2)
 #checkTask('circles', l=100, c=4)
@@ -190,15 +216,20 @@ checkTask('mnist', t=10, m='delta')
 #checkTask('random', l=100, f=4)
 #checkTask('hyperPlane', l=100)
 
-#checkTask('circles', l=lObj, c=2, m='delta')
-#checkTask('circles', l=lObj, c=4, m='delta')
-#checkTask('random', l=lObj, f=2, m='delta')
-#checkTask('random', l=lObj, f=4, m='delta')
-#checkTask('hyperPlane', l=lObj, m='delta')
+checkTask('circles', l=lObj, c=2, m='delta')
+checkTask('circles', l=lObj, c=4, m='delta')
+checkTask('random', l=lObj, f=2, m='delta')
+checkTask('random', l=lObj, f=4, m='delta')
+checkTask('hyperPlane', l=lObj, m='delta')
 
-#checkTask(17, t=25, m='delta') #wisconsin
-#checkTask(186, t=10, m='delta') #wine
-#checkTask(53, t=25, m='delta') #iris
+checkTask(53, m='delta') #iris
+checkTask(17, m='delta') #wisconsin
+checkTask(186, m='delta') #wine
+checkTask(602, m='delta') #dry bean
+checkTask(654, m='delta') #isolet
+
+checkTask('mnist', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Сделать загрузку и анализ датасета с изображениями MNIST и CIFAR-10 https://habr.com/ru/companies/wunderfund/articles/314872/
