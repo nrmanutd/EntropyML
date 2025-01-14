@@ -6,8 +6,52 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 
-def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
+def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
+    enc = LabelEncoder()
 
+    cIdx = np.where(target == iClass)[0]
+    oIdx = np.where(target != iClass)[0]
+    curTarget = np.copy(target)
+
+    curTarget[cIdx] = iClass
+    curTarget[oIdx] = -1
+
+    curTarget = enc.fit_transform(np.ravel(curTarget))
+
+    estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, curTarget,
+                                                           '{0}_c{1}_of_{2}'.format(taskName, iClass, len(nClasses)),
+                                                           args, kwargs)
+    pass
+
+
+def estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs):
+    enc = LabelEncoder()
+    nClasses = np.unique(target)
+    nFeatures = dataSet.shape[1]
+
+    for jClass in np.arange(iClass):
+        cIdx = np.where(target == iClass)[0]
+        jIdx = np.where(target == jClass)[0]
+
+        curTarget = np.zeros(len(cIdx) + len(jIdx))
+        curSet = np.zeros((len(curTarget), nFeatures))
+
+        curTarget[0:len(cIdx)] = target[cIdx]
+        curSet[0:len(cIdx), :] = dataSet[cIdx, :]
+
+        curTarget[len(cIdx):len(curTarget)] = target[jIdx]
+        curSet[len(cIdx):len(curTarget), :] = dataSet[jIdx, :]
+
+        curTarget = enc.fit_transform(np.ravel(curTarget))
+
+        estimateAndVisualizeEmpiricalDistributionDeltaConcrete(curSet, curTarget,
+                                                               '{0}_c{1}_vs_{2}_of_{3}'.format(taskName, iClass, jClass, len(nClasses)),
+                                                               args, kwargs)
+
+    pass
+
+
+def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
@@ -15,16 +59,9 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
 
     if len(nClasses) > 2:
         for iClass in nClasses:
-            cIdx = np.where(target == iClass)[0]
-            oIdx = np.where(target != iClass)[0]
-            curTarget = np.copy(target)
+            #estimateOneOverOthers(dataSet, target, iClass, taskName, args, kwargs)
+            estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs)
 
-            curTarget[cIdx] = iClass
-            curTarget[oIdx] = -1
-
-            curTarget = enc.fit_transform(np.ravel(curTarget))
-
-            estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, curTarget, '{0}_c{1}_of_{2}'.format(taskName, iClass, len(nClasses)), args, kwargs)
     else:
         estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, args, kwargs)
 
