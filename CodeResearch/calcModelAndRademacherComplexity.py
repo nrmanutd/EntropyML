@@ -25,8 +25,8 @@ def calculateRademacherComplexity(dataSet, nObjects, nAttempts, modelAttempts, n
     return {'radResult': radResult, 'modelResult': modelResult}
 
 def calculateModelAndDistributionDelta(dataSet, nObjects, nAttempts, modelAttempts, nRadSets, target):
-    enc = LabelEncoder()
-    target = enc.fit_transform(np.ravel(target))
+    #enc = LabelEncoder()
+    #target = enc.fit_transform(np.ravel(target))
 
     print('Calculating Rademacher & Model scores...')
     start = time.time()
