@@ -2,45 +2,81 @@ import numpy as np
 
 from CodeResearch.calculateDistributionDelta import getMaximumDiviser, GetSortedData
 
+
+def getDeltaForFeature(sortedIdx, target, featureState, cClass, cClassKoeff, oClassKoeff, curOmitedObjects):
+
+    newIdx = 0
+    delta = 0
+    curStatePositive = False
+
+    for iObject in range(featureState, -1, -1):
+
+        if sortedIdx[iObject] in curOmitedObjects:
+            continue
+
+        d = cClassKoeff if target[sortedIdx[iObject]] == cClass else oClassKoeff
+
+        if d < 0 and curStatePositive:
+            newIdx = sortedIdx[iObject]
+            break
+
+        if d > 0 and not curStatePositive:
+            curStatePositive = True
+
+        delta += d
+        newIdx = sortedIdx[iObject]
+
+    return newIdx, delta
+
+
+def getNextStep(curState, curOmitedObjects, sortedIdx, sortedValues, target, cClass, cClassKoeff, oClassKoeff):
+
+    nFeatures = sortedValues.shape[1]
+
+    bestDelta = -1000
+    bestFeature = -1
+    bestNewIdx = -1
+    idxToOmit = []
+
+    for iFeature in range(0, nFeatures):
+        newIdx, delta = getDeltaForFeature(sortedIdx[:, iFeature], target, curState[iFeature], cClass, cClassKoeff, oClassKoeff, curOmitedObjects)
+
+        if newIdx == -1:
+            continue
+
+        if delta > bestDelta:
+            bestDelta = delta
+            bestFeature = iFeature
+            bestNewIdx = newIdx
+            idxToOmit = sortedIdx[range(curState[iFeature], bestNewIdx, -1), iFeature]
+
+    return bestFeature, bestNewIdx, bestDelta, idxToOmit
+
 def getMaximumDiviserPerClass(sortedIdx, sortedValues, target, cClass, cClassKoeff, oClassKoeff):
     nObjects = sortedValues.shape[0]
     nFeatures = sortedValues.shape[1]
 
-    curSet = set()
-    totalBalance = 0
+    curState = np.ones(nFeatures, dtype=int) * (nObjects - 1)
+    curOmitedObjects = set()
+    curBalance = 0
+    maxBalance = 0
+    maxState = []
 
-    diviser = np.zeros(nFeatures)
+    while True:
+        iFeature, newIdx, delta, IdxToOmit = getNextStep(curState, curOmitedObjects, sortedIdx, sortedValues, target, cClass, cClassKoeff, oClassKoeff)
 
-    for iFeature in range(0, nFeatures):
-        curBalance = totalBalance
-        maxBalance = totalBalance
-        curObject = nObjects
+        if iFeature == -1:
+            break
 
-        for iObject in range(nObjects - 1, 0, -1):
+        curBalance += delta
+        curState[iFeature] = newIdx
+        curOmitedObjects.update(IdxToOmit)
 
-            if iFeature > 0 and sortedIdx[iObject, iFeature] not in curSet:
-                continue
+        if curBalance > maxBalance:
+            maxBalance = curBalance
+            maxState = curState
 
-            delta = cClassKoeff if target[sortedIdx[iObject, iFeature]] == cClass else oClassKoeff
-            curBalance -= delta
-
-            if abs(curBalance) > abs(maxBalance):
-                maxBalance = curBalance
-                curObject = iObject
-
-        # print('Max diviser]: {:} of {:}, value]: {:}'.format(curObject - 1, nObjects, sortedValues[curObject - 1, iFeature]))
-
-        curIdxes = set(sortedIdx[0:curObject, iFeature])
-        diviser[iFeature] = sortedValues[curObject - 1, iFeature]
-
-        if iFeature == 0:
-            curSet = curIdxes
-        else:
-            curSet = curSet.intersection(curIdxes)
-
-        totalBalance = maxBalance
-
-    return totalBalance, diviser
+    return maxBalance, maxState
 
 def getMaximumDiviserProd(dataSet, target):
 
