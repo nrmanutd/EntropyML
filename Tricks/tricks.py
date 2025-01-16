@@ -5,26 +5,26 @@ from CodeResearch.calculateDistributionDelta import getMaximumDiviser, GetSorted
 
 def getDeltaForFeature(sortedIdx, target, featureState, cClass, cClassKoeff, oClassKoeff, curOmitedObjects):
 
-    newIdx = 0
+    newIdx = -1
     delta = 0
     curStatePositive = False
 
     for iObject in range(featureState, -1, -1):
-
         if sortedIdx[iObject] in curOmitedObjects:
+            newIdx = iObject - 1
             continue
 
         d = cClassKoeff if target[sortedIdx[iObject]] == cClass else oClassKoeff
 
         if d < 0 and curStatePositive:
-            newIdx = sortedIdx[iObject]
+            newIdx = iObject
             break
 
         if d > 0 and not curStatePositive:
             curStatePositive = True
 
         delta += d
-        newIdx = sortedIdx[iObject]
+        newIdx = iObject - 1
 
     return newIdx, delta
 
@@ -39,9 +39,13 @@ def getNextStep(curState, curOmitedObjects, sortedIdx, sortedValues, target, cCl
     idxToOmit = []
 
     for iFeature in range(0, nFeatures):
+
+        if curState[iFeature] == -1:
+            continue
+
         newIdx, delta = getDeltaForFeature(sortedIdx[:, iFeature], target, curState[iFeature], cClass, cClassKoeff, oClassKoeff, curOmitedObjects)
 
-        if newIdx == -1:
+        if newIdx == -1 and delta < 0:
             continue
 
         if delta > bestDelta:
@@ -76,7 +80,7 @@ def getMaximumDiviserPerClass(sortedIdx, sortedValues, target, cClass, cClassKoe
             maxBalance = curBalance
             maxState = curState
 
-    return maxBalance, maxState
+    return maxBalance, sortedValues[:, maxState]
 
 def getMaximumDiviserProd(dataSet, target):
 
