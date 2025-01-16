@@ -210,12 +210,6 @@ lObj = 1000
 #checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
-#checkTask('circles', l=100, c=2)
-#checkTask('circles', l=100, c=4)
-#checkTask('random', l=100, f=2)
-#checkTask('random', l=100, f=4)
-#checkTask('hyperPlane', l=100)
-
 #checkTask('circles', l=lObj, c=2, m='delta')
 #checkTask('circles', l=lObj, c=4, m='delta')
 #checkTask('random', l=lObj, f=2, m='delta')
@@ -225,11 +219,11 @@ lObj = 1000
 #checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
 #checkTask(186, m='delta') #wine
-#checkTask(54, m='delta') #isolet
+checkTask(54, m='delta') #isolet
 #checkTask(602, m='delta') #dry bean
 
 
-checkTask('mnist', t=10, m='delta')
+#checkTask('mnist', t=10, m='delta')
 #checkTask('cifar', t=10, m='delta')
 
 #todo

@@ -29,7 +29,16 @@ def estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs):
     nClasses = np.unique(target)
     nFeatures = dataSet.shape[1]
 
+    maxCounter = 3
+    currentCounter = 0
+
     for jClass in np.arange(iClass):
+
+        if currentCounter >= maxCounter:
+            break
+
+        currentCounter += 1
+
         cIdx = np.where(target == iClass)[0]
         jIdx = np.where(target == jClass)[0]
 
@@ -45,7 +54,7 @@ def estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs):
         curTarget = enc.fit_transform(np.ravel(curTarget))
 
         estimateAndVisualizeEmpiricalDistributionDeltaConcrete(curSet, curTarget,
-                                                               '{0}_c{1}_vs_{2}_of_{3}'.format(taskName, iClass, jClass, len(nClasses)),
+                                                               '{0}_c{1}({4})_vs_c{2}({5})_of_{3}'.format(taskName, iClass, jClass, len(nClasses), len(cIdx), len(jIdx)),
                                                                args, kwargs)
 
     pass
@@ -81,7 +90,7 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
     totalPoints = kwargs.get('t', None)
     totalPoints = 25 if totalPoints is None else totalPoints
 
-    step = math.floor(min(nObjects / 2, 3000) / totalPoints)
+    step = max(1, math.floor(min(nObjects / 2, 3000) / totalPoints))
 
     print('Starting delta task: {0}. nAttempts: {1}, modelAttempts: {2}, objects: {3}'.format(taskName, nAttempts, modelAttempts, nObjects))
 

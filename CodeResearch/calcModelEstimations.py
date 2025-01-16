@@ -1,13 +1,11 @@
 import numpy as np
 from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
+from xgboost import XGBClassifier
 
 
 def calcXGBoost(X_train, Y_train, X_test, Y_test):
@@ -59,12 +57,9 @@ def fitAndPredict(X_train, Y_train, X_test, Y_test):
 
 
 def calcConcreteModel(dataSet, nObjects, target):
-    enc = LabelEncoder()
-    target = enc.fit_transform(np.ravel(target))
-
     totalObjects = dataSet.shape[0]
     mask = np.zeros(totalObjects)
-    mask[np.arange(nObjects)] = 1
+    mask[0:nObjects] = 1
 
     mask = np.random.permutation(mask)
     idx = np.where(mask > 0)[0]

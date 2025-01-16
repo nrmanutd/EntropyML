@@ -305,7 +305,7 @@ def GetSortedData(subSet):
     sortedSet = np.zeros((nObjects, nFeatures))
 
     for iFeature in np.arange(nFeatures):
-        sIdx = np.argsort(subSet[:, iFeature])
+        sIdx = np.argsort(subSet[:, iFeature], stable=True)
         sortedSetIdx[:, iFeature] = sIdx
         sortedSet[:, iFeature] = subSet[sIdx, iFeature]
 
@@ -320,7 +320,7 @@ def ConvertVector(v, p1, p2):
 
     return res
 
-def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
+def CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta):
     xObjects = subSetX.shape[0]
     yObjects = subSetY.shape[0]
 
@@ -330,6 +330,11 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
     vectors = []
     vList = set()
     normUpper = 0.0
+
+    v0x_max = 0.0
+    v0y_max = 0.0
+    vx_max = 0.0
+    vy_max = 0.0
 
     for iVector in np.arange(xObjects + yObjects):
         curVector = subSetX[iVector, :] if iVector < xObjects else subSetY[iVector - xObjects, :]
@@ -348,18 +353,20 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
 
         v = np.zeros(1 + k + m)
         v[0] = 0.5*(mX / k - mY / m)
-        v[np.arange(1, 1 + k + m)] = 0.5 * np.concatenate((vX / k, -vY / m))
+        v[1:(1 + k)] = 0.5 * vX / k
+        v[(1 + k):(1 + k + m)] = - 0.5 * vY / m
 
-        #n1 = (0.5*(mX / k - mY / m))**2
-        #nx = nzdX / (4 * k * k)
-        #ny = nzdY / (4 * m * m)
+        curNorm = LA.norm(v)
 
-        #nn = math.sqrt(n1 + nx + ny)
-        #nla = LA.norm(v)
+        if curNorm > normUpper:
+            normUpper = curNorm
+            v0x_max = mX
+            v0y_max = mY
+            vx_max = np.sum(np.abs(vX))
+            vy_max = np.sum(np.abs(vY))
 
-        normUpper = max(normUpper, LA.norm(v))
         if abs(normUpper) < 0.00001:
-            print('Error: ', normUpper)
+            raise ValueError('Error: {:}'.format(normUpper))
 
         #normUpper = max(normUpper, nn)
 
@@ -377,6 +384,13 @@ def CalcRademacherDistributionDeltasXY(subSetX, subSetY):
             if curLen > prevLen:
                 vectors.append(vv)
 
+    v0 = (v0x_max/xObjects - v0y_max/yObjects)
+    if abs(v0) > abs(maxDelta):
+        raise ValueError('Error: maxDelta <= v0')
+
+    print('NormUpper: {:}, v[0] = {:}, maxDelta = {:} v0x = {:}, v0y = {:}, vx = {:}, vy = {:}, 2k = {:}, 2m = {:}'.format(
+            normUpper, v0, maxDelta, v0x_max, v0y_max, vx_max, vy_max, xObjects, yObjects))
+
     return vectors, normUpper
 
 
@@ -387,7 +401,11 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     subSetX = subSet[iIdx, :]
     subSetY = subSet[jIdx, :]
 
-    vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY)
+    print (subSet)
+    print (target)
+
+    maxDelta, maxValues = getMaximumDiviser(subSet, target)
+    vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta)
 
     upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
     rad, sigma = calcRademacherComplexity(vectors, nAttempts)
@@ -469,30 +487,48 @@ def calcRademacherDeltasForSets(dataSet, nObjects, nAttempts, nRadSets, target):
 
     return {'rad': resRad, 'upperRad': resUpperRad}
 
-def prepareData(dataSet):
+def getMaximumDiviser(dataSet, target):
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
-    resVectors = []
+    nClasses, counts = np.unique(target, return_counts=True)
 
-    print('Preparing data...')
-    s1 = time.time()
+    if len(nClasses) != 2:
+        raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+
     sortedIdx, sortedValues = GetSortedData(dataSet)
-    e1 = time.time()
-    print('Data prepared...{:.2f}'.format(e1 - s1))
 
-    s1 = time.time()
+    curSet = set()
+    totalBalance = 0
 
-    featuresIdx = np.arange(nFeatures)
+    diviser = np.zeros(nFeatures)
 
-    for iVector in range(0, nObjects):
-        curVector = dataSet[iVector, :]
+    for iFeature in range(0, nFeatures):
+        curBalance = totalBalance
+        maxBalance = totalBalance
+        curObject = nObjects
 
-        #if iVector%100 == 0:
-        e1 = time.time()
-        print('Vector: {:}, time: {:.2f}'.format(iVector, e1-s1))
+        for iObject in range(nObjects - 1, 0, -1):
 
-        v, m, nzd, idx, deltas = calculateVectorFast(curVector, sortedIdx, sortedValues, featuresIdx)
-        featuresIdx = np.flip(np.argsort(deltas))
-        resVectors.append(idx)
+            if iFeature > 0 and sortedIdx[iObject, iFeature] not in curSet:
+                continue
 
-    return resVectors
+            delta = 1/counts[0] if target[sortedIdx[iObject, iFeature]] == nClasses[0] else -1/counts[1]
+            curBalance -= delta
+
+            if abs(curBalance) > abs(maxBalance):
+                maxBalance = curBalance
+                curObject = iObject
+
+        #print('Max diviser]: {:} of {:}, value]: {:}'.format(curObject - 1, nObjects, sortedValues[curObject - 1, iFeature]))
+
+        curIdxes = set(sortedIdx[0:curObject, iFeature])
+        diviser[iFeature] = sortedValues[curObject - 1, iFeature]
+
+        if iFeature == 0:
+            curSet = curIdxes
+        else:
+            curSet = curSet.intersection(curIdxes)
+
+        totalBalance = maxBalance
+
+    return totalBalance, diviser
