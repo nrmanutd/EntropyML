@@ -25,7 +25,7 @@ def VisualizeAndSaveDistributionDeltas(data, task):
 
     #plot values
     for i in np.arange(pairedLines):
-        ax.plot(xLabels, rad[i, :], label="_Rad #{0}".format(i))
+        #ax.plot(xLabels, rad[i, :], label="_Rad #{0}".format(i))
         ax.plot(xLabels, upperRad[i, :], label="_Upper Rad #{0}".format(i), ls=':')
 
     nModels = accuracy.shape[0]
@@ -52,7 +52,7 @@ def VisualizeAndSaveDistributionDeltas(data, task):
     ax.grid()
 
     for i in np.arange(pairedLines):
-        ax.plot(xLabels, np.log(rad[i, :]), label="_Log Rad #{0}".format(i), linewidth=2)
+        #ax.plot(xLabels, np.log(rad[i, :]), label="_Log Rad #{0}".format(i), linewidth=2)
         ax.plot(xLabels, np.log(upperRad[i, :]),
                label="_Log Upper Rad #{0}".format(i), linewidth=2, ls=':')
 

@@ -5,7 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="improved visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/diviserCalcuation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Tricks/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tricks/tricks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +56,7 @@
     "git-widget-placeholder": "main"
   }
 }]]></component>
-  <component name="RunManager" selected="Python.tricks">
+  <component name="RunManager" selected="Python.DNResearch">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -97,8 +103,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.tricks" />
         <item itemvalue="Python.DNResearch" />
+        <item itemvalue="Python.tricks" />
       </list>
     </recent_temporary>
   </component>
@@ -414,7 +420,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737006114644</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="improved visualization">
+      <option name="closed" value="true" />
+      <created>1737008654849</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1737008654849</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -470,23 +484,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>166</line>
+          <line>164</line>
           <option name="timeStamp" value="123" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>368</line>
+          <line>342</line>
           <option name="timeStamp" value="136" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DNResearch.py</url>
-          <line>218</line>
-          <option name="timeStamp" value="138" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>490</line>
-          <option name="timeStamp" value="142" />
+          <line>387</line>
+          <option name="timeStamp" value="151" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

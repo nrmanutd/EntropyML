@@ -1,17 +1,15 @@
 import bisect
 import math
 import statistics
-import time
 
 import numpy as np
 from numpy import linalg as LA
 from scipy.stats import bernoulli
-from sklearn.metrics import accuracy_score
-from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
 
-from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.calcSupremum import calcSupremum
+from CodeResearch.diviserCalcuation import getMaximumDiviserProd, getMaximumDiviser, getMaximumDiviserFast
+from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector, GetSubSet
+
 
 def calculateDistributionDelta(dataSet, nObjects, nAttempts):
 
@@ -296,30 +294,6 @@ def calcRademacherForSets(dataSet, nObjects, nAttempts, nRadSets, target):
 
     return {'rad': np.mean(rad), 'upperRad': np.mean(upperRad), 'sigma': np.mean(sigmas), 'radA': np.mean(radA), 'upperRadA': np.mean(upperRadA), 'sigmaA': np.mean(sigmasA), 'alpha': np.mean(upperRadAlpha), 'alphaA': np.mean(upperRadAAlpha)}
 
-
-def GetSortedData(subSet):
-    nObjects = subSet.shape[0]
-    nFeatures = subSet.shape[1]
-
-    sortedSetIdx = np.zeros((nObjects, nFeatures), dtype=int)
-    sortedSet = np.zeros((nObjects, nFeatures))
-
-    for iFeature in np.arange(nFeatures):
-        sIdx = np.argsort(subSet[:, iFeature], stable=True)
-        sortedSetIdx[:, iFeature] = sIdx
-        sortedSet[:, iFeature] = subSet[sIdx, iFeature]
-
-    return sortedSetIdx, sortedSet
-
-def ConvertVector(v, p1, p2):
-
-    res = np.zeros(len(v))
-    res[0] = v[0] * p1
-    idx = np.arange(1, len(v))
-    res[idx] = v[idx] * p2
-
-    return res
-
 def CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta):
     xObjects = subSetX.shape[0]
     yObjects = subSetY.shape[0]
@@ -401,47 +375,35 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     subSetX = subSet[iIdx, :]
     subSetY = subSet[jIdx, :]
 
-    print (subSet)
-    print (target)
+    #maxDelta, maxValues = getMaximumDiviser(subSet, target)
+    maxDelta2, maxValues2 = getMaximumDiviserProd(subSet, target)
+    maxDelta3, maxValues3 = getMaximumDiviserFast(subSet, target)
+    #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
+    print('Prod diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta2, maxValues2, maxDelta3, maxValues3))
 
-    maxDelta, maxValues = getMaximumDiviser(subSet, target)
-    vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta)
+    if abs(maxDelta3-maxDelta2) > 0.000001:
+        print(subSet)
+        print(target)
 
-    upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
-    rad, sigma = calcRademacherComplexity(vectors, nAttempts)
+        raise ValueError('Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
+        print(
+            '!!!!Error!!!! Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
+
+    #vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta2)
+
+    nFeatures = subSet.shape[1]
+    xObjects = len(iIdx)
+    yObjects = len(jIdx)
+
+    #upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
+    normUpper = math.sqrt(maxDelta2 ** 2 + 1 / xObjects + 1 / yObjects)
+    upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
+    #rad, sigma = calcRademacherComplexity(vectors, nAttempts)
 
     multiplier = (len(iIdx) + len(jIdx))/2 + 1
 
-    return rad * multiplier, upperRad
-
-
-def GetObjectsPerClass(target, seekingClass, nObjects):
-    idx = np.where(target == seekingClass)[0]
-
-    mask = np.zeros(len(idx))
-    mask[np.arange(nObjects)] = 1
-
-    mask = np.random.permutation(mask)
-    idxM = np.where(mask > 0)[0]
-
-    return idx[idxM].tolist()
-
-
-def GetSubSet(dataSet, target, nObjects):
-    vClasses, parts = np.unique(target, return_counts=True)
-    parts = parts / len(target)
-
-    nParts = np.floor(nObjects * parts).astype(int)
-
-    objectsPerClass = 2 * np.maximum(np.ones(len(nParts), dtype=int), nParts)
-
-    subSetIdx = []
-
-    for iClass in np.arange(len(vClasses)):
-        idx = GetObjectsPerClass(target, vClasses[iClass], objectsPerClass[iClass])
-        subSetIdx = subSetIdx + idx
-
-    return dataSet[subSetIdx], target[subSetIdx]
+    #return rad * multiplier, upperRad
+    return 1, upperRad
 
 def calcRademacherDistributionDeltas(dataSet, nObjects, nAttempts, target):
     nClasses = len(np.unique(target))
@@ -486,49 +448,3 @@ def calcRademacherDeltasForSets(dataSet, nObjects, nAttempts, nRadSets, target):
         resUpperRad[i] = np.mean(upperRad[i, :])
 
     return {'rad': resRad, 'upperRad': resUpperRad}
-
-def getMaximumDiviser(dataSet, target):
-    nObjects = dataSet.shape[0]
-    nFeatures = dataSet.shape[1]
-    nClasses, counts = np.unique(target, return_counts=True)
-
-    if len(nClasses) != 2:
-        raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
-
-    sortedIdx, sortedValues = GetSortedData(dataSet)
-
-    curSet = set()
-    totalBalance = 0
-
-    diviser = np.zeros(nFeatures)
-
-    for iFeature in range(0, nFeatures):
-        curBalance = totalBalance
-        maxBalance = totalBalance
-        curObject = nObjects
-
-        for iObject in range(nObjects - 1, 0, -1):
-
-            if iFeature > 0 and sortedIdx[iObject, iFeature] not in curSet:
-                continue
-
-            delta = 1/counts[0] if target[sortedIdx[iObject, iFeature]] == nClasses[0] else -1/counts[1]
-            curBalance -= delta
-
-            if abs(curBalance) > abs(maxBalance):
-                maxBalance = curBalance
-                curObject = iObject
-
-        #print('Max diviser]: {:} of {:}, value]: {:}'.format(curObject - 1, nObjects, sortedValues[curObject - 1, iFeature]))
-
-        curIdxes = set(sortedIdx[0:curObject, iFeature])
-        diviser[iFeature] = sortedValues[curObject - 1, iFeature]
-
-        if iFeature == 0:
-            curSet = curIdxes
-        else:
-            curSet = curSet.intersection(curIdxes)
-
-        totalBalance = maxBalance
-
-    return totalBalance, diviser
