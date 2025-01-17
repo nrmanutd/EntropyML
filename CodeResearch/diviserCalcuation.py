@@ -269,7 +269,7 @@ def getNextStepFast(sortedDataSet, valuedTarget1):
         curSet = sortedDataSet[iFeature]
         curDelta, curItemsToOmit = calcDelta(curSet, valuedTarget1)
 
-        print('Feature {:}: delta = {:}, items to omit = {:}'.format(iFeature, curDelta, curItemsToOmit))
+        #print('Feature {:}: delta = {:}, items to omit = {:}'.format(iFeature, curDelta, curItemsToOmit))
 
         if len(curItemsToOmit) == 0:
             continue
@@ -291,18 +291,14 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
     maxBalance = 0
     maxState = np.zeros(nFeatures)
 
-    #print('Starting calculation...{:}'.format(valuedTarget1))
-
     while True:
-        print('Calculating next step...')
         iFeature, delta, itemsToOmit = getNextStepFast(sortedDataSet, valuedTarget1)
 
         if iFeature == -1:
-            print('No more better steps')
             break
 
         curBalance += delta
-        print('Step: i#{:}, d{:}, to omit:{:}. Cur balance: {:}, best balance: {:}'.format(iFeature, delta, itemsToOmit, curBalance, maxBalance))
+        #print('Step: i#{:}, d{:}, to omit:{:}. Cur balance: {:}, best balance: {:}'.format(iFeature, delta, itemsToOmit, curBalance, maxBalance))
 
         for item in itemsToOmit:
             curDecrment = valuedTarget1[item]
