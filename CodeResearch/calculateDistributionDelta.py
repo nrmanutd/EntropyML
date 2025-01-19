@@ -7,8 +7,9 @@ import numpy as np
 from numpy import linalg as LA
 from scipy.stats import bernoulli
 
+from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserCorrect
+from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.calcSupremum import calcSupremum
-from CodeResearch.diviserCalcuation import getMaximumDiviserProd, getMaximumDiviser, getMaximumDiviserFast
 from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector, GetSubSet
 
 
@@ -377,21 +378,22 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     subSetY = subSet[jIdx, :]
 
     #maxDelta, maxValues = getMaximumDiviser(subSet, target)
-    #s1 = time.time()
-    #maxDelta2, maxValues2 = getMaximumDiviserProd(subSet, target)
-    #e1 = time.time()
-    #dProd = e1 - s1
-
-    #s1 = time.time()
+    s1 = time.time()
     maxDelta3, maxValues3 = getMaximumDiviserFast(subSet, target)
-    #e1 = time.time()
-    #dFast = e1 - s1
+    e1 = time.time()
+    dFast = e1 - s1
+
+    s1 = time.time()
+    maxDelta4, maxValues4 = getMaximumDiviserCorrect(subSet, target)
+    e1 = time.time()
+    dCorrect = e1 - s1
     #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
     #print('Prod diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta2, dProd, maxDelta3, dFast))
+    print('Correct diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta4, dCorrect, maxDelta3, dFast))
 
-    #if abs(maxDelta3-maxDelta2) > 0.000001:
-    #    print(subSet)
-    #    print(target)
+    if abs(maxDelta4-maxDelta3) > 0.000001:
+        print(subSet)
+        print(target)
 
         #raise ValueError('Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
     #    print(
