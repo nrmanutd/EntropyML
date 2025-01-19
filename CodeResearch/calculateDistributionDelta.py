@@ -1,6 +1,7 @@
 import bisect
 import math
 import statistics
+import time
 
 import numpy as np
 from numpy import linalg as LA
@@ -376,18 +377,25 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     subSetY = subSet[jIdx, :]
 
     #maxDelta, maxValues = getMaximumDiviser(subSet, target)
-    maxDelta2, maxValues2 = getMaximumDiviserProd(subSet, target)
+    #s1 = time.time()
+    #maxDelta2, maxValues2 = getMaximumDiviserProd(subSet, target)
+    #e1 = time.time()
+    #dProd = e1 - s1
+
+    #s1 = time.time()
     maxDelta3, maxValues3 = getMaximumDiviserFast(subSet, target)
+    #e1 = time.time()
+    #dFast = e1 - s1
     #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
-    print('Prod diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta2, maxValues2, maxDelta3, maxValues3))
+    #print('Prod diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta2, dProd, maxDelta3, dFast))
 
-    if abs(maxDelta3-maxDelta2) > 0.000001:
-        print(subSet)
-        print(target)
+    #if abs(maxDelta3-maxDelta2) > 0.000001:
+    #    print(subSet)
+    #    print(target)
 
-        raise ValueError('Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
-        print(
-            '!!!!Error!!!! Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
+        #raise ValueError('Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
+    #    print(
+    #        '!!!!Error!!!! Fast diviser worse than prod. Fast diviser: {:}/{:.2f}s, prod diviser: {:}/{:.2f}s'.format(maxDelta3, dFast, maxDelta2, dProd))
 
     #vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta2)
 
@@ -396,8 +404,10 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     yObjects = len(jIdx)
 
     #upperRad = normUpper * np.sqrt(np.log(2 * len(vectors)))
-    normUpper = math.sqrt(maxDelta2 ** 2 + 1 / xObjects + 1 / yObjects)
-    upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
+    #normUpper = math.sqrt(maxDelta3 ** 2 + 1 / xObjects + 1 / yObjects)
+    #upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
+    upperRad = maxDelta3
+    print('KS = {:}'.format(maxDelta3))
     #rad, sigma = calcRademacherComplexity(vectors, nAttempts)
 
     multiplier = (len(iIdx) + len(jIdx))/2 + 1

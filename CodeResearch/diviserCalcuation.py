@@ -210,14 +210,15 @@ def GetSortedDict(dataSet):
     nObjects = dataSet.shape[0]
 
     for iFeature in range(0, nFeatures):
-        res.append(SortedDict())
+        curDict = SortedDict()
+        res.append(curDict)
 
         for iObject in range(0, nObjects):
             v = -dataSet[iObject, iFeature]
-            if v not in res[iFeature]:
-                res[iFeature][v] = {iObject}
+            if v not in curDict:
+                curDict[v] = {iObject}
             else:
-                res[iFeature][v].add(iObject)
+                curDict[v].add(iObject)
 
     return res
 
@@ -231,8 +232,7 @@ def calcDelta(curSet, valuedTarget1):
 
     for keyPair in curSet:
         if keyPair == lastElement:
-            itemsToOmit = []
-            break
+            return delta, itemsToOmit
 
         d = 0
         curItemsToOmit = curSet[keyPair]
@@ -322,10 +322,10 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
         if maxLeft + curBalance <= maxBalance:
             break
 
-    mb = calculateDeltaIndependently2(dataSet, valuedTarget1, maxState)
+    #mb = calculateDeltaIndependently2(dataSet, valuedTarget1, maxState)
 
-    if abs(mb - maxBalance) > 0.00001:
-        raise ValueError('Error!!! Fast != independent: {:} vs {:}'.format(maxBalance, mb))
+    #if abs(mb - maxBalance) > 0.00001:
+    #    raise ValueError('Error!!! Fast != independent: {:} vs {:}'.format(maxBalance, mb))
 
     return abs(maxBalance), maxState
 

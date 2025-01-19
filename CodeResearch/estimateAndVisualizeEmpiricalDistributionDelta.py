@@ -79,7 +79,7 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
         for iClass in nClasses:
             #estimateOneOverOthers(dataSet, target, iClass, taskName, args, kwargs)
             estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs)
-            #estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs)
+            estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs)
 
     else:
         estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, args, kwargs)
@@ -100,7 +100,7 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
     totalPoints = kwargs.get('t', None)
     totalPoints = 25 if totalPoints is None else totalPoints
 
-    step = max(1, math.floor(min(nObjects / 2, 1000) / totalPoints))
+    step = max(1, math.floor(min(nObjects / 2, 3000) / totalPoints))
 
     print('Starting delta task: {0}. nAttempts: {1}, modelAttempts: {2}, objects: {3}'.format(taskName, nAttempts, modelAttempts, nObjects))
 
