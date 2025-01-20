@@ -5,7 +5,7 @@ import numpy as np
 from rtree import index
 
 from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently2
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict, GetSortedDictList
 from CodeResearch.rademacherHelpers import GetSortedData
 
 
@@ -65,7 +65,7 @@ def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
         if newDiviser[fFeature] < value[fFeature]:
             continue
 
-        idx = bisect.bisect_left(sortedNegValues[:, fFeature], value[fFeature])
+        idx = bisect.bisect_left(sortedNegValues[:, fFeature], value[fFeature]) - 1
         newDiviser[fFeature] = sortedNegValues[idx, fFeature]
 
     return newDiviser
@@ -104,32 +104,37 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget):
     negativeObjectsIdx = np.where(valuedTarget < 0)[0]
     negativeObjects = dataSet[negativeObjectsIdx, :]
     sortedNegIdx, sortedNegValues = GetSortedData(negativeObjects)
-    baseNegPoint = sortedNegValues[0, :]
 
     positiveObjectsIdx = np.where(valuedTarget > 0)[0]
     positiveObjects = dataSet[positiveObjectsIdx, :]
     sortedPosIdx, sortedPosValues = GetSortedData(positiveObjects)
-    basePosPoint = sortedPosValues[0, :]
 
-    sortedNegDataSet = GetSortedDict(negativeObjects)
+    basePoint = np.zeros(nFeatures)
+    for i in range(0, nFeatures):
+        basePoint[i] = min(sortedPosValues[0, i], sortedNegValues[0, i])
 
-    bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, basePosPoint, positiveIdx)
+    sortedNegDataSet = GetSortedDictList(negativeObjects)
+
+    bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, basePoint, positiveIdx)
 
     bestDiviser = bestStartDiviser
     bestScore = bestStartScore
 
     for iFeature in range(0, nFeatures):
-        currentDiviser = bestStartDiviser
+        currentDiviser = bestStartDiviser.copy()
         currentIdx = sortedNegDataSet[iFeature]
 
         for iValue in currentIdx:
-            idx = list(currentIdx[iValue])
+            idx = currentIdx[iValue]
             currentDiviser = updateDiviser(currentDiviser, negativeObjects[idx, :], sortedNegIdx, sortedNegValues)
 
-            positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePosPoint)
-            negativePoints = getPointsUnderDiviser(negativeIdx, currentDiviser, baseNegPoint)
+            positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePoint)
+            negativePoints = getPointsUnderDiviser(negativeIdx, currentDiviser, basePoint)
 
             currentScore = (positiveCount - positivePoints) * positiveScore + (negativeCount - negativePoints) * negativeScore
+
+            if currentScore + positivePoints * positiveScore <= bestScore:
+                break
 
             #добавить проверку на раннюю остановку
             if currentScore > bestScore:

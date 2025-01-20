@@ -26,3 +26,21 @@ def GetSortedDict(dataSet):
                 curDict[v].add(iObject)
 
     return res
+
+def GetSortedDictList(dataSet):
+    res = []
+    nFeatures = dataSet.shape[1]
+    nObjects = dataSet.shape[0]
+
+    for iFeature in range(0, nFeatures):
+        curDict = SortedDict()
+        res.append(curDict)
+
+        for iObject in range(0, nObjects):
+            v = -dataSet[iObject, iFeature]
+            if v not in curDict:
+                curDict[v] = [iObject]
+            else:
+                curDict[v].append(iObject)
+
+    return res
