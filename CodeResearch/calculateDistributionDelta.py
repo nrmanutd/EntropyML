@@ -9,6 +9,7 @@ from scipy.stats import bernoulli
 
 from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserCorrect
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.statisticsCalculation import getMaximumPossibleByAnalysis
 from CodeResearch.calcSupremum import calcSupremum
 from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector, GetSubSet
@@ -192,7 +193,6 @@ def calcRademacherVectorsFast(subSet):
             vectors.append(v)
 
     return vectors
-
 
 def calcRademacherVectors(subSet):
     nObjects = subSet.shape[0]
@@ -381,25 +381,24 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     #maxDelta, maxValues = getMaximumDiviser(subSet, target)
     s1 = time.time()
     maxDelta3, maxValues3 = getMaximumDiviserFast(subSet, target)
-    pv = getMaximumPossibleByAnalysis(subSet, target)
     e1 = time.time()
     dFast = e1 - s1
 
-    #s1 = time.time()
-    #maxDelta4, maxValues4 = getMaximumDiviserCorrect(subSet, target)
-    #e1 = time.time()
-    #dCorrect = e1 - s1
+    s1 = time.time()
+    maxDelta5, maxValues5 = getMaximumDiviserRTree(subSet, target)
+    e1 = time.time()
+    dRTree = e1 - s1
     #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
     #print('Prod diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta2, dProd, maxDelta3, dFast))
     #print('Correct diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta4, dCorrect, maxDelta3, dFast))
+    print('RTree diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta5, dRTree, maxDelta3, dFast))
 
-    #if abs(maxDelta4-maxDelta3) > 0.000001:
-    #    print(subSet)
-    #    print(target)
+    if abs(maxDelta5-maxDelta3) > 0.000001:
+        print(subSet)
+        print(target)
 
-        #raise ValueError('Fast diviser worse than prod. Fast diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta3, maxValues3, maxDelta2, maxValues2))
-    #    print(
-    #        '!!!!Error!!!! Fast diviser worse than prod. Fast diviser: {:}/{:.2f}s, prod diviser: {:}/{:.2f}s'.format(maxDelta3, dFast, maxDelta2, dProd))
+        raise ValueError('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
+        #print('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
 
     #vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta2)
 

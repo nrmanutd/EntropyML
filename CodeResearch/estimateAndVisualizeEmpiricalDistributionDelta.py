@@ -71,10 +71,6 @@ def estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs):
     pass
 
 def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
-    uploadRTree(dataSet, target)
-
-    return
-
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 

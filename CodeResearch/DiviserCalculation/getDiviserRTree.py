@@ -93,7 +93,12 @@ def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegV
         lenAfter = len(eSet.intersection(omitIdx))
 
         if lenBefore == lenAfter:
-            newDiviser[fFeature] = sortedNegValues[idxl - 1, fFeature]
+            curIdx = idxl - 1
+
+            while sortedNegIdx[curIdx, fFeature] in omitIdx:
+                curIdx -= 1
+
+            newDiviser[fFeature] = sortedNegValues[curIdx, fFeature]
 
     return newDiviser
 
