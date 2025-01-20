@@ -58,54 +58,36 @@ def getPointsUnderDiviser(idx, currentDiviser, basePoint):
     return len(res)
 
 
-def updateDiviserConcrete(newDiviser, value, sortedIdx, sortedValues, valuedTarget):
-    nFeatures = sortedIdx.shape[1]
+def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
+    nFeatures = sortedNegIdx.shape[1]
 
     for fFeature in range(0, nFeatures):
         if newDiviser[fFeature] < value[fFeature]:
             continue
 
-        idx = bisect.bisect_left(sortedValues[:, fFeature], value[fFeature])
-        for iObject in range(idx, -1, -1):
-            if valuedTarget[sortedIdx[iObject, fFeature]] < 0:
-                newDiviser[fFeature] = sortedValues[iObject, fFeature]
-                break
+        idx = bisect.bisect_left(sortedNegValues[:, fFeature], value[fFeature])
+        newDiviser[fFeature] = sortedNegValues[idx, fFeature]
 
     return newDiviser
 
-def updateDiviser(currentDiviser, origIdxs, sortedIdx, sortedValues, valuedTarget, dataSet):
+def updateDiviser(currentDiviser, values, sortedNegIdx, sortedNegValues):
+    newDiviser = currentDiviser
+    nValues = values.shape[0]
 
-    newDiviser = currentDiviser.copy()#probably place for optimization
-
-    for idx in origIdxs:
-        if valuedTarget[idx] > 0:
-            continue
-
-        newDiviser = updateDiviserConcrete(newDiviser, dataSet[idx, :], sortedIdx, sortedValues, valuedTarget)
+    for iValue in range(0, nValues):
+        newDiviser = updateDiviserConcrete(newDiviser, values[iValue, :], sortedNegIdx, sortedNegValues)
 
     return newDiviser
 
+def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, basePoint, positiveIdx):
 
-def getBestStartDiviser(sortedIdx, sortedValues, targetValue):
+    nNegObjects = sortedNegValues.shape[0]
+    bestDiviser = sortedNegValues[nNegObjects - 1, :]
 
-    nObjects = sortedIdx.shape[0]
-    nFeatures = sortedIdx.shape[1]
-    diviser = np.zeros(nFeatures)
+    positivePointsUnderDiviser = getPointsUnderDiviser(positiveIdx, bestDiviser, basePoint)
+    bestScore = (positiveCount - positivePointsUnderDiviser) * positiveScore
 
-    bestScore = 0.0
-    addedIdxes = set()
-
-    for iFeature in range(0, nFeatures):
-        for iObject in range(nObjects - 1, -1, -1):
-            if targetValue[sortedIdx[iObject, iFeature]] < 0:
-                diviser[iFeature] = sortedValues[iObject, iFeature]
-                break
-
-            if sortedIdx[iObject, iFeature] not in addedIdxes:
-                bestScore += targetValue[sortedIdx[iObject, iFeature]]
-                addedIdxes.add(sortedIdx[iObject, iFeature])
-
-    return diviser, bestScore
+    return bestDiviser, bestScore
 
 def getMaximumDiviserPerClassRT(dataSet, valuedTarget):
 
@@ -117,35 +99,35 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget):
     positiveCount = counts[0] if nClasses[0] > 0 else counts[1]
 
     nFeatures = dataSet.shape[1]
-
-    sortedIdx, sortedValues = GetSortedData(dataSet)
-    sortedDataSet = GetSortedDict(dataSet)
-
     positiveIdx, negativeIdx = GetRTreeIndex(dataSet, valuedTarget)
 
-    bestDiviser, bestScore = getBestStartDiviser(sortedIdx, sortedValues, valuedTarget)
-    basePoint = sortedValues[0, :]
+    negativeObjectsIdx = np.where(valuedTarget < 0)[0]
+    negativeObjects = dataSet[negativeObjectsIdx, :]
+    sortedNegIdx, sortedNegValues = GetSortedData(negativeObjects)
+    baseNegPoint = sortedNegValues[0, :]
+
+    positiveObjectsIdx = np.where(valuedTarget > 0)[0]
+    positiveObjects = dataSet[positiveObjectsIdx, :]
+    sortedPosIdx, sortedPosValues = GetSortedData(positiveObjects)
+    basePosPoint = sortedPosValues[0, :]
+
+    sortedNegDataSet = GetSortedDict(negativeObjects)
+
+    bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, basePosPoint, positiveIdx)
+
+    bestDiviser = bestStartDiviser
+    bestScore = bestStartScore
 
     for iFeature in range(0, nFeatures):
-        currentDiviser, currentScore = getBestStartDiviser(sortedIdx, sortedValues, valuedTarget)
-        currentIdx = sortedDataSet[iFeature]
+        currentDiviser = bestStartDiviser
+        currentIdx = sortedNegDataSet[iFeature]
 
         for iValue in currentIdx:
-            origIdxs = currentIdx[iValue]
+            idx = list(currentIdx[iValue])
+            currentDiviser = updateDiviser(currentDiviser, negativeObjects[idx, :], sortedNegIdx, sortedNegValues)
 
-            negativeDetected = False
-            for idx in origIdxs:
-                if valuedTarget[idx] < 0:
-                    negativeDetected = True
-                    break
-
-            if not negativeDetected:
-                continue
-
-            currentDiviser = updateDiviser(currentDiviser, origIdxs, sortedIdx, sortedValues, valuedTarget, dataSet)
-
-            positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePoint)
-            negativePoints = getPointsUnderDiviser(negativeIdx, currentDiviser, basePoint)
+            positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePosPoint)
+            negativePoints = getPointsUnderDiviser(negativeIdx, currentDiviser, baseNegPoint)
 
             currentScore = (positiveCount - positivePoints) * positiveScore + (negativeCount - negativePoints) * negativeScore
 
