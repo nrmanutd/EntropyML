@@ -70,12 +70,30 @@ def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
 
     return newDiviser
 
-def updateDiviser(currentDiviser, values, sortedNegIdx, sortedNegValues):
+def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegValues, omitIdx):
     newDiviser = currentDiviser
-    nValues = values.shape[0]
+    nFeatures = sortedNegIdx.shape[1]
 
-    for iValue in range(0, nValues):
-        newDiviser = updateDiviserConcrete(newDiviser, values[iValue, :], sortedNegIdx, sortedNegValues)
+    for fFeature in range(0, nFeatures):
+        setOfEqualizers = set()
+
+        for i in idx:
+            if newDiviser[fFeature] < negativeObjects[i, fFeature]:
+                continue
+            setOfEqualizers.add(i)
+
+        idxl = bisect.bisect_left(sortedNegValues[:, fFeature], newDiviser[fFeature])
+        idxr = bisect.bisect_right(sortedNegValues[:, fFeature], newDiviser[fFeature])
+
+        eSet = set(sortedNegIdx[idxl: idxr, fFeature])
+        for e in setOfEqualizers:
+            eSet.discard(e)
+
+        lenBefore = len(eSet)
+        lenAfter = len(eSet.intersection(omitIdx))
+
+        if lenBefore == lenAfter:
+            newDiviser[fFeature] = sortedNegValues[idxl - 1, fFeature]
 
     return newDiviser
 
@@ -123,10 +141,11 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget):
     for iFeature in range(0, nFeatures):
         currentDiviser = bestStartDiviser.copy()
         currentIdx = sortedNegDataSet[iFeature]
+        omit = set()
 
         for iValue in currentIdx:
             idx = currentIdx[iValue]
-            currentDiviser = updateDiviser(currentDiviser, negativeObjects[idx, :], sortedNegIdx, sortedNegValues)
+            currentDiviser = updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegValues, omit)
 
             positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePoint)
             negativePoints = getPointsUnderDiviser(negativeIdx, currentDiviser, basePoint)
@@ -140,6 +159,8 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget):
             if currentScore > bestScore:
                 bestScore = currentScore
                 bestDiviser = currentDiviser.copy()
+
+            omit.update(idx)
 
     mb = calculateDeltaIndependently2(dataSet, valuedTarget, bestDiviser)
 

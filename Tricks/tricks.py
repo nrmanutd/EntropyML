@@ -45,11 +45,11 @@ def showConcrete(diviser, values, name):
 
 def showResults(s, c):
 
-    diviser, values = getMaximumDiviserProd(s, c)
-    showConcrete(diviser, values, 'Prod')
+    #diviser, values = getMaximumDiviserProd(s, c)
+    #showConcrete(diviser, values, 'Prod')
 
-    diviser, values = getMaximumDiviser(s, c)
-    showConcrete(diviser, values, 'Stable')
+    #diviser, values = getMaximumDiviser(s, c)
+    #showConcrete(diviser, values, 'Stable')
 
     diviser, values = getMaximumDiviserFast(s, c)
     showConcrete(diviser, values, 'Fast')
@@ -61,7 +61,7 @@ def showResults(s, c):
     showConcrete(diviser, values, 'RT')
     pass
 
-#showResults(s, c)
-#showResults(s1, c1)
+showResults(s, c)
+showResults(s1, c1)
 showResults(s2, c2)
-#showResults(s3, c3)
+showResults(s3, c3)
