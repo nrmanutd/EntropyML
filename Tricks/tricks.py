@@ -4,6 +4,8 @@ from CodeResearch.DiviserCalculation.diviserCalcuation import getMaximumDiviser
 from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserCorrect
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserProd import getMaximumDiviserProd
+from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
+from CodeResearch.DiviserCalculation.statisticsCalculation import getMaximumPossibleByAnalysis
 
 s = np.array([[1,0,0], [0,1,0], [0,0,1], [3, 2, -1], [2, 3, -1], [2, 2, 0]])
 c = np.array([1, 1, 1, -1, -1, -1])
@@ -52,12 +54,14 @@ def showResults(s, c):
     diviser, values = getMaximumDiviserFast(s, c)
     showConcrete(diviser, values, 'Fast')
 
-    diviser, values = getMaximumDiviserCorrect(s, c)
-    showConcrete(diviser, values, 'Correct')
+    #diviser, values = getMaximumDiviserCorrect(s, c)
+    #showConcrete(diviser, values, 'Correct')
 
+    diviser, values = getMaximumDiviserRTree(s, c)
+    showConcrete(diviser, values, 'RT')
     pass
 
 #showResults(s, c)
 #showResults(s1, c1)
-#showResults(s2, c2)
-showResults(s3, c3)
+showResults(s2, c2)
+#showResults(s3, c3)

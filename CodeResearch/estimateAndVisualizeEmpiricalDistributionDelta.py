@@ -3,6 +3,7 @@ import math
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.DiviserCalculation.rTreeIndex import uploadRTree
 from CodeResearch.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 
@@ -70,6 +71,10 @@ def estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs):
     pass
 
 def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
+    uploadRTree(dataSet, target)
+
+    return
+
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
