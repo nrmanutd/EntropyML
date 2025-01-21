@@ -1,8 +1,5 @@
 import bisect
 import time
-import numba
-
-from numba import njit, prange
 
 import numpy as np
 
@@ -13,7 +10,6 @@ from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetS
     GetSortedDictByIndex
 from CodeResearch.rademacherHelpers import GetSortedData, GetSortedDataLists
 
-@numba.njit
 def getIdx(dataSet, id):
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
@@ -45,7 +41,6 @@ def getIdx(dataSet, id):
 
     return idx
 
-@numba.njit
 def GetRTreeIndex(dataSet, valuedTarget):
     positiveIdx = np.where(valuedTarget > 0)[0]
     negativeIdx = np.where(valuedTarget < 0)[0]
@@ -55,7 +50,7 @@ def GetRTreeIndex(dataSet, valuedTarget):
 
     return positive, negative
 
-@numba.njit
+
 def getPointsUnderDiviser(idx, currentDiviser, basePoint):
 
     nFeatures = len(currentDiviser)
@@ -68,7 +63,6 @@ def getPointsUnderDiviser(idx, currentDiviser, basePoint):
 
     return len(res)
 
-@numba.njit
 def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
     nFeatures = sortedNegIdx.shape[1]
 
@@ -81,14 +75,13 @@ def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
 
     return newDiviser
 
-@numba.njit
-def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegValues, omitIdx):
+def updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omitIdx):
     newDiviser = currentDiviser
     nFeatures = sortedNegIdx.shape[1]
 
     #print('Updating diviser for len = {:}'.format(len(idx)))
-    timeForSearch = 0
-    timeForInternalCycle = 0
+    #timeForSearch = 0
+    #timeForInternalCycle = 0
 
     #timeForIntersection = 0
     #timeForSearchingNext = 0
@@ -143,7 +136,6 @@ def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegV
                                                                                    #timeForSearchingNext/total))
     return newDiviser
 
-@numba.njit
 def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint):
 
     nNegObjects = sortedNegValues.shape[0]
@@ -195,13 +187,11 @@ def getPointsUnderDiviserIntersection(sortedPosValues, sortedPosIdx, currentDivi
 
     return len(curSet)
 
-@numba.njit
 def getUnreachablePositives(negObjects, positiveIdx, basePoint):
     lowest = np.min(negObjects, axis=0)
 
     return getPointsUnderDiviser(positiveIdx, lowest, basePoint)
 
-@numba.njit
 def updateDiviserViaRTTree(negativeIdx, negativeObjects, idx, nFeatures):
 
     for id in idx:
@@ -224,7 +214,7 @@ def updateDiviserFast(idx, negIdx, nFeatures):
 
     return diviser
 
-@njit(parallel=True)
+#@numba.jit(nopython=True)
 def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
 
     nClasses = np.unique(valuedTarget)
@@ -268,13 +258,13 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
     bestDiviserArray = np.zeros((nFeatures, nFeatures))
     possibleBestScoreArray = np.zeros(nFeatures)
 
-    for iFeature in prange(0, nFeatures):
+    for iFeature in range(0, nFeatures):
         bestScoreArray[iFeature] = bestScore
         bestDiviserArray[:, iFeature] = bestDiviser
-        possibleBestScoreArray[:, iFeature] = possibleBestScore
+        possibleBestScoreArray[iFeature] = possibleBestScore
 
-        if iFeature%100 == 0:
-            print('Calculating for feature {:}/{:}'.format(iFeature, nFeatures))
+        #if iFeature%100 == 0:
+        print('Calculating for feature {:}/{:}'.format(iFeature, nFeatures))
 
         currentDiviser = bestStartDiviser.copy()
         currentIdx = sortedNegDataSet[iFeature]
@@ -295,7 +285,8 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
 
             #print(len(idx))
             s1 = time.time()
-            currentDiviser = updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegValues, omit)
+
+            currentDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
             #currentDiviser = updateDiviserViaRTTree(negativeIdx, negativeObjects, idx, nFeatures)
             #currentDiviser = updateDiviserFast(idx, negIdx, nFeatures)
 

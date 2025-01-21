@@ -43,7 +43,6 @@ def GetSortedDictByIndex(sortedIdx, objects):
 
     return res
 
-@numba.njit
 def GetSortedDictList(dataSet):
     res = []
     nFeatures = dataSet.shape[1]

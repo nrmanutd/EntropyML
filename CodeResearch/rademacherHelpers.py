@@ -1,16 +1,15 @@
 import numba
 import numpy as np
 
-@numba.njit
 def GetSortedData(subSet):
     nObjects = subSet.shape[0]
     nFeatures = subSet.shape[1]
 
-    sortedSetIdx = np.zeros((nObjects, nFeatures), dtype=numba.int64)
+    sortedSetIdx = np.zeros((nObjects, nFeatures), dtype=int)
     sortedSet = np.zeros((nObjects, nFeatures))
 
     for iFeature in np.arange(nFeatures):
-        sIdx = np.argsort(subSet[:, iFeature])#todo: stable = True
+        sIdx = np.argsort(subSet[:, iFeature], stable=True)
         sortedSetIdx[:, iFeature] = sIdx
         sortedSet[:, iFeature] = subSet[sIdx, iFeature]
 
