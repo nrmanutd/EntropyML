@@ -1,5 +1,7 @@
 import bisect
 import time
+import numba
+
 from numba import njit, prange
 
 import numpy as np
@@ -11,7 +13,7 @@ from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetS
     GetSortedDictByIndex
 from CodeResearch.rademacherHelpers import GetSortedData, GetSortedDataLists
 
-
+@numba.njit
 def getIdx(dataSet, id):
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
@@ -43,6 +45,7 @@ def getIdx(dataSet, id):
 
     return idx
 
+@numba.njit
 def GetRTreeIndex(dataSet, valuedTarget):
     positiveIdx = np.where(valuedTarget > 0)[0]
     negativeIdx = np.where(valuedTarget < 0)[0]
@@ -52,7 +55,7 @@ def GetRTreeIndex(dataSet, valuedTarget):
 
     return positive, negative
 
-
+@numba.njit
 def getPointsUnderDiviser(idx, currentDiviser, basePoint):
 
     nFeatures = len(currentDiviser)
@@ -65,7 +68,7 @@ def getPointsUnderDiviser(idx, currentDiviser, basePoint):
 
     return len(res)
 
-
+@numba.njit
 def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
     nFeatures = sortedNegIdx.shape[1]
 
@@ -78,6 +81,7 @@ def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
 
     return newDiviser
 
+@numba.njit
 def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegValues, omitIdx):
     newDiviser = currentDiviser
     nFeatures = sortedNegIdx.shape[1]
@@ -139,6 +143,7 @@ def updateDiviser(currentDiviser, negativeObjects, idx, sortedNegIdx, sortedNegV
                                                                                    #timeForSearchingNext/total))
     return newDiviser
 
+@numba.njit
 def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint):
 
     nNegObjects = sortedNegValues.shape[0]
@@ -149,6 +154,7 @@ def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveI
     bestScore = (positiveCount - positivePointsUnderDiviser) * positiveScore
 
     return bestDiviser, bestScore, 1
+
 
 def getPointsBeforeDiviserIntersection(sortedPosValues, sortedPosIdx, currentDiviser):
     nFeatures = sortedPosValues.shape[1]
@@ -189,13 +195,13 @@ def getPointsUnderDiviserIntersection(sortedPosValues, sortedPosIdx, currentDivi
 
     return len(curSet)
 
-
+@numba.njit
 def getUnreachablePositives(negObjects, positiveIdx, basePoint):
     lowest = np.min(negObjects, axis=0)
 
     return getPointsUnderDiviser(positiveIdx, lowest, basePoint)
 
-
+@numba.njit
 def updateDiviserViaRTTree(negativeIdx, negativeObjects, idx, nFeatures):
 
     for id in idx:
@@ -221,20 +227,20 @@ def updateDiviserFast(idx, negIdx, nFeatures):
 @njit(parallel=True)
 def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
 
-    nClasses, counts = np.unique(valuedTarget, return_counts=True)
+    nClasses = np.unique(valuedTarget)
 
     negativeScore = nClasses[0] if nClasses[0] < 0 else nClasses[1]
-    negativeCount = counts[0] if nClasses[0] < 0 else counts[1]
     positiveScore = nClasses[0] if nClasses[0] > 0 else nClasses[1]
-    positiveCount = counts[0] if nClasses[0] > 0 else counts[1]
 
     nFeatures = dataSet.shape[1]
 
     negativeObjectsIdx = np.where(valuedTarget < 0)[0]
+    negativeCount = len(negativeObjectsIdx)
     negativeObjects = dataSet[negativeObjectsIdx, :]
     sortedNegIdx, sortedNegValues = GetSortedData(negativeObjects)
 
     positiveObjectsIdx = np.where(valuedTarget > 0)[0]
+    positiveCount = len(positiveObjectsIdx)
     positiveObjects = dataSet[positiveObjectsIdx, :]
     sortedPosIdx, sortedPosValues = GetSortedData(positiveObjects)
 

@@ -1,4 +1,5 @@
 import numpy as np
+import numba
 from sortedcontainers import SortedDict
 
 def GetValuedTarget(target, c1, c1p, c2p):
@@ -42,6 +43,7 @@ def GetSortedDictByIndex(sortedIdx, objects):
 
     return res
 
+@numba.njit
 def GetSortedDictList(dataSet):
     res = []
     nFeatures = dataSet.shape[1]

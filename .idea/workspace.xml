@@ -6,15 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="improved visualization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tricks/rTreeTricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tricks/rTreeTricks.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tricks/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tricks/tricks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -509,8 +503,27 @@
       <option name="project" value="LOCAL" />
       <updated>1737409516642</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="improved visualization">
+      <option name="closed" value="true" />
+      <created>1737469281217</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1737469281217</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
@@ -635,13 +648,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
-          <line>62</line>
+          <line>66</line>
           <option name="timeStamp" value="200" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
-          <line>294</line>
-          <option name="timeStamp" value="201" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Tricks/rTreeTricks.py</url>
