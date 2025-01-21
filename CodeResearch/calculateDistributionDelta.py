@@ -384,20 +384,21 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     e1 = time.time()
     dFast = e1 - s1
 
-    s1 = time.time()
-    maxDelta5, maxValues5 = getMaximumDiviserRTree(subSet, target)
-    e1 = time.time()
-    dRTree = e1 - s1
+    #s1 = time.time()
+    maxDelta5, maxValues5, possibleBest = getMaximumDiviserRTree(subSet, target)
+    #maxDelta5 = maxDelta3
+    #e1 = time.time()
+    #dRTree = e1 - s1
     #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
     #print('Prod diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta2, dProd, maxDelta3, dFast))
     #print('Correct diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta4, dCorrect, maxDelta3, dFast))
-    print('RTree diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta5, dRTree, maxDelta3, dFast))
+    #print('RTree diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta5, dRTree, maxDelta3, dFast))
 
-    if abs(maxDelta5-maxDelta3) > 0.000001:
-        print(subSet)
-        print(target)
+    #if abs(maxDelta5-maxDelta3) > 0.000001:
+    #    print(subSet)
+    #    print(target)
 
-        raise ValueError('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
+    #   raise ValueError('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
         #print('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
 
     #vectors, normUpper = CalcRademacherDistributionDeltasXY(subSetX, subSetY, maxDelta2)
@@ -410,13 +411,14 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     #normUpper = math.sqrt(maxDelta3 ** 2 + 1 / xObjects + 1 / yObjects)
     #upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
     upperRad = maxDelta3
-    print('KS = {:}'.format(maxDelta3))
+    upperRad2 = maxDelta5
+    print('KS1(Fast) = {:}, KS2(RTree) = {:}, K2(Upper) = {:}'.format(maxDelta3, maxDelta5, possibleBest))
     #rad, sigma = calcRademacherComplexity(vectors, nAttempts)
 
     multiplier = (len(iIdx) + len(jIdx))/2 + 1
 
     #return rad * multiplier, upperRad
-    return 1, upperRad
+    return upperRad2, upperRad
 
 def calcRademacherDistributionDeltas(dataSet, nObjects, nAttempts, target):
     nClasses = len(np.unique(target))

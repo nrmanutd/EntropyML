@@ -14,6 +14,28 @@ def GetSortedData(subSet):
 
     return sortedSetIdx, sortedSet
 
+def GetSortedDataLists(subSet):
+    nObjects = subSet.shape[0]
+    nFeatures = subSet.shape[1]
+
+    sortedSetIdx = []
+    sortedSet = []
+    mapOrigToSorted = []
+
+    for iFeature in range(0, nFeatures):
+        sIdx = np.argsort(subSet[:, iFeature], stable=True)
+        sortedSetIdx.append(sIdx)
+        sortedSet.append(subSet[sIdx, iFeature])
+
+        map = np.zeros(nObjects)
+        for iIdx in range(0, nObjects):
+            map[sIdx[iIdx]] = iIdx
+
+        mapOrigToSorted.append(map)
+
+    return sortedSetIdx, sortedSet, mapOrigToSorted
+
+
 def ConvertVector(v, p1, p2):
 
     res = np.zeros(len(v))

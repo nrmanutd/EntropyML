@@ -25,16 +25,16 @@ def VisualizeAndSaveDistributionDeltas(data, task):
 
     #plot values
     for i in np.arange(pairedLines):
-        #ax.plot(xLabels, rad[i, :], label="_Rad #{0}".format(i))
-        ax.plot(xLabels, upperRad[i, :], label="_Upper Rad #{0}".format(i), ls=':')
+        ax.plot(xLabels, rad[i, :], label="Rad(RT) #{0}".format(i))
+        ax.plot(xLabels, upperRad[i, :], label="Upper Rad(Fast) #{0}".format(i), ls=':')
 
     nModels = accuracy.shape[0]
-    for i in np.arange(nModels):
-        ax.plot(xLabels, accuracy[i, :], label="Accuracy #{0}".format(i), ls='-.')
-        ax.plot(xLabels, modelSigma[i, :], label="ModelSigma #{0}".format(i), ls='-.')
-        ax.plot(xLabels, 1 - accuracy[i, :], label="Loss #{0}".format(i), ls='-.')
-        ax.plot(xLabels, accuracy[i, :] + modelSigma[i, :], label="+s #{0}".format(i))
-        ax.plot(xLabels, accuracy[i, :] - modelSigma[i, :], label="-s #{0}".format(i))
+    #for i in np.arange(nModels):
+    #    ax.plot(xLabels, accuracy[i, :], label="Accuracy #{0}".format(i), ls='-.')
+    #    ax.plot(xLabels, modelSigma[i, :], label="ModelSigma #{0}".format(i), ls='-.')
+    #    ax.plot(xLabels, 1 - accuracy[i, :], label="Loss #{0}".format(i), ls='-.')
+    #    ax.plot(xLabels, accuracy[i, :] + modelSigma[i, :], label="+s #{0}".format(i))
+    #    ax.plot(xLabels, accuracy[i, :] - modelSigma[i, :], label="-s #{0}".format(i))
 
     ax.legend()
 
@@ -52,15 +52,15 @@ def VisualizeAndSaveDistributionDeltas(data, task):
     ax.grid()
 
     for i in np.arange(pairedLines):
-        #ax.plot(xLabels, np.log(rad[i, :]), label="_Log Rad #{0}".format(i), linewidth=2)
+        ax.plot(xLabels, np.log(rad[i, :]), label="Log Rad(RT) #{0}".format(i), linewidth=2)
         ax.plot(xLabels, np.log(upperRad[i, :]),
-               label="_Log Upper Rad #{0}".format(i), linewidth=2, ls=':')
+               label="Log Upper Rad(Fast) #{0}".format(i), linewidth=2, ls=':')
 
-    for i in np.arange(nModels):
-        ax.plot(xLabels, np.log(accuracy[i, :]), label="Log Accuracy #{0}".format(i), ls='-.')
-        ax.plot(xLabels, accuracy[i, :], label="Accuracy #{0}".format(i), ls='-.')
-        ax.plot(xLabels, np.log(modelSigma[i, :]), label="Log ModelSigma #{0}".format(i), ls='-.')
-        ax.plot(xLabels, np.log(1 - accuracy[i, :]), label="Log Loss #{0}".format(i), ls='-.')
+    #for i in np.arange(nModels):
+        #ax.plot(xLabels, np.log(accuracy[i, :]), label="Log Accuracy #{0}".format(i), ls='-.')
+        #ax.plot(xLabels, accuracy[i, :], label="Accuracy #{0}".format(i), ls='-.')
+        #ax.plot(xLabels, np.log(modelSigma[i, :]), label="Log ModelSigma #{0}".format(i), ls='-.')
+        #ax.plot(xLabels, np.log(1 - accuracy[i, :]), label="Log Loss #{0}".format(i), ls='-.')
 
     ax.legend()
 

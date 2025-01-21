@@ -1,4 +1,16 @@
+import numpy as np
 from rtree import index
+import sys
+
+print(sys.version)
+
+d = dict()
+d[1] = '1'
+d[2] = '2'
+d[3] = '3'
+
+print(next(iter(d.items())))
+
 
 p = index.Property()
 p.dimension = 3
@@ -16,6 +28,8 @@ points = [
 
 for point in points:
     idx.insert(*point)
+
+print(idx.bounds)
 
 query_rect = (1, 2, 1, 4, 5, 4)
 

@@ -216,13 +216,13 @@ lObj = 1000
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
 
-checkTask(53, m='delta') #iris
+#checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
-#checkTask('mnist', t=10, m='delta')
-#checkTask(54, m='delta') #isolet
+checkTask('mnist', t=10, m='delta')
+checkTask(54, m='delta') #isolet
 #checkTask('cifar', t=10, m='delta')
 
 #todo

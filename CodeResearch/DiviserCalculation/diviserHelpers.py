@@ -27,6 +27,21 @@ def GetSortedDict(dataSet):
 
     return res
 
+def GetSortedDictByIndex(sortedIdx, objects):
+    res = []
+    nFeatures = objects.shape[1]
+    nObjects = objects.shape[0]
+
+    for iFeature in range(0, nFeatures):
+        curDict = dict()
+        res.append(curDict)
+
+        for iObject in range(nObjects - 1, -1, -1):
+            origIdx = sortedIdx[iObject, iFeature]
+            curDict[origIdx] = objects[origIdx, iFeature]
+
+    return res
+
 def GetSortedDictList(dataSet):
     res = []
     nFeatures = dataSet.shape[1]
@@ -39,8 +54,8 @@ def GetSortedDictList(dataSet):
         for iObject in range(0, nObjects):
             v = -dataSet[iObject, iFeature]
             if v not in curDict:
-                curDict[v] = [iObject]
+                curDict[v] = {iObject}
             else:
-                curDict[v].append(iObject)
+                curDict[v].add(iObject)
 
     return res
