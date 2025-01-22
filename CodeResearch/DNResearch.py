@@ -7,7 +7,9 @@ from tensorflow.keras.utils import to_categorical
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta
+from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
+    estimatePValuesForClassesSeparation
+
 
 def empiricalDistributionById(id, t, m):
     set = fetch_ucirepo(id=id)
@@ -153,11 +155,14 @@ def checkMnist(t, m):
     #trainY = to_categorical(trainY, num_classes)  # One-hot encode the labels
     #testY = to_categorical(testY, num_classes)  # One-hot encode the labels
 
+    estimatePValuesForClassesSeparation(trainX, trainY, 'mnist', t=t)
+    return
+
     if m == 'delta':
         estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'mnist', t=t)
     else:
         calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'mnist', t=t)
-    pass
+    return
 
 def checkCifar(t, m):
     num_train = 50000  # there are 60000 training examples in CIFAR
@@ -221,9 +226,9 @@ lObj = 1000
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
-#checkTask('mnist', t=10, m='delta')
+checkTask('mnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-checkTask('cifar', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

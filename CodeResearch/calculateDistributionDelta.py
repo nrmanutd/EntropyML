@@ -7,12 +7,11 @@ import numpy as np
 from numpy import linalg as LA
 from scipy.stats import bernoulli
 
-from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserCorrect
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
-from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
-from CodeResearch.DiviserCalculation.statisticsCalculation import getMaximumPossibleByAnalysis
+from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcSupremum import calcSupremum
-from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector, GetSubSet
+from CodeResearch.permutationHelpers import GetSubSet
+from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector
 
 
 def calculateDistributionDelta(dataSet, nObjects, nAttempts):
@@ -167,7 +166,6 @@ def calculateVectorFast(point, sortedSetIdx, sortedSet, isSelfVector):
     return v, nonZeroCoordinates, nonZeroDeltas
 
 def calcRademacherVectorsFast(subSet):
-
     nObjects = subSet.shape[0]
     nFeatures = subSet.shape[1]
     
@@ -385,7 +383,8 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     dFast = e1 - s1
 
     #s1 = time.time()
-    maxDelta5, maxValues5, possibleBest = getMaximumDiviserRTree(subSet, target)
+    #maxDelta5, maxValues5, possibleBest = getMaximumDiviserRTree(subSet, target)
+    maxDelta6, maxValues6, possibleBest = getMaximumDiviserRTreeStochastic(subSet, target)
     #maxDelta5 = maxDelta3
     #e1 = time.time()
     #dRTree = e1 - s1
@@ -411,8 +410,9 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     #normUpper = math.sqrt(maxDelta3 ** 2 + 1 / xObjects + 1 / yObjects)
     #upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
     upperRad = maxDelta3
-    upperRad2 = maxDelta5
-    print('KS1(Fast) = {:}, KS2(RTree) = {:}, K2(Upper) = {:}'.format(maxDelta3, maxDelta5, possibleBest))
+    #upperRad2 = maxDelta5
+    upperRad2 = maxDelta6
+    print('KS1(Fast) = {:}, KS3(Stochastic) = {:}'.format(maxDelta3, maxDelta6))
     #rad, sigma = calcRademacherComplexity(vectors, nAttempts)
 
     multiplier = (len(iIdx) + len(jIdx))/2 + 1

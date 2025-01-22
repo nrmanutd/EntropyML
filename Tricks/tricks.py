@@ -5,6 +5,7 @@ from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserC
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserProd import getMaximumDiviserProd
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
+from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.DiviserCalculation.statisticsCalculation import getMaximumPossibleByAnalysis
 
 s = np.array([[1,0,0], [0,1,0], [0,0,1], [3, 2, -1], [2, 3, -1], [2, 2, 0]])
@@ -118,8 +119,11 @@ def showResults(s, c):
     #diviser, values = getMaximumDiviserCorrect(s, c)
     #showConcrete(diviser, values, 'Correct')
 
-    diviser, values = getMaximumDiviserRTree(s, c)
+    diviser, values, mpv = getMaximumDiviserRTree(s, c)
     showConcrete(diviser, values, 'RT')
+
+    diviser, values, mpv = getMaximumDiviserRTreeStochastic(s, c)
+    showConcrete(diviser, values, 'Stochastic')
     pass
 
 showResults(s, c)

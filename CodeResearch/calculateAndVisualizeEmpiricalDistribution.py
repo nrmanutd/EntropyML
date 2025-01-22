@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 
-from CodeResearch.SaveRademacherResults import SaveRademacherResults
+from CodeResearch.Visualization.SaveRademacherResults import SaveRademacherResults
 from CodeResearch.calcModelAndRademacherComplexity import calculateRademacherComplexity
 
 

@@ -3,12 +3,16 @@ import math
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.DiviserCalculation.rTreeIndex import uploadRTree
-from CodeResearch.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
+from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
+from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
+from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast
+
 
 def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
     enc = LabelEncoder()
+
+    nClasses = np.unique(target)
 
     cIdx = np.where(target == iClass)[0]
     oIdx = np.where(target != iClass)[0]
@@ -150,5 +154,50 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
             'nRadSets': nRadSets, 'nClasses': nClasses}
 
     VisualizeAndSaveDistributionDeltas(data, task)
+
+    return
+
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwargs):
+    enc = LabelEncoder()
+    target = enc.fit_transform(np.ravel(target))
+
+    nObjects = len(target)
+
+    nAttempts = 5
+    #nClasses = len(np.unique(target))
+    nClasses = 2
+
+    pairs = math.floor(nClasses * (nClasses - 1) / 2)
+
+    totalPoints = kwargs.get('t', None)
+    totalPoints = 25 if totalPoints is None else totalPoints
+
+    step = max(1, math.floor(min(nObjects / 2, 3000) / totalPoints))
+    numberOfSteps = 40
+
+    stochasticResults = np.zeros((numberOfSteps, pairs))
+    fastResults = np.zeros((numberOfSteps, pairs))
+    xSteps = (range(0, numberOfSteps) + np.ones(numberOfSteps)) * step
+    data = {'steps': xSteps, 'taskName': taskName, 'step': 0}
+
+    for iStep in range(0, numberOfSteps):
+        currentObjects = (iStep + 1) * step
+        print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
+        curIdx = 0
+
+        data['step'] = iStep
+        for iClass in range(0, nClasses):
+            for jClass in range(0, iClass):
+                ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                stochasticResults[iStep, curIdx] = ijpValue
+
+                ijpValue = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                fastResults[iStep, curIdx] = ijpValue
+
+                curIdx += 1
+                data['stochastic'] = stochasticResults
+                data['fast'] = fastResults
+
+                visualizePValues(data)
 
     return
