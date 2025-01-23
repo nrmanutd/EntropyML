@@ -163,16 +163,15 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
     nObjects = len(target)
 
-    nAttempts = 200
+    nAttempts = 1000
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
-    totalPoints = kwargs.get('t', None)
-    totalPoints = 25 if totalPoints is None else totalPoints
+    numberOfSteps = kwargs.get('t', None)
+    numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
-    step = max(1, math.floor(min(nObjects / 2, 3000) / totalPoints))
-    numberOfSteps = 40
+    step = max(1, math.floor(min(nObjects, 3000) / numberOfSteps))
 
     stochasticResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))

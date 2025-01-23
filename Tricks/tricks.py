@@ -119,10 +119,10 @@ def showResults(s, c):
     #diviser, values = getMaximumDiviserCorrect(s, c)
     #showConcrete(diviser, values, 'Correct')
 
-    diviser, values, mpv = getMaximumDiviserRTree(s, c)
+    diviser, values = getMaximumDiviserRTree(s, c)
     showConcrete(diviser, values, 'RT')
 
-    diviser, values, mpv = getMaximumDiviserRTreeStochastic(s, c)
+    diviser, values = getMaximumDiviserRTreeStochastic(s, c)
     showConcrete(diviser, values, 'Stochastic')
     pass
 

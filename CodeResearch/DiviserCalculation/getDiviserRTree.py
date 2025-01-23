@@ -152,24 +152,136 @@ def updateDiviserFast(idx, negIdx, nFeatures):
     return divisor
 
 
-def updateDiviserGreedy(currentDiviser, nextIdx, negativeIdx, positiveIdx, negativeObjects, omit, bestScore):
+def checkDiviserEqualsIdx(curDiviser, point):
+    for i in range(0, len(curDiviser)):
+        if curDiviser[i] != point[i]:
+            return False
+
+    return True
+
+
+def getBorderObjects(curDiviser, idx, sortedNegDataSet, omit):
+
+    deprecatedFeatures = set()
+    borderObjects = set()
+
+    for i in range(0, len(curDiviser)):
+        curIdxes = sortedNegDataSet[i][-curDiviser[i]] - omit
+        if idx in curIdxes:
+            deprecatedFeatures.add(i)
+            continue
+
+        borderObjects.update(curIdxes)
+
+    return borderObjects, deprecatedFeatures
+
+
+def getPosIdxes(low, high, sortedPosIdx, sortedPosValues, iFeature):
+
+    idxHigh = bisect.bisect_right(sortedPosValues[:, iFeature], high)
+    idxLow = bisect.bisect_right(sortedPosValues[:, iFeature], low)
+
+    if idxHigh <= idxLow:
+        return []
+
+    return sortedPosIdx[idxLow:idxHigh, iFeature]
+
+
+def getBestObject(borderObjects, deprecatedFeatures, negativeObjects, stableNegIdx, sortedPosIdx, sortedPosValues):
+
+    nFeatures = negativeObjects.shape[1]
+    bestObject = -1#todo decide how to initialize
+    bestCandidates = 0
+
+    for iBorder in borderObjects:
+        curObjectIdxes = set()
+        for iFeature in range(0, nFeatures):
+            if iFeature in deprecatedFeatures:
+                continue
+
+            posIdxes = getPosIdxes(negativeObjects[stableNegIdx, iFeature], negativeObjects[iBorder, iFeature], sortedPosIdx, sortedPosValues, iFeature)
+            curObjectIdxes.update(posIdxes)
+
+        if len(curObjectIdxes) > bestCandidates:
+            bestCandidates = len(curObjectIdxes)
+            bestObject = iBorder
+
+    return bestObject
+
+
+def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore,
+              positiveScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues, negativeScore):
+
+    omitted = set()
+    bestOmitted = set()
+
+    bestCurDiviser = currentDiviser.copy()
+    bestCurScore = currentScore
+
+    curDiviser = currentDiviser.copy()
+
+    positiveCount = sortedPosIdx.shape[0]
+    negativeCount = sortedNegIdx.shape[0]
+
+    newOmit = omit.copy()
+
+    while True:
+        #print('Cur diviser: ', curDiviser)
+        #print('Cur negative object: ', negativeObjects[idx, :])
+
+        if checkDiviserEqualsIdx(curDiviser, negativeObjects[idx, :]):
+            break
+
+        borderObjects, deprecatedFeatures = getBorderObjects(curDiviser, idx, sortedNegDataSet, newOmit)
+        #print(borderObjects)
+        bestObject = getBestObject(borderObjects, deprecatedFeatures, negativeObjects, idx, sortedPosIdx, sortedPosValues)
+        #print(bestObject)
+        if bestObject == -1:
+            break
+
+        curDiviser = updateDiviser(curDiviser, {bestObject}, sortedNegIdx, sortedNegValues, newOmit)#todo: optimize this code
+        omitted.add(bestObject)
+        newOmit.add(bestObject)
+
+        positivePoints = getPointsUnderDiviser(positiveIdx, curDiviser, basePoint)
+        negativePoints = len(negativeObjects) - len(newOmit)
+
+        curScore = (positiveCount - positivePoints) * positiveScore + (
+                negativeCount - negativePoints) * negativeScore
+
+        if curScore > bestScore:
+            bestCurScore = curScore
+            bestCurDiviser = curDiviser.copy()
+            bestOmitted = omitted.copy()
+
+    return bestCurScore, bestCurDiviser, bestOmitted
+
+def updateDiviserGreedy(currentDiviser, nextIdx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore, positiveScore, negativeScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues):
+    pPointsUnderDiviser = getPointsIdxUnderDiviser(positiveIdx, currentDiviser, basePoint)
+
+    bestIdxCurrentScore = currentScore
+    bestIdxDiviser = currentDiviser.copy()
+    curIdxOmitted = {}
 
     for idx in nextIdx:
         curPoint = negativeObjects[idx, :]
-        id = np.where(currentDiviser < curPoint)[0]
-        if len(id) > 0:
-            print('Error')
-        betweenDiviserAndNegative = getPointsIdxUnderDiviser(negativeIdx, currentDiviser, curPoint)
 
-        collection = dict()
+        pPointsUnderCurPoint = getPointsIdxUnderDiviser(positiveIdx, curPoint, basePoint)
+        positiveCandidates = pPointsUnderDiviser - pPointsUnderCurPoint
 
-        for negCandidate in betweenDiviserAndNegative:
-            positivePoints = getPointsIdxUnderDiviser(positiveIdx, currentDiviser, negativeObjects[negCandidate, :])
-            collection[negCandidate] = positivePoints
+        bestCurScore = currentScore + len(positiveCandidates) * positiveScore
+        if bestCurScore < bestScore:
+            continue
 
-        print(collection)
+        curIdxScore, curIdxDiviser, omitted = getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore,
+              positiveScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues, negativeScore)
 
-    return bestScore, currentDiviser, omit
+        if curIdxScore > currentScore:
+            bestIdxCurrentScore = curIdxScore
+            bestIdxDiviser = curIdxDiviser
+            curIdxOmitted = omitted
+
+    return bestIdxCurrentScore, bestIdxDiviser, curIdxOmitted
 
 
 def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, balance, diviser):
@@ -204,12 +316,12 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, balance, divise
 
     bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
 
-    if bestStartScore > balance:
-        bestDiviser = bestStartDiviser
-        bestScore = bestStartScore
-    else:
-        bestDiviser = diviser
-        bestScore = balance
+    #if bestStartScore > balance:
+    bestDiviser = bestStartDiviser.copy()
+    bestScore = bestStartScore
+    #else:
+    #    bestDiviser = diviser
+    #    bestScore = balance
 
     #if 1 - bestScore < subError:
     #    return bestScore, bestDiviser
@@ -219,16 +331,34 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, balance, divise
     currentDiviser = bestDiviser.copy()
     currentIdx = sortedNegDataSet[iFeature]
 
-    omit = set()
+    currentOmit = set()
+
+    nextStartDiviser = bestStartDiviser.copy()
+
     for iValue in currentIdx:
+        omit = currentOmit.copy()
+        currentDiviser = nextStartDiviser.copy()
+
         idx = currentIdx[iValue]
-        currentDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
+        nextStartDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
+        currentDiviser = nextStartDiviser.copy()
         omit.update(idx)
 
-        nextIdx = currentIdx[-currentDiviser[iFeature]]
-        currentScore, currentDiviser, omitted = updateDiviserGreedy(currentDiviser, nextIdx, negativeIdx, positiveIdx, negativeObjects, omit, bestScore)
+        nextValue = currentDiviser[iFeature]
+        if iValue == nextValue:
+            break
+
+        positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePoint)
+        negativePoints = negativeCount - len(omit)
+
+        currentScore = (positiveCount - positivePoints) * positiveScore + (
+                negativeCount - negativePoints) * negativeScore
+
+        nextIdx = currentIdx[-nextValue]
+        currentScore, currentDiviser, omitted = updateDiviserGreedy(currentDiviser, nextIdx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore, positiveScore,  negativeScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues,)
 
         omit.update(omitted)
+        currentOmit.update(idx)
 
         if currentScore > bestScore:
             bestScore = currentScore

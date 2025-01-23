@@ -5,14 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/Logs_200_attempts.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tricks/tricks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +43,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.DNResearch.executor": "Run",
+    "Python.DNResearch.executor": "Debug",
     "Python.calcEntropy.executor": "Debug",
     "Python.calculateDistributionDelta.executor": "Debug",
     "Python.car.executor": "Run",
@@ -53,7 +52,7 @@
     "Python.main.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
-    "Python.tricks.executor": "Debug",
+    "Python.tricks.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main"
   }
@@ -64,7 +63,7 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
+  <component name="RunManager" selected="Python.tricks">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -111,8 +110,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.DNResearch" />
         <item itemvalue="Python.tricks" />
+        <item itemvalue="Python.DNResearch" />
       </list>
     </recent_temporary>
   </component>
@@ -131,14 +130,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00003" summary="added main.py file">
-      <option name="closed" value="true" />
-      <created>1719742860179</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1719742860179</updated>
     </task>
     <task id="LOCAL-00004" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -524,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737578109542</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737615393049</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1737615393049</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -668,18 +667,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
-          <line>160</line>
-          <option name="timeStamp" value="216" />
+          <line>357</line>
+          <option name="timeStamp" value="226" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/pValueCalculator.py</url>
-          <line>24</line>
-          <option name="timeStamp" value="217" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>189</line>
-          <option name="timeStamp" value="218" />
+          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
+          <line>338</line>
+          <option name="timeStamp" value="228" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

@@ -123,9 +123,7 @@ def getPointsIdxUnderDiviser(idx, currentDiviser, basePoint):
     return set(idx.intersection(query))
 
 def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint):
-
-    nNegObjects = sortedNegValues.shape[0]
-    bestDiviser = sortedNegValues[nNegObjects - 1, :]
+    bestDiviser = sortedNegValues[- 1, :]
 
     positivePointsUnderDiviser = getPointsUnderDiviser(positiveIdx, bestDiviser, basePoint)
     #positivePointsUnderDiviser = getPointsBeforeDiviserIntersection(sortedPosValues, sortedPosIdx, bestDiviser)

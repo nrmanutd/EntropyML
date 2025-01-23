@@ -220,8 +220,8 @@ lObj = 1000
 
 #checkTask('circles', l=lObj, c=2, m='delta')
 #checkTask('circles', l=lObj, c=4, m='delta')
-checkTask('random', l=lObj, f=2, m='delta')
-checkTask('random', l=lObj, f=4, m='delta')
+#checkTask('random', l=lObj, f=2, m='delta')
+#checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
 
 #checkTask(53, m='delta') #iris
@@ -229,7 +229,7 @@ checkTask('random', l=lObj, f=4, m='delta')
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
-#checkTask('mnist', t=10, m='delta')
+checkTask('mnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
 #checkTask('cifar', t=10, m='delta')
 
