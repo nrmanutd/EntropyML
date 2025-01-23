@@ -188,11 +188,10 @@ def getPosIdxes(low, high, sortedPosIdx, sortedPosValues, iFeature):
     return sortedPosIdx[idxLow:idxHigh, iFeature]
 
 
-def getBestObject(borderObjects, deprecatedFeatures, negativeObjects, stableNegIdx, sortedPosIdx, sortedPosValues):
+def getBestObject(borderObjects, candidates, deprecatedFeatures, negativeObjects, stableNegIdx, sortedPosIdx, sortedPosValues):
 
     nFeatures = negativeObjects.shape[1]
-    bestObject = -1#todo decide how to initialize
-    bestCandidates = 0
+    #candidates = -1 * np.ones(negativeObjects.shape[0])
 
     for iBorder in borderObjects:
         curObjectIdxes = set()
@@ -203,12 +202,22 @@ def getBestObject(borderObjects, deprecatedFeatures, negativeObjects, stableNegI
             posIdxes = getPosIdxes(negativeObjects[stableNegIdx, iFeature], negativeObjects[iBorder, iFeature], sortedPosIdx, sortedPosValues, iFeature)
             curObjectIdxes.update(posIdxes)
 
-        if len(curObjectIdxes) > bestCandidates:
-            bestCandidates = len(curObjectIdxes)
-            bestObject = iBorder
+        candidates[iBorder] = len(curObjectIdxes) if len(curObjectIdxes) > 0 else -1
 
-    return bestObject
+    candidatesSortedIdx = np.argsort(candidates)
+    return candidatesSortedIdx, candidates
 
+
+def getBestBorder(curBordersRankValues, curBorderObjects):
+    bestBorder = -1
+    bestValue = 0
+
+    for borderObj in curBorderObjects:
+        if curBordersRankValues[borderObj] > bestValue:
+            bestBorder = borderObj
+            bestValue = curBordersRankValues[borderObj]
+
+    return bestBorder
 
 def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore,
               positiveScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues, negativeScore):
@@ -227,6 +236,11 @@ def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit
     getBest = 0
     updateDiv = 0
     gettingPoints = 0
+    deprecated = 0
+
+    curBordersRankValues = -1 * np.ones(len(negativeObjects))
+    curBorderObjects, curDeprecatedFeatures = getBorderObjects(curDiviser, idx, sortedNegDataSet, newOmit)
+    curSortedBordersIdx, curBordersRankValues = getBestObject(curBorderObjects, curBordersRankValues, curDeprecatedFeatures, negativeObjects, idx, sortedPosIdx, sortedPosValues)
 
     while True:
         if checkDiviserEqualsIdx(curDiviser, negativeObjects[idx, :]):
@@ -236,9 +250,25 @@ def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit
         borderObjects, deprecatedFeatures = getBorderObjects(curDiviser, idx, sortedNegDataSet, newOmit)
         e1 = time.time()
         getBorder += (e1 - c1)
+        #print('Deprecated features ', deprecatedFeatures)
 
         c1 = time.time()
-        bestObject = getBestObject(borderObjects, deprecatedFeatures, negativeObjects, idx, sortedPosIdx, sortedPosValues)
+        if len(curDeprecatedFeatures - deprecatedFeatures) == 0:
+            bordersToAdd = curBorderObjects - borderObjects
+            #print(bordersToAdd)
+            curSortedBordersIdx, curBordersRankValues = getBestObject(bordersToAdd, curBordersRankValues,
+                                                                      curDeprecatedFeatures, negativeObjects, idx,
+                                                                      sortedPosIdx, sortedPosValues)
+        else:
+            curSortedBordersIdx, curBordersRankValues = getBestObject(borderObjects, curBordersRankValues,
+                                                                      deprecatedFeatures, negativeObjects, idx,
+                                                                      sortedPosIdx, sortedPosValues)
+
+        curBorderObjects = borderObjects
+        curDeprecatedFeatures = deprecatedFeatures
+
+        bestObject = getBestBorder(curBordersRankValues, curBorderObjects)
+        #bestObject = getBestObject(borderObjects, deprecatedFeatures, negativeObjects, idx, sortedPosIdx, sortedPosValues)
         e1 = time.time()
         getBest += (e1 - c1)
 
@@ -269,7 +299,7 @@ def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit
         if bestPossibleScore < bestCurScore:
             break
 
-        print('Get border: {:}, get best: {:}, updateDiv: {:}, gettingPoints: {:}'.format(getBorder, getBest, updateDiv, gettingPoints))
+        #print('Get border: {:}, get best: {:}, deprecated: {:}, updateDiv: {:}, gettingPoints: {:}'.format(getBorder, getBest, deprecated, updateDiv, gettingPoints))
 
     return bestCurScore, bestCurDiviser
 
@@ -280,7 +310,7 @@ def updateDiviserGreedy(currentDiviser, nextIdx, positiveIdx, basePoint, negativ
     bestIdxDiviser = currentDiviser.copy()
 
     for idx in nextIdx:
-        print('Greedy inside...{:}/{:}'.format(idx, len(nextIdx)))
+        #print('Greedy inside...{:}/{:}'.format(idx, len(nextIdx)))
         curPoint = negativeObjects[idx, :]
 
         pPointsUnderCurPoint = getPointsIdxUnderDiviser(positiveIdx, curPoint, basePoint)
@@ -348,13 +378,14 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, startScore, sta
     nextStartDiviser = bestStartDiviser.copy()
     omit = set()
 
+    counter = 0
     for iValue in currentIdx:
-        print('Value {:} of {:}'.format(iValue, len(currentIdx)))
+        counter += 1
+        print('Value {:} of {:}'.format(counter, len(currentIdx)))
         currentDiviser = nextStartDiviser.copy()
 
         idx = currentIdx[iValue]
         nextStartDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
-        print('Updated diviser...')
 
         currentDiviser = nextStartDiviser.copy()
         omit.update(idx)
@@ -377,7 +408,6 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, startScore, sta
                 return bestScore, bestDiviser
 
         nextIdx = currentIdx[-nextValue]
-        print('Updating greedy...')
         currentScore, currentDiviser = updateDiviserGreedy(currentDiviser, nextIdx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore, positiveScore,  negativeScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues)
 
         if currentScore > bestScore:

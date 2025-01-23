@@ -6,9 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +58,7 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
+  <component name="RunManager" selected="Python.tricks">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -107,8 +105,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.DNResearch" />
         <item itemvalue="Python.tricks" />
+        <item itemvalue="Python.DNResearch" />
       </list>
     </recent_temporary>
   </component>
@@ -127,14 +125,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00005" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1719922173389</created>
-      <option name="number" value="00005" />
-      <option name="presentableId" value="LOCAL-00005" />
-      <option name="project" value="LOCAL" />
-      <updated>1719922173389</updated>
     </task>
     <task id="LOCAL-00006" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -520,7 +510,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737649514325</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <task id="LOCAL-00054" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737664828214</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1737664828214</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -661,6 +659,11 @@
           <url>file://$PROJECT_DIR$/Tricks/rTreeTricks.py</url>
           <line>14</line>
           <option name="timeStamp" value="202" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
+          <line>246</line>
+          <option name="timeStamp" value="230" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
