@@ -4,22 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" afterDir="false" />
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/Logs_200_attempts.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/SaveRademacherResults.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/SaveRademacherResults.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/VisualizeAndSaveDistributionDeltas.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveDistributionDeltas.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateAndVisualizeEmpiricalDistribution.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tricks/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tricks/tricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +53,7 @@
     "Python.main.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
-    "Python.tricks.executor": "Run",
+    "Python.tricks.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main"
   }
@@ -138,14 +131,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00002" summary="added main.py file">
-      <option name="closed" value="true" />
-      <created>1719742764758</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1719742764758</updated>
     </task>
     <task id="LOCAL-00003" summary="added main.py file">
       <option name="closed" value="true" />
@@ -531,7 +516,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737479521353</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737578109542</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1737578109542</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -552,7 +545,8 @@
     <MESSAGE value="added entropy calculation" />
     <MESSAGE value="improved visualization" />
     <MESSAGE value="updated algorithm" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated algorithm" />
+    <MESSAGE value="updated algorithm, added permutation logic calculation and visualization" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated algorithm, added permutation logic calculation and visualization" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -673,9 +667,19 @@
           <option name="timeStamp" value="202" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="211" />
+          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
+          <line>160</line>
+          <option name="timeStamp" value="216" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/pValueCalculator.py</url>
+          <line>24</line>
+          <option name="timeStamp" value="217" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>189</line>
+          <option name="timeStamp" value="218" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

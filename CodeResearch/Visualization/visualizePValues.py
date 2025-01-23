@@ -19,8 +19,8 @@ def visualizePValues(data):
     idx = range(0, iStep + 1)
     # plot values
     for i in np.arange(pairedClasses):
-        ax.plot(xSteps[idx], stochastic[idx, i], label="_StochasticRT #{0}".format(i))
-        ax.plot(xSteps[idx], fast[idx, i], label="_FastRT #{0}".format(i), ls=':')
+        ax.plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')
+        ax.plot(xSteps[idx], fast[idx, i], label="FastRT #{0}".format(i), ls=':', marker='X')
 
     ax.legend()
 

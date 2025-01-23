@@ -1,14 +1,12 @@
-import math
-import time
 from random import randrange
 
 import numpy as np
 
-from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently2
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, getIdx, GetSortedDictList, GetPowerOfSet, \
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, getIdx, GetSortedDictList, \
     getBestStartDiviser, getPointsUnderDiviser, prepareDataSet
 from CodeResearch.DiviserCalculation.getDiviserRTree import updateDiviser
 from CodeResearch.rademacherHelpers import GetSortedData
+
 
 def getTopBorderCandidates(currentDiviser, sortedNegDataSet, topPoints, omit):
     nFeatures = len(currentDiviser)
@@ -58,16 +56,16 @@ def getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget, subError):
 
     sortedNegDataSet = GetSortedDictList(negativeObjects)
 
-    bestStartDiviser, bestStartScore, possibleBestScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
+    bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
 
     bestDiviser = bestStartDiviser
     bestScore = bestStartScore
 
     if 1 - bestScore < subError:
-        return bestScore, bestDiviser, possibleBestScore
+        return bestScore, bestDiviser
 
-    topPoints = 1
-    nAttempts = 1
+    topPoints = 5
+    nAttempts = 10
 
     for iAttempt in range(0, nAttempts):
         #if iAttempt%10 == 0:
@@ -120,10 +118,9 @@ def getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget, subError):
             if currentScore > bestScore:
                 bestScore = currentScore
                 bestDiviser = currentDiviser.copy()
-                possibleBestScore = currentPossibleBestScore
 
                 if 1 - bestScore < subError:
-                    return bestScore, bestDiviser, possibleBestScore
+                    return bestScore, bestDiviser
 
             omit.add(omittingObject)
             curIterations += 1
@@ -141,7 +138,7 @@ def getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget, subError):
 
     #    raise ValueError('Error!!! Correct != independent: {:} vs {:}, {:}'.format(bestScore, mb, bestDiviser))
 
-    return bestScore, bestDiviser, possibleBestScore
+    return bestScore, bestDiviser
 
 def getMaximumDiviserRTreeStochastic(dataSet, target):
 
@@ -155,12 +152,12 @@ def getMaximumDiviserRTreeStochastic(dataSet, target):
         raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
 
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser, c1PossibleBest = getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget1, subError)
+    c1Banalce, c1diviser = getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget1, subError)
 
     valuedTarget2 = GetValuedTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser, c2PossibleBest = getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget2, subError)
+    c2Banalce, c2diviser = getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget2, subError)
 
     if c1Banalce > c2Banalce:
-        return c1Banalce, c1diviser, c1PossibleBest
+        return c1Banalce, c1diviser
 
-    return c2Banalce, c2diviser, c2PossibleBest
+    return c2Banalce, c2diviser

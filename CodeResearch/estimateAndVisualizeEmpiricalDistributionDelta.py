@@ -163,9 +163,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
     nObjects = len(target)
 
-    nAttempts = 5
-    #nClasses = len(np.unique(target))
-    nClasses = 2
+    nAttempts = 200
+    nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
@@ -199,5 +198,4 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 data['fast'] = fastResults
 
                 visualizePValues(data)
-
     return

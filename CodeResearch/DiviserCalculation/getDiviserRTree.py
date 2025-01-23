@@ -1,12 +1,15 @@
 import bisect
-import time
 
 import numpy as np
 
 from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently2
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict, GetSortedDictList, \
-    GetSortedDictByIndex, getIdx, GetPowerOfSet, getPointsUnderDiviser, getBestStartDiviser, prepareDataSet
-from CodeResearch.rademacherHelpers import GetSortedData, GetSortedDataLists
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDictList, \
+    getIdx, GetPowerOfSet, getPointsUnderDiviser, getBestStartDiviser, prepareDataSet, \
+    getPointsIdxUnderDiviser
+from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.rademacherHelpers import GetSortedData
+
+
 def GetRTreeIndex(dataSet, valuedTarget):
     positiveIdx = np.where(valuedTarget > 0)[0]
     negativeIdx = np.where(valuedTarget < 0)[0]
@@ -31,13 +34,6 @@ def updateDiviserConcrete(newDiviser, value, sortedNegIdx, sortedNegValues):
 def updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omitIdx):
     newDiviser = currentDiviser
     nFeatures = sortedNegIdx.shape[1]
-
-    #print('Updating diviser for len = {:}'.format(len(idx)))
-    #timeForSearch = 0
-    #timeForInternalCycle = 0
-
-    #timeForIntersection = 0
-    #timeForSearchingNext = 0
 
     for fFeature in range(0, nFeatures):
         #s1 = time.time()
@@ -143,7 +139,7 @@ def updateDiviserViaRTTree(negativeIdx, negativeObjects, idx, nFeatures):
 
 def updateDiviserFast(idx, negIdx, nFeatures):
 
-    diviser = np.zeros(nFeatures)
+    divisor = np.zeros(nFeatures)
     for iFeature in range(0, nFeatures):
         for iObject in idx:
             del negIdx[iFeature][iObject]
@@ -151,11 +147,32 @@ def updateDiviserFast(idx, negIdx, nFeatures):
         if len(negIdx[iFeature]) == 0:
             print('Dict in zero capacity')
 
-        diviser[iFeature] = next(iter(negIdx[iFeature].items()))[1]
+        divisor[iFeature] = next(iter(negIdx[iFeature].items()))[1]
 
-    return diviser
+    return divisor
 
-def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
+
+def updateDiviserGreedy(currentDiviser, nextIdx, negativeIdx, positiveIdx, negativeObjects, omit, bestScore):
+
+    for idx in nextIdx:
+        curPoint = negativeObjects[idx, :]
+        id = np.where(currentDiviser < curPoint)[0]
+        if len(id) > 0:
+            print('Error')
+        betweenDiviserAndNegative = getPointsIdxUnderDiviser(negativeIdx, currentDiviser, curPoint)
+
+        collection = dict()
+
+        for negCandidate in betweenDiviserAndNegative:
+            positivePoints = getPointsIdxUnderDiviser(positiveIdx, currentDiviser, negativeObjects[negCandidate, :])
+            collection[negCandidate] = positivePoints
+
+        print(collection)
+
+    return bestScore, currentDiviser, omit
+
+
+def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, balance, diviser):
 
     nClasses = np.unique(valuedTarget)
 
@@ -175,7 +192,7 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
     sortedPosIdx, sortedPosValues = GetSortedData(positiveObjects)
 
     positiveIdx = getIdx(dataSet[positiveObjectsIdx, :], range(0, len(positiveObjectsIdx)))
-    #negativeIdx = getIdx(dataSet[negativeObjectsIdx, :], range(0, len(negativeObjectsIdx)))
+    negativeIdx = getIdx(dataSet[negativeObjectsIdx, :], range(0, len(negativeObjectsIdx)))
 
     basePoint = np.zeros(nFeatures)
     for i in range(0, nFeatures):
@@ -185,109 +202,53 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError):
     axesPower = GetPowerOfSet(sortedNegDataSet)
     axesSortedPowerIdx = np.argsort(axesPower)
 
-    bestStartDiviser, bestStartScore, possibleBestScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
+    bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
 
-    bestDiviser = bestStartDiviser
-    bestScore = bestStartScore
+    if bestStartScore > balance:
+        bestDiviser = bestStartDiviser
+        bestScore = bestStartScore
+    else:
+        bestDiviser = diviser
+        bestScore = balance
 
-    if 1 - bestScore < subError:
-        return bestScore, bestDiviser, possibleBestScore
+    #if 1 - bestScore < subError:
+    #    return bestScore, bestDiviser
 
-    totalSum = 0
-    underSumCalculation = 0
-    totalGeneratingIndexTime = 0
+    iFeature = axesSortedPowerIdx[-1]
 
-    for iSortedFeature in range(nFeatures - 1, -1, -1):
-        iFeature = axesSortedPowerIdx[iSortedFeature]
+    currentDiviser = bestDiviser.copy()
+    currentIdx = sortedNegDataSet[iFeature]
 
-        #if iSortedFeature%100 == 0:
-        #    print('Calculating for feature {:}/{:}'.format(iFeature, nFeatures))
+    omit = set()
+    for iValue in currentIdx:
+        idx = currentIdx[iValue]
+        currentDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
+        omit.update(idx)
 
-        currentDiviser = bestStartDiviser.copy()
-        currentIdx = sortedNegDataSet[iFeature]
+        nextIdx = currentIdx[-currentDiviser[iFeature]]
+        currentScore, currentDiviser, omitted = updateDiviserGreedy(currentDiviser, nextIdx, negativeIdx, positiveIdx, negativeObjects, omit, bestScore)
 
-        if len(currentIdx) == 1:
-            break
+        omit.update(omitted)
 
-        omit = set()
-        #omitedPointsCount = 0
+        if currentScore > bestScore:
+            bestScore = currentScore
+            bestDiviser = currentDiviser.copy()
 
-        s1 = time.time()
-        #negIdx = GetSortedDictByIndex(sortedNegIdx, negativeObjects)
-        #negativeIdx = getIdx(negativeObjects, range(0, len(negativeObjectsIdx)))
-        e1 = time.time()
-        totalGeneratingIndexTime += (e1 - s1)
-        #print(len(currentIdx))
+            if 1 - bestScore < subError:
+                return bestScore, bestDiviser
 
-        for iValue in currentIdx:
-            idx = currentIdx[iValue]
+    mb = calculateDeltaIndependently2(dataSet, valuedTarget, bestDiviser)
 
-            #if len(omit) + len(idx) == negativeObjects.shape[0]: todo сделать проверку на последнего по-другому
-            #    break
+    if abs(mb - bestScore) > 0.00001:
+        print(dataSet)
+        print(valuedTarget)
+        print('Error!!! Correct != independent: {:} vs {:}, {:}'.format(bestScore, mb, bestDiviser))
 
-            #print(len(idx))
-            s1 = time.time()
+        raise ValueError('Error!!! Correct != independent: {:} vs {:}, {:}'.format(bestScore, mb, bestDiviser))
 
-            currentDiviser = updateDiviser(currentDiviser, idx, sortedNegIdx, sortedNegValues, omit)
-            #currentDiviser = updateDiviserViaRTTree(negativeIdx, negativeObjects, idx, nFeatures)
-            #currentDiviser = updateDiviserFast(idx, negIdx, nFeatures)
-
-            #if len(negativeIdx) == 0:
-            #    break
-
-            e1 = time.time()
-            totalSum += (e1 - s1)
-            #print('Updating of diviser {:}'.format(e1 - s1))
-
-            s1 = time.time()
-            positivePoints = getPointsUnderDiviser(positiveIdx, currentDiviser, basePoint)
-            #positivePoints = getPointsUnderDiviserIntersection(sortedPosValues, sortedPosIdx, currentDiviser)
-            e1 = time.time()
-            underSumCalculation += (e1 - s1)
-            #print('Getting points under diviser {:}'.format(e1 - s1))
-
-            negativePoints = negativeCount - len(omit) - len(idx)
-            currentScore = (positiveCount - positivePoints) * positiveScore + (negativeCount - negativePoints) * negativeScore
-
-            nextObject = list(currentIdx[-currentDiviser[iFeature]])
-            positivePointsNeverReached = getUnreachablePositives(negativeObjects[nextObject], positiveIdx, basePoint)
-
-            #if positivePointsNeverReached > 0:
-            #    print('Points never reached vs all rest {:}/{:}'.format(positivePointsNeverReached, positivePoints))
-
-            currentPossibleBestScore = currentScore + (positivePoints - positivePointsNeverReached) * positiveScore
-            #print(possibleBestScore)
-
-            if currentPossibleBestScore <= bestScore:
-                break
-
-            #добавить проверку на раннюю остановку
-            if currentScore > bestScore:
-                bestScore = currentScore
-                bestDiviser = currentDiviser.copy()
-                possibleBestScore = currentPossibleBestScore
-
-                if 1 - bestScore < subError:
-                    return bestScore, bestDiviser, possibleBestScore
-
-            omit.update(idx)
-
-        #if iSortedFeature % 100 == 0:
-        #    print('Best score {:}/Total updating {:}/getting under {:}/generating time {:}'.format(bestScore, totalSum, underSumCalculation, totalGeneratingIndexTime))
-
-    #mb = calculateDeltaIndependently2(dataSet, valuedTarget, bestDiviser)
-
-    #if abs(mb - bestScore) > 0.00001:
-    #    print(dataSet)
-    #    print(valuedTarget)
-    #    print('Error!!! Correct != independent: {:} vs {:}, {:}'.format(bestScore, mb, bestDiviser))
-
-    #    raise ValueError('Error!!! Correct != independent: {:} vs {:}, {:}'.format(bestScore, mb, bestDiviser))
-
-    return bestScore, bestDiviser, possibleBestScore
+    return bestScore, bestDiviser
 
 def getMaximumDiviserRTree(dataSet, target):
-
     dataSet, target = prepareDataSet(dataSet, target)
     nClasses, counts = np.unique(target, return_counts=True)
 
@@ -296,20 +257,18 @@ def getMaximumDiviserRTree(dataSet, target):
     if len(nClasses) != 2:
         raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
 
-    s1 = time.time()
+    fastBalance, fastDiviser = getMaximumDiviserFast(dataSet, target)
+
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser, c1PossibleBest = getMaximumDiviserPerClassRT(dataSet, valuedTarget1, subError)
+    c1Banalce, c1diviser = getMaximumDiviserPerClassRT(dataSet, valuedTarget1, subError, fastBalance, fastDiviser)
 
     if 1 - c1Banalce < subError:
-        return c1Banalce, c1diviser, c1PossibleBest
+        return c1Banalce, c1diviser
 
     valuedTarget2 = GetValuedTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser, c2PossibleBest = getMaximumDiviserPerClassRT(dataSet, valuedTarget2, subError)
-    e1 = time.time()
-
-    #print('C1 {:}, C2 {:}'.format(c1Banalce, c2Banalce))
+    c2Banalce, c2diviser = getMaximumDiviserPerClassRT(dataSet, valuedTarget2, subError, c1Banalce, c1diviser)
 
     if c1Banalce > c2Banalce:
-        return c1Banalce, c1diviser, c1PossibleBest
+        return c1Banalce, c1diviser
 
-    return c2Banalce, c2diviser, c2PossibleBest
+    return c2Banalce, c2diviser

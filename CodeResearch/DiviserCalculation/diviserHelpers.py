@@ -112,6 +112,16 @@ def getPointsUnderDiviser(idx, currentDiviser, basePoint):
 
     return len(res)
 
+def getPointsIdxUnderDiviser(idx, currentDiviser, basePoint):
+
+    nFeatures = len(currentDiviser)
+    query = np.zeros(2 * nFeatures)
+
+    query[0:nFeatures] = basePoint
+    query[nFeatures:2*nFeatures] = currentDiviser
+
+    return set(idx.intersection(query))
+
 def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint):
 
     nNegObjects = sortedNegValues.shape[0]
@@ -121,7 +131,7 @@ def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveI
     #positivePointsUnderDiviser = getPointsBeforeDiviserIntersection(sortedPosValues, sortedPosIdx, bestDiviser)
     bestScore = (positiveCount - positivePointsUnderDiviser) * positiveScore
 
-    return bestDiviser, bestScore, 1
+    return bestDiviser, bestScore
 
 def prepareDataSet(dataSet, target):
     nFeatures = dataSet.shape[1]
