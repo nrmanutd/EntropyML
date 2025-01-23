@@ -8,6 +8,7 @@ from numpy import linalg as LA
 from scipy.stats import bernoulli
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcSupremum import calcSupremum
 from CodeResearch.permutationHelpers import GetSubSet
@@ -382,20 +383,21 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     e1 = time.time()
     dFast = e1 - s1
 
-    #s1 = time.time()
-    #maxDelta5, maxValues5, possibleBest = getMaximumDiviserRTree(subSet, target)
-    maxDelta6, maxValues6, possibleBest = getMaximumDiviserRTreeStochastic(subSet, target)
+    s1 = time.time()
+    maxDelta5, maxValues5 = getMaximumDiviserRTree(subSet, target)
+    #maxDelta6, maxValues6 = getMaximumDiviserRTreeStochastic(subSet, target)
+
     #maxDelta5 = maxDelta3
-    #e1 = time.time()
-    #dRTree = e1 - s1
+    e1 = time.time()
+    dRTree = e1 - s1
     #print('Stable diviser: {:}/{:}, prod diviser: {:}/{:}'.format(maxDelta, maxValues, maxDelta2, maxValues2))
     #print('Prod diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta2, dProd, maxDelta3, dFast))
     #print('Correct diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta4, dCorrect, maxDelta3, dFast))
-    #print('RTree diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta5, dRTree, maxDelta3, dFast))
+    print('RTree diviser: {:}/{:.2f}s, fast diviser: {:}/{:.2f}s'.format(maxDelta5, dRTree, maxDelta3, dFast))
 
-    #if abs(maxDelta5-maxDelta3) > 0.000001:
-    #    print(subSet)
-    #    print(target)
+    if abs(maxDelta5-maxDelta3) > 0.000001:
+        print(subSet)
+        print(target)
 
     #   raise ValueError('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
         #print('RTree diviser differs with prod. RTree diviser: {:}/{:}, fast diviser: {:}/{:}'.format(maxDelta5, maxValues5, maxDelta3, maxValues3))
@@ -410,9 +412,9 @@ def CalcRademacherDistributionDeltasForClasses(subSet, iClass, jClass, target, n
     #normUpper = math.sqrt(maxDelta3 ** 2 + 1 / xObjects + 1 / yObjects)
     #upperRad = normUpper * np.sqrt(math.log(8) + nFeatures * math.log(xObjects + yObjects))
     upperRad = maxDelta3
-    #upperRad2 = maxDelta5
-    upperRad2 = maxDelta6
-    print('KS1(Fast) = {:}, KS3(Stochastic) = {:}'.format(maxDelta3, maxDelta6))
+    upperRad2 = maxDelta5
+    #upperRad2 = maxDelta6
+    print('KS1(Fast) = {:}, KS3(RDTree) = {:}'.format(maxDelta3, maxDelta5))
     #rad, sigma = calcRademacherComplexity(vectors, nAttempts)
 
     multiplier = (len(iIdx) + len(jIdx))/2 + 1

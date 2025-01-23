@@ -76,8 +76,8 @@ def checkRandom(l, f, m):
 
         target[i] = 1 if np.random.uniform(-1, 1) > 0 else -1
 
-    estimatePValuesForClassesSeparation(dataSet, target, 'random')
-    return
+    #estimatePValuesForClassesSeparation(dataSet, target, 'random')
+    #return
 
     if m == 'delta':
         estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'random')
@@ -158,8 +158,8 @@ def checkMnist(t, m):
     #trainY = to_categorical(trainY, num_classes)  # One-hot encode the labels
     #testY = to_categorical(testY, num_classes)  # One-hot encode the labels
 
-    estimatePValuesForClassesSeparation(trainX, trainY, 'mnist', t=t)
-    return
+    #estimatePValuesForClassesSeparation(trainX, trainY, 'mnist', t=t)
+    #return
 
     if m == 'delta':
         estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'mnist', t=t)

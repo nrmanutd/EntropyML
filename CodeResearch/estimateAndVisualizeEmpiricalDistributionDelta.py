@@ -83,8 +83,8 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
     if len(nClasses) > 2:
         for iClass in nClasses:
             #estimateOneOverOthers(dataSet, target, iClass, taskName, args, kwargs)
-            estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs)
-            #estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs)
+            #estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs)
+            estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs)
 
     else:
         estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, args, kwargs)
