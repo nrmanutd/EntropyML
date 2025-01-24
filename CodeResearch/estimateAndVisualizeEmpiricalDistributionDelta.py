@@ -1,4 +1,5 @@
 import math
+import time
 
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -75,6 +76,9 @@ def estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs):
     pass
 
 def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *args, **kwargs):
+    estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwargs)
+    return
+
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
@@ -88,7 +92,6 @@ def estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, taskName, *a
 
     else:
         estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, args, kwargs)
-
     pass
 
 def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, taskName, *args, **kwargs):
@@ -163,7 +166,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
     nObjects = len(target)
 
-    nAttempts = 1000
+    nAttempts = 100
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
@@ -171,30 +174,56 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     numberOfSteps = kwargs.get('t', None)
     numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
-    step = max(1, math.floor(min(nObjects, 3000) / numberOfSteps))
+    step = min(50, math.floor(min(nObjects, 3000) / numberOfSteps))
+    #step = 50
 
-    stochasticResults = np.zeros((numberOfSteps, pairs))
+    targetResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))
+    pValuesResults = np.zeros((numberOfSteps, pairs, nAttempts))
+    modelPredictions = np.zeros((numberOfSteps, pairs, 2))
+
     xSteps = (range(0, numberOfSteps) + np.ones(numberOfSteps)) * step
-    data = {'steps': xSteps, 'taskName': taskName, 'step': 0}
+    data = {'steps': xSteps, 'taskName': taskName, 'step': 0, 'nAttempts': nAttempts}
+    names = []
+    curIdx = 0
 
-    for iStep in range(0, numberOfSteps):
-        currentObjects = (iStep + 1) * step
-        print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
-        curIdx = 0
+    setToCompare = set([1, 3, 5, 8])
+    #setToCompare = set(np.unique(target))
 
-        data['step'] = iStep
-        for iClass in range(0, nClasses):
-            for jClass in range(0, iClass):
-                ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                stochasticResults[iStep, curIdx] = ijpValue
+    for iClass in range(0, nClasses):
+        for jClass in range(0, iClass):
 
-                ijpValue = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+            if iClass not in setToCompare or jClass not in setToCompare:
+                continue
+
+            print('Current pair of classes: {:}/{:}, task {:}'.format(iClass, jClass, taskName))
+            names.append('{:}/{:}'.format(iClass, jClass))
+
+            for iStep in range(0, numberOfSteps):
+                currentObjects = (iStep + 1) * step
+                c1 = time.time()
+                print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
+                data['step'] = iStep
+
+                #ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                #stochasticResults[iStep, curIdx] = ijpValue
+
+                ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 fastResults[iStep, curIdx] = ijpValue
+                targetResults[iStep, curIdx] = tValue
+                pValuesResults[iStep, curIdx, :] = pValues
+                modelPredictions[iStep, curIdx, :] = modelPrediction
 
-                curIdx += 1
-                data['stochastic'] = stochasticResults
+                data['pValuesResults'] = pValuesResults
+                data['targetResults'] = targetResults
+                data['pairIndex'] = curIdx
+                data['classes'] = '{:} vs {:}'.format(iClass, jClass)
                 data['fast'] = fastResults
-
+                data['names'] = names
+                data['model'] = modelPredictions
+                e1 = time.time()
+                print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
                 visualizePValues(data)
+
+            curIdx += 1
     return

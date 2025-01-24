@@ -1,5 +1,8 @@
+import random
+
 import numpy as np
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Sequential
@@ -9,8 +12,6 @@ from xgboost import XGBClassifier
 
 
 def calcXGBoost(X_train, Y_train, X_test, Y_test):
-    return 1
-
     model = XGBClassifier().fit(X_train, Y_train)
 
     predict = model.predict(X_test)
@@ -19,7 +20,8 @@ def calcXGBoost(X_train, Y_train, X_test, Y_test):
     return accuracy
 
 def calcNN(X_train, Y_train, X_test, Y_test):
-    return 1
+
+    return 0
 
     nFeatures = X_train.shape[1]
     nClasses = len(np.unique(Y_train))
@@ -39,8 +41,11 @@ def calcNN(X_train, Y_train, X_test, Y_test):
 def define_model(nFeatures, nClasses):
     model = Sequential()
     model.add(Input(shape=(nFeatures,)))
-    model.add(Dense(512, activation='relu', kernel_initializer='he_uniform'))
-    model.add(Dense(512, activation='relu', kernel_initializer='he_uniform'))
+
+    dense = 512 if nFeatures > 20 else 16
+
+    model.add(Dense(dense, activation='relu', kernel_initializer='he_uniform'))
+    model.add(Dense(dense, activation='relu', kernel_initializer='he_uniform'))
     model.add(Dense(nClasses, activation='softmax'))
     # compile model
     opt = SGD(learning_rate=0.01, momentum=0.9)
@@ -93,6 +98,8 @@ def calcConcreteModel(dataSet, nObjects, target):
 
 
 def calcModel(dataSet, nObjects, nAttempts, target):
+    enc = LabelEncoder()
+    target = enc.fit_transform(np.ravel(target))
 
     nModels = 2
     accuracy = np.zeros((nModels, nAttempts))

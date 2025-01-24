@@ -212,12 +212,26 @@ def getBestBorder(curBordersRankValues, curBorderObjects):
     bestBorder = -1
     bestValue = 0
 
+    #index = list(curBorderObjects)
+    #ranks = curBordersRankValues[index]
+    #sortedIdx = np.argsort(ranks)
+    #print(ranks[sortedIdx])
+    #print(len(curBorderObjects))
+
+    idx = np.array(list(curBorderObjects), dtype=int)
+    ranks = curBordersRankValues[idx]
+    topIdx = np.where(ranks > 0.9 * max(ranks))[0]
+    top = idx[topIdx]
+    return set(top)
+
     for borderObj in curBorderObjects:
         if curBordersRankValues[borderObj] > bestValue:
             bestBorder = borderObj
             bestValue = curBordersRankValues[borderObj]
 
-    return bestBorder
+    topIdx = np.where(bestBorder > 0.9 * bestValue)[0]
+    borders = curBorderObjects[topIdx]
+    return set(list(borders))
 
 def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore,
               positiveScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues, negativeScore):
@@ -272,14 +286,18 @@ def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit
         e1 = time.time()
         getBest += (e1 - c1)
 
-        if bestObject == -1:
-            break
+        #if bestObject == -1:
+        #    break
 
+        #bestObject = curBorderObjects
         c1 = time.time()
-        curDiviser = updateDiviser(curDiviser, {bestObject}, sortedNegIdx, sortedNegValues, newOmit)#todo: optimize this code
+        #curDiviser = updateDiviser(curDiviser, {bestObject}, sortedNegIdx, sortedNegValues, newOmit)#todo: optimize this code
+        curDiviser = updateDiviser(curDiviser, bestObject, sortedNegIdx, sortedNegValues,
+                                   newOmit)  # todo: optimize this code
         e1 = time.time()
         updateDiv += (e1 - c1)
-        newOmit.add(bestObject)
+        #newOmit.add(bestObject)
+        newOmit.update(bestObject)
 
         c1 = time.time()
         positivePoints = getPointsUnderDiviser(positiveIdx, curDiviser, basePoint)
@@ -295,9 +313,11 @@ def getGreedy(currentDiviser, idx, positiveIdx, basePoint, negativeObjects, omit
             bestCurScore = curScore
             bestCurDiviser = curDiviser.copy()
 
-        bestPossibleScore = currentScore + (positivePoints - positivePointsUnderStablePoint) * positiveScore
+        bestPossibleScore = curScore + (positivePoints - positivePointsUnderStablePoint) * positiveScore
         if bestPossibleScore < bestCurScore:
             break
+
+        #print('CurScore {:}, bestPossibleScore {:}'.format(curScore, bestPossibleScore))
 
         #print('Get border: {:}, get best: {:}, deprecated: {:}, updateDiv: {:}, gettingPoints: {:}'.format(getBorder, getBest, deprecated, updateDiv, gettingPoints))
 
@@ -362,12 +382,12 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, startScore, sta
 
     bestStartDiviser, bestStartScore = getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveIdx, basePoint)
 
-    if bestStartScore > startScore:
-        bestDiviser = bestStartDiviser.copy()
-        bestScore = bestStartScore
-    else:
-        bestDiviser = startDiviser
-        bestScore = startScore
+    #if bestStartScore > startScore:
+    bestDiviser = bestStartDiviser.copy()
+    bestScore = bestStartScore
+    #else:
+    #    bestDiviser = startDiviser
+    #    bestScore = startScore
 
     if 1 - bestScore < subError:
         return bestScore, bestDiviser
@@ -400,6 +420,7 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, startScore, sta
         currentScore = (positiveCount - positivePoints) * positiveScore + (
                 negativeCount - negativePoints) * negativeScore
 
+        print('Updating score: {:}'.format(currentScore))
         if currentScore > bestScore:
             bestScore = currentScore
             bestDiviser = currentDiviser.copy()
@@ -410,6 +431,7 @@ def getMaximumDiviserPerClassRT(dataSet, valuedTarget, subError, startScore, sta
         nextIdx = currentIdx[-nextValue]
         currentScore, currentDiviser = updateDiviserGreedy(currentDiviser, nextIdx, positiveIdx, basePoint, negativeObjects, omit, currentScore, bestScore, positiveScore,  negativeScore, sortedNegDataSet, sortedNegIdx, sortedNegValues, sortedPosIdx, sortedPosValues)
 
+        print('Greedy score: {:}'.format(currentScore))
         if currentScore > bestScore:
             bestScore = currentScore
             bestDiviser = currentDiviser.copy()
@@ -438,6 +460,7 @@ def getMaximumDiviserRTree(dataSet, target):
         raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
 
     fastBalance, fastDiviser = getMaximumDiviserFast(dataSet, target)
+    print('Fast score: ', fastBalance)
 
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
     c1Banalce, c1diviser = getMaximumDiviserPerClassRT(dataSet, valuedTarget1, subError, fastBalance, fastDiviser)

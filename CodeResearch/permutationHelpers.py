@@ -10,7 +10,7 @@ def GetObjectsPerClass(target, seekingClass, nObjects):
     idx = np.where(target == seekingClass)[0]
 
     mask = np.zeros(len(idx))
-    mask[np.arange(nObjects)] = 1
+    mask[range(0, min(len(idx) - 1, nObjects))] = 1
 
     mask = np.random.permutation(mask)
     idxM = np.where(mask > 0)[0]

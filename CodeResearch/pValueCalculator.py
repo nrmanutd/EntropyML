@@ -6,6 +6,7 @@ import numpy as np
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
+from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.permutationHelpers import GetObjectsPerClass, permuteDataSet
 
 
@@ -20,6 +21,9 @@ def getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass):
 
     iClassObjects = GetObjectsPerClass(target, iClass, iObjectsCount)
     jClassObjects = GetObjectsPerClass(target, jClass, jObjectsCount)
+
+    iObjectsCount = len(iClassObjects)
+    jObjectsCount = len(jClassObjects)
 
     nFeatures = dataSet.shape[1]
     newSet = np.zeros((iObjectsCount + jObjectsCount, nFeatures))
@@ -37,8 +41,8 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
     newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
 
     #print('Calculating stochastic target...')
-    targetValue = getMaximumDiviserRTree(newSet, newTarget)[0]
-    #targetValue = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
+    #targetValue = getMaximumDiviserRTree(newSet, newTarget)[0]
+    targetValue = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
     #print(targetValue)
     totalTime = 0.0
 
@@ -59,18 +63,30 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
     return min(pValue, 1 - pValue)
 
 def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
-    newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
 
-    targetValue = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
-    #print(targetValue)
+    iObjects = list(np.where(target == iClass)[0])
+    jObjects = list(np.where(target == jClass)[0])
+    objectsIdx = iObjects + jObjects
+    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), 10, target[objectsIdx])
 
     values = np.zeros(nAttempts)
+    ksCalculation = 0
+    constructingCalculation = 0
     for iAttempt in range(0, nAttempts):
-        permutedSet, permutedTarget = permuteDataSet(newSet, newTarget)
-        values[iAttempt] = getMaximumDiviserFast(permutedSet, permutedTarget)[0]
+        if iAttempt%100 == 0:
+            print('Attempt # ', iAttempt)
 
-    #valuesIdx = np.argsort(values)
-    #print(values[valuesIdx])
+        s1 = time.time()
+        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        e1 = time.time()
+        constructingCalculation += e1 - s1
 
-    pValue = len(np.where(values < targetValue)[0]) / len(values)
-    return min(pValue, 1 - pValue)
+        s1 = time.time()
+        values[iAttempt] = getMaximumDiviserFast(newSet, newTarget)[0]
+        e1 = time.time()
+        ksCalculation += e1 - s1
+
+    print('KS: {:.2f}s, construction: {:.2f}s'.format(ksCalculation, constructingCalculation))
+    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
+    pValue = len(np.where(values > targetValue)[0]) / len(values)
+    return min(pValue, 1 - pValue), targetValue, values, precision
