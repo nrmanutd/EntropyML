@@ -51,7 +51,7 @@ def visualizePValues(data):
 
     ax[1].legend()
 
-    plt.savefig('PValuesFigures\\pValues_{0}_{1}.png'.format(taskName, classesPair), format='png')
+    plt.savefig('PValuesFigures\\pValues_par_{0}_{1}.png'.format(taskName, classesPair), format='png')
     plt.close(fig)
 
     px = 1 / plt.rcParams['figure.dpi']
@@ -78,7 +78,7 @@ def visualizePValues(data):
 
     ax.legend()
 
-    plt.savefig('PValuesFigures\\pValues_pairs_bp_{0}.png'.format(taskName), format='png')
+    plt.savefig('PValuesFigures\\pValues_par_pairs_bp_{0}.png'.format(taskName), format='png')
     plt.close(fig)
 
     pass

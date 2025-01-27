@@ -1,13 +1,13 @@
 import math
 
 import numpy as np
-from numba import jit, njit
+from joblib import Parallel, delayed
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
-from CodeResearch.permutationHelpers import GetObjectsPerClass, permuteDataSet
+from CodeResearch.permutationHelpers import GetObjectsPerClass
 
-@njit
+
 def getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass):
     iClassIdx = np.where(target == iClass)[0]
     jClassIdx = np.where(target == jClass)[0]
@@ -46,14 +46,18 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
     totalTime = 0.0
 
     values = np.zeros(nAttempts)
-    for iAttempt in range(0, nAttempts):
+    #parallel = Parallel(n_jobs=2, return_as="generator")
+    #output_generator = parallel(delayed(calcRTStochastic)(newSet, newTarget, iAttempt) for iAttempt in range(nAttempts))
+
+    #for iAttempt in range(0, nAttempts):
         #print('Permutation attempt {:}/{:}'.format(iAttempt, nAttempts))
-        permutedSet, permutedTarget = permuteDataSet(newSet, newTarget)
+
         #s1 = time.time()
-        values[iAttempt] = getMaximumDiviserRTreeStochastic(permutedSet, permutedTarget)[0]
+        #values[iAttempt] = getMaximumDiviserRTreeStochastic(permutedSet, permutedTarget)[0]
         #e1 = time.time()
         #totalTime += (e1 - s1)
         #print('Time is {:.2f}'.format(e1 - s1))
+    #values = list()
     #valuesIdx = np.argsort(values)
     #print(values[valuesIdx])
     #print('Total time for {:} permutations is {:.2f}'.format(nAttempts, totalTime))
@@ -61,8 +65,6 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
     pValue = len(np.where(values < targetValue)[0]) / len(values)
     return min(pValue, 1 - pValue)
 
-
-@njit
 def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
     #iObjects = list(np.where(target == iClass)[0])
     #jObjects = list(np.where(target == jClass)[0])
@@ -80,3 +82,20 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
     pValue = len(np.where(values < targetValue)[0]) / len(values)
     return min(pValue, 1 - pValue), targetValue, values, [0, 0]
+
+def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts):
+    parallel = Parallel(n_jobs=-1, return_as="generator")
+    output_generator = parallel(delayed(calcRTFastParallel)(currentObjects, dataSet, target, iClass, jClass, iAttempt) for iAttempt in range(nAttempts))
+
+    values = np.array(list(output_generator))
+
+    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
+    pValue = len(np.where(values < targetValue)[0]) / len(values)
+
+    return min(pValue, 1 - pValue), targetValue, values, [0, 0]
+
+def calcRTFastParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
+    if iAttempt%100 == 0:
+        print("Attempt# {:}".format(iAttempt))
+    newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+    return getMaximumDiviserFast(newSet, newTarget)[0]

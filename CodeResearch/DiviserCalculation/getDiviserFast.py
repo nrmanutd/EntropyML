@@ -1,9 +1,7 @@
 import numpy as np
-from numba import njit
 
 from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict
 
-@njit
 def calcDelta(curSet, valuedTarget1):
     delta = 0
     itemsToOmit = []
@@ -39,7 +37,6 @@ def calcDelta(curSet, valuedTarget1):
 
     return delta, itemsToOmit
 
-@njit
 def getNextStepFast(sortedDataSet, valuedTarget1):
     nFeatures = len(sortedDataSet)
 
@@ -63,11 +60,10 @@ def getNextStepFast(sortedDataSet, valuedTarget1):
 
     return bestFeature, bestDelta, bestItemsToOmit
 
-@njit
-def getMaximumDiviserPerClassFast(dataSet, valuedTarget1, nClasses, counts):
+def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
     sortedDataSet = GetSortedDict(dataSet)
     nFeatures = dataSet.shape[1]
-    #nClasses, counts = np.unique(valuedTarget1, return_counts=True)
+    nClasses, counts = np.unique(valuedTarget1, return_counts=True)
     maxLeft = max(nClasses[0] * counts[0], nClasses[1] * counts[1])
 
     curBalance = 0
@@ -112,23 +108,18 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1, nClasses, counts):
 
     return abs(maxBalance), maxState
 
-@njit
 def getMaximumDiviserFast(dataSet, target):
-    nClasses = np.unique(target)
+    nClasses, counts = np.unique(target, return_counts=True)
 
     if len(nClasses) != 2:
         #raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
         print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
 
-    counts = [0, 0]
-    counts[0] = len(np.nonzero(target == nClasses[0]))
-    counts[1] = len(np.nonzero(target == nClasses[1]))
-
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget1, nClasses, counts)
+    c1Banalce, c1diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget1)
 
     valuedTarget2 = GetValuedTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget2, nClasses, counts)
+    c2Banalce, c2diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget2)
 
     if c1Banalce > c2Banalce:
         return c1Banalce, c1diviser

@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
-from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast
+from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel
 
 
 def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
@@ -166,7 +166,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
     nObjects = len(target)
 
-    nAttempts = 100
+    nAttempts = 1000
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
@@ -187,8 +187,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     names = []
     curIdx = 0
 
-    setToCompare = set([1, 3, 5, 8])
-    #setToCompare = set(np.unique(target))
+    #setToCompare = set([1, 3, 5, 8])
+    setToCompare = set(np.unique(target))
 
     for iClass in range(0, nClasses):
         for jClass in range(0, iClass):
@@ -208,7 +208,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 #stochasticResults[iStep, curIdx] = ijpValue
 
-                ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                ijpValue, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                #ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 fastResults[iStep, curIdx] = ijpValue
                 targetResults[iStep, curIdx] = tValue
                 pValuesResults[iStep, curIdx, :] = pValues
@@ -223,7 +224,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 data['model'] = modelPredictions
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
-                visualizePValues(data)
+                #visualizePValues(data)
 
             curIdx += 1
+
+    visualizePValues(data)
     return

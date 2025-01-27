@@ -1,6 +1,5 @@
 import numba
 import numpy as np
-from numba import jit, njit
 
 
 def permuteDataSet(newSet, newTarget):
@@ -9,11 +8,10 @@ def permuteDataSet(newSet, newTarget):
 
     return newSet[newIdx], newTarget
 
-@jit
 def GetObjectsPerClass(target, seekingClass, nObjects):
     idx = np.nonzero(target == seekingClass)[0]
 
-    mask = np.zeros(len(idx), dtype=numba.int8)
+    mask = np.zeros(len(idx))
     mask[0: min(len(idx) - 1, nObjects)] = 1
 
     mask = np.random.permutation(mask)
