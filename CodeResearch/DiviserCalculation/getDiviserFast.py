@@ -64,10 +64,10 @@ def getNextStepFast(sortedDataSet, valuedTarget1):
     return bestFeature, bestDelta, bestItemsToOmit
 
 @njit
-def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
+def getMaximumDiviserPerClassFast(dataSet, valuedTarget1, nClasses, counts):
     sortedDataSet = GetSortedDict(dataSet)
     nFeatures = dataSet.shape[1]
-    nClasses, counts = np.unique(valuedTarget1, return_counts=True)
+    #nClasses, counts = np.unique(valuedTarget1, return_counts=True)
     maxLeft = max(nClasses[0] * counts[0], nClasses[1] * counts[1])
 
     curBalance = 0
@@ -114,16 +114,21 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
 
 @njit
 def getMaximumDiviserFast(dataSet, target):
-    nClasses, counts = np.unique(target, return_counts=True)
+    nClasses = np.unique(target)
 
     if len(nClasses) != 2:
-        raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        #raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
+
+    counts = [0, 0]
+    counts[0] = len(np.nonzero(target == nClasses[0]))
+    counts[1] = len(np.nonzero(target == nClasses[1]))
 
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget1)
+    c1Banalce, c1diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget1, nClasses, counts)
 
     valuedTarget2 = GetValuedTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget2)
+    c2Banalce, c2diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget2, nClasses, counts)
 
     if c1Banalce > c2Banalce:
         return c1Banalce, c1diviser
