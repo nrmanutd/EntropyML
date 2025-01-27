@@ -1,8 +1,9 @@
 import numpy as np
+from numba import njit
 
 from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict
 
-
+@njit
 def calcDelta(curSet, valuedTarget1):
     delta = 0
     itemsToOmit = []
@@ -38,7 +39,7 @@ def calcDelta(curSet, valuedTarget1):
 
     return delta, itemsToOmit
 
-
+@njit
 def getNextStepFast(sortedDataSet, valuedTarget1):
     nFeatures = len(sortedDataSet)
 
@@ -62,6 +63,7 @@ def getNextStepFast(sortedDataSet, valuedTarget1):
 
     return bestFeature, bestDelta, bestItemsToOmit
 
+@njit
 def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
     sortedDataSet = GetSortedDict(dataSet)
     nFeatures = dataSet.shape[1]
@@ -110,6 +112,7 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
 
     return abs(maxBalance), maxState
 
+@njit
 def getMaximumDiviserFast(dataSet, target):
     nClasses, counts = np.unique(target, return_counts=True)
 

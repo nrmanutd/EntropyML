@@ -178,8 +178,8 @@ def checkCifar(t, m):
     (trainX, trainY), (testX, testY) = cifar10.load_data()
     # reshape dataset to have a single channel
 
-    trainX = trainX.reshape(num_train, height * width )  # Flatten data to 1D
-    testX = testX.reshape(num_test, height * width)  # Flatten data to 1D
+    trainX = trainX.reshape(num_train, height * width * 3)  # Flatten data to 1D
+    testX = testX.reshape(num_test, height * width * 3)  # Flatten data to 1D
     trainX = trainX.astype('float32')
     testX = testX.astype('float32')
     trainX /= 255  # Normalise data to [0, 1] range
@@ -229,9 +229,9 @@ lObj = 1000
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
-checkTask('mnist', t=10, m='delta')
+#checkTask('mnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-#checkTask('cifar', t=10, m='delta')
+checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

@@ -1,7 +1,9 @@
 import numpy as np
+from numba import njit
 from rtree import index
 from sortedcontainers import SortedDict
 
+@njit
 def GetValuedTarget(target, c1, c1p, c2p):
 
     res = np.zeros(len(target))
@@ -10,6 +12,7 @@ def GetValuedTarget(target, c1, c1p, c2p):
 
     return res
 
+@njit
 def GetSortedDict(dataSet):
     res = []
     nFeatures = dataSet.shape[1]

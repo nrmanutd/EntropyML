@@ -1,6 +1,7 @@
 import random
 
 import numpy as np
+from numba import jit
 from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.layers import Dense
@@ -62,7 +63,6 @@ def fitAndPredict(X_train, Y_train, X_test, Y_test):
 
     return accuracy
 
-
 def calcConcreteModel(dataSet, nObjects, target):
     totalObjects = dataSet.shape[0]
     mask = np.zeros(totalObjects)
@@ -95,7 +95,6 @@ def calcConcreteModel(dataSet, nObjects, target):
     accuracy = fitAndPredict(X_train, Y_train, X_test, Y_test)
 
     return accuracy
-
 
 def calcModel(dataSet, nObjects, nAttempts, target):
     enc = LabelEncoder()

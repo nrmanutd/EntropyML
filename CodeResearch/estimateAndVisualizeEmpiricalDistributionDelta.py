@@ -172,7 +172,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
     numberOfSteps = kwargs.get('t', None)
-    numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
+    numberOfSteps = 5# if numberOfSteps is None else numberOfSteps
 
     step = min(50, math.floor(min(nObjects, 3000) / numberOfSteps))
     #step = 50

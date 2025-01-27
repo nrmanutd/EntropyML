@@ -25,18 +25,18 @@ def visualizePValues(data):
     idx = range(0, iStep + 1)
     # plot values
     #for i in np.arange(pairedClasses):
-    ax[0].plot(xSteps[idx], targetResults[idx, pairIdx], label="FastRT #{0}".format(pairIdx), ls=':', marker='X')
+    ax[0].plot(xSteps[idx], targetResults[idx, pairIdx], label="Theoretical bound #{0}".format(pairIdx), ls=':', marker='X')
     ax[0].plot(xSteps[idx], model[idx, pairIdx, 0], label="XGBoost", ls=':', marker='o')
     ax[0].plot(xSteps[idx], model[idx, pairIdx, 1], label="NN", ls=':', marker='x')
     for i in range(nAttempts):
         ax[0].plot(xSteps[idx], pValuesResults[idx, pairIdx, i], label="_FastRT #{0}".format(pairIdx), ls='', marker='x')
         #ax[0].plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')
 
-    maxValue = np.zeros(len(idx))
+    minValue = np.zeros(len(idx))
     for i in range(len(idx)):
-        maxValue[i] = max(pValuesResults[i, pairIdx, :])
+       minValue[i] = min(pValuesResults[i, pairIdx, :])
 
-    ax[0].plot(xSteps[idx], targetResults[idx, pairIdx] - maxValue, label="Delta #{0}".format(pairIdx), ls='-', marker='o')
+    ax[0].plot(xSteps[idx], minValue - targetResults[idx, pairIdx], label="Delta #{0}".format(pairIdx), ls='-', marker='o')
 
     ax[0].legend()
 
@@ -61,15 +61,24 @@ def visualizePValues(data):
     ax.grid()
 
     idx = range(0, iStep + 1)
-    # plot values
+
+    positionsBp = []
+    data = []
+    colors = 'bgrcmykw'
+
     for i in range(pairIdx + 1):
-        ax.plot(xSteps[idx], targetResults[idx, i], label="FastRT pair #{0}".format(pairsNames[i]), ls=':',
-                   marker='x')
-        # ax[0].plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')
+        mins = np.zeros(len(idx))
+        maxs = np.zeros(len(idx))
+        for k in range(len(idx)):
+            mins[k] = np.min(pValuesResults[k, i, :])
+            maxs[k] = np.max(pValuesResults[k, i, :])
+
+        ax.plot(xSteps[idx], mins, label="Min #{0}".format(pairsNames[i]), ls='--', color='{:}'.format(colors[i%8]), marker='o')
+        ax.plot(xSteps[idx], maxs, label="Max #{0}".format(pairsNames[i]), ls='--', color='{:}'.format(colors[i%8]), marker='o')
 
     ax.legend()
 
-    plt.savefig('PValuesFigures\\pValues_pairs_{0}.png'.format(taskName), format='png')
+    plt.savefig('PValuesFigures\\pValues_pairs_bp_{0}.png'.format(taskName), format='png')
     plt.close(fig)
 
     pass

@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/old/Logs_200_attempts.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/PValuesFigures/Logs_200_attempts.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
@@ -131,14 +134,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00007" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1719958881060</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1719958881060</updated>
     </task>
     <task id="LOCAL-00008" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -524,7 +519,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737668477461</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737751778074</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1737751778074</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -1,4 +1,6 @@
 import numpy as np
+from numba import jit, njit
+
 
 def permuteDataSet(newSet, newTarget):
     idx = range(0, len(newTarget))
@@ -6,6 +8,7 @@ def permuteDataSet(newSet, newTarget):
 
     return newSet[newIdx], newTarget
 
+@njit
 def GetObjectsPerClass(target, seekingClass, nObjects):
     idx = np.where(target == seekingClass)[0]
 
