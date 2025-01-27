@@ -64,8 +64,8 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
 
 @njit
 def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
-    iObjects = list(np.where(target == iClass)[0])
-    jObjects = list(np.where(target == jClass)[0])
+    #iObjects = list(np.where(target == iClass)[0])
+    #jObjects = list(np.where(target == jClass)[0])
     #objectsIdx = iObjects + jObjects
     #precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), 10, target[objectsIdx])['accuracy']
 

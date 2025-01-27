@@ -1,3 +1,4 @@
+import numba
 import numpy as np
 from numba import jit, njit
 
@@ -8,17 +9,17 @@ def permuteDataSet(newSet, newTarget):
 
     return newSet[newIdx], newTarget
 
-@njit
+@jit
 def GetObjectsPerClass(target, seekingClass, nObjects):
-    idx = np.where(target == seekingClass)[0]
+    idx = np.nonzero(target == seekingClass)[0]
 
-    mask = np.zeros(len(idx))
-    mask[range(0, min(len(idx) - 1, nObjects))] = 1
+    mask = np.zeros(len(idx), dtype=numba.int8)
+    mask[0: min(len(idx) - 1, nObjects)] = 1
 
     mask = np.random.permutation(mask)
-    idxM = np.where(mask > 0)[0]
+    idxM = np.nonzero(mask)[0]
 
-    return idx[idxM].tolist()
+    return idx[idxM]
 
 def GetSubSet(dataSet, target, nObjects):
     vClasses, parts = np.unique(target, return_counts=True)
