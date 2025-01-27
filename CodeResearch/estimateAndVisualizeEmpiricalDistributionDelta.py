@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
+from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel
@@ -224,9 +225,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 data['model'] = modelPredictions
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
-                #visualizePValues(data)
+                visualizePValues(data)
+                #saveDataForVisualization(data)
 
             curIdx += 1
 
-    visualizePValues(data)
     return

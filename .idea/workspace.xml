@@ -5,14 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_circles_1 vs 0_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_circles_1 vs 0_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_circles_1 vs 0_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_circles_1 vs 0_3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_circles_1 vs 0_4.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_radian_circles_1 vs 0_0.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_radian_circles_1 vs 0_1.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_radian_circles_1 vs 0_2.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_radian_circles_1 vs 0_3.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/pValues_pairs_radian_circles_1 vs 0_4.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,14 +138,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00011" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720814294655</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1720814294655</updated>
     </task>
     <task id="LOCAL-00012" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -524,7 +523,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737971943453</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737984152998</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1737984152999</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
