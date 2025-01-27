@@ -14,7 +14,7 @@ def getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass):
 
     partIClass = len(iClassIdx) / (len(iClassIdx) + len(jClassIdx))
 
-    iObjectsCount = math.floor(partIClass * currentObjects)
+    iObjectsCount = math.ceil(partIClass * currentObjects)
     jObjectsCount = currentObjects - iObjectsCount
 
     iClassObjects = GetObjectsPerClass(target, iClass, iObjectsCount)
