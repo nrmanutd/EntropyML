@@ -48,7 +48,7 @@ def getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget, subError):
     sortedPosIdx, sortedPosValues = GetSortedData(positiveObjects)
 
     positiveIdx = getIdx(dataSet[positiveObjectsIdx, :], range(0, len(positiveObjectsIdx)))
-    negativeIdx = getIdx(dataSet[negativeObjectsIdx, :], range(0, len(negativeObjectsIdx)))
+    #negativeIdx = getIdx(dataSet[negativeObjectsIdx, :], range(0, len(negativeObjectsIdx)))
 
     basePoint = np.zeros(nFeatures)
     for i in range(0, nFeatures):
@@ -68,8 +68,8 @@ def getMaximumDiviserPerClassRTStochastic(dataSet, valuedTarget, subError):
     nAttempts = 10
 
     for iAttempt in range(0, nAttempts):
-        if iAttempt%10 == 0:
-            print('#Attempt (Stochastic)', iAttempt)
+        #if iAttempt%10 == 0:
+        #    print('#Attempt (Stochastic)', iAttempt)
 
         currentDiviser = bestStartDiviser.copy()
         omit = set()

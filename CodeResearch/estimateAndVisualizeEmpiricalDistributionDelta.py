@@ -175,8 +175,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     numberOfSteps = kwargs.get('t', None)
     numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
-    step = min(50, math.floor(min(nObjects, 3000) / numberOfSteps))
-    #step = 50
+    step = min(100, math.floor(min(nObjects, 3000) / numberOfSteps))
+    #step = 200
 
     targetResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))
@@ -188,8 +188,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     names = []
     curIdx = 0
 
-    setToCompare = set([6, 2])
-    #setToCompare = set(np.unique(target))
+    #setToCompare = set([6, 2])
+    setToCompare = set(np.unique(target))
 
     for iClass in range(0, nClasses):
         for jClass in range(0, iClass):
@@ -209,8 +209,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 #stochasticResults[iStep, curIdx] = ijpValue
 
-                #ijpValue, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                ijpValue, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                #ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 fastResults[iStep, curIdx] = ijpValue
                 targetResults[iStep, curIdx] = tValue
                 pValuesResults[iStep, curIdx, :] = pValues

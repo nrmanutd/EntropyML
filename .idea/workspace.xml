@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSets/fashion-mnist_test.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSets/fashion-mnist_train.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
     </list>
@@ -36,24 +39,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python.DNResearch.executor": "Run",
-    "Python.calcEntropy.executor": "Debug",
-    "Python.calculateDistributionDelta.executor": "Debug",
-    "Python.car.executor": "Run",
-    "Python.hist_optimal_bin_width.executor": "Run",
-    "Python.imagesTricks.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.rTreeIndex.executor": "Run",
-    "Python.rTreeTricks.executor": "Debug",
-    "Python.tricks.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python.DNResearch.executor&quot;: &quot;Run&quot;,
+    &quot;Python.calcEntropy.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.calculateDistributionDelta.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.car.executor&quot;: &quot;Run&quot;,
+    &quot;Python.hist_optimal_bin_width.executor&quot;: &quot;Run&quot;,
+    &quot;Python.imagesTricks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rTreeIndex.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rTreeTricks.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.tricks.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
@@ -127,14 +130,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00013" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720815932255</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1720815932255</updated>
     </task>
     <task id="LOCAL-00014" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -520,7 +515,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737985313278</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1737991142632</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1737991142632</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -683,9 +686,9 @@
           <option name="timeStamp" value="235" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/pValueCalculator.py</url>
-          <line>78</line>
-          <option name="timeStamp" value="236" />
+          <url>file://$PROJECT_DIR$/CodeResearch/DNResearch.py</url>
+          <line>190</line>
+          <option name="timeStamp" value="237" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

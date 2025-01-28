@@ -1,9 +1,11 @@
 import math
+import os
 
 import numpy as np
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.utils import to_categorical
+import pandas as pd
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
@@ -167,6 +169,45 @@ def checkMnist(t, m):
         calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'mnist', t=t)
     return
 
+def load_images_from_df(df):
+    images = df.iloc[:, 1:].values.astype('float32')
+    images = images.reshape(-1, 28, 28, 1)
+    images /= 255.0
+    return images
+def load_labels_from_df(df):
+    labels = df.iloc[:, 0].values.astype('int32')
+    return labels
+
+def checkFashionMnist(t, m):
+    num_train = 60000  # there are 60000 training examples in MNIST
+    num_test = 10000  # there are 10000 test examples in MNIST
+
+    height, width, depth = 28, 28, 1  # MNIST images are 28x28 and greyscale
+    num_classes = 10  # there are 10 classes (1 per digit)
+
+    path = 'DataSets/'
+    train_dir = os.path.join(path, 'fashion-mnist_train.csv')
+    test_dir = os.path.join(path, 'fashion-mnist_test.csv')
+    train_df = pd.read_csv(train_dir)
+    test_df = pd.read_csv(test_dir)
+
+    train_images = load_images_from_df(train_df)
+    train_labels = load_labels_from_df(train_df)
+    test_images = load_images_from_df(test_df)
+    test_labels = load_labels_from_df(test_df)
+
+    train_labels = train_df.iloc[:, 0].values
+    test_labels = test_df.iloc[:, 0].values
+
+    trainX = train_images.reshape(num_train, height * width)  # Flatten data to 1D
+    testX = test_images.reshape(num_test, height * width)  # Flatten data to 1D
+
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(trainX, train_labels, 'fashionmnist', t=t)
+    else:
+        calculateAndVisualizeEmpiricalDistribution(trainX, train_labels, 'fashionmnist', t=t)
+    return
+
 def checkCifar(t, m):
     num_train = 50000  # there are 60000 training examples in CIFAR
     num_test = 10000  # there are 10000 test examples in CIFAR
@@ -205,12 +246,14 @@ def checkTask(task, *args, **kwargs):
         checkHyperPlaneWithIntersection(kwargs.get('l', None), kwargs.get('alpha', None), m=kwargs.get('m', None))
     elif task == 'mnist':
         checkMnist(t=kwargs.get('t', None), m=kwargs.get('m', None))
+    elif task == 'fashionmnist':
+        checkFashionMnist(t=kwargs.get('t', None), m=kwargs.get('m', None))
     elif task == 'cifar':
         checkCifar(t=kwargs.get('t', None), m=kwargs.get('m', None))
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
-lObj = 1000
+lObj = 10000
 
 #checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
@@ -226,10 +269,11 @@ lObj = 1000
 
 #checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
-checkTask(186, m='delta') #wine
+#checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
 checkTask('mnist', t=10, m='delta')
+#checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
 #checkTask('cifar', t=10, m='delta')
 
