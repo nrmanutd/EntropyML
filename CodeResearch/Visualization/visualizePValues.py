@@ -7,6 +7,7 @@ def visualizePValues(data):
     xSteps = data['steps']
     targetResults = data['targetResults']
     pValuesResults = data['pValuesResults']
+    meanPValues = data['meanPValue']
     classesPair = data['classes']
     fast = data['fast']
     iStep = data['step']
@@ -15,21 +16,28 @@ def visualizePValues(data):
     nAttempts = data['nAttempts']
     pairsNames = data['names']
     model = data['model']
+    nPoints = data['nPoints']
+    nThreshold = data['thresholds']
 
     px = 1 / plt.rcParams['figure.dpi']
     fig, ax = plt.subplots(2, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     pairedClasses = fast.shape[1]
 
-    ax[0].title.set_text('Comparison values of classes {:}'.format(pairIdx))
+    idx = range(0, iStep + 1)
+    corrCoeff1 = np.corrcoef(meanPValues[idx, pairIdx], model[idx, pairIdx, 0])
+    corrCoeff2 = np.corrcoef(meanPValues[idx, pairIdx], model[idx, pairIdx, 1])
+
+    ax[0].title.set_text('Comparison values of classes {:}. Corr coeff1: {:}, corr coeff2: {:}.'.format(pairIdx, corrCoeff1, corrCoeff2))
     ax[0].grid()
 
-    idx = range(0, iStep + 1)
     # plot values
     #for i in np.arange(pairedClasses):
     ax[0].plot(xSteps[idx], targetResults[idx, pairIdx], label="Theoretical bound #{0}".format(pairIdx), ls=':', marker='X')
     ax[0].plot(xSteps[idx], model[idx, pairIdx, 0], label="XGBoost", ls=':', marker='o')
     ax[0].plot(xSteps[idx], model[idx, pairIdx, 1], label="NN", ls=':', marker='x')
+    ax[0].plot(xSteps[idx], meanPValues[idx, pairIdx], label="Mean pValue", ls='-', marker='*')
+    ax[0].plot((nPoints[pairIdx], nPoints[pairIdx]), (0, 1), label="N* {:.3f}".format(nThreshold[pairIdx]), linewidth=4, color='blue')
     for i in range(nAttempts):
         ax[0].plot(xSteps[idx], pValuesResults[idx, pairIdx, i], label="_FastRT #{0}".format(pairIdx), ls='', marker='x')
         #ax[0].plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')

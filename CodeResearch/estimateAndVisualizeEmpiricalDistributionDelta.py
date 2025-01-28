@@ -173,15 +173,19 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
     numberOfSteps = kwargs.get('t', None)
-    numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
+    numberOfSteps = 5 if numberOfSteps is None else numberOfSteps
 
-    step = min(100, math.floor(min(nObjects, 3000) / numberOfSteps))
+    step = min(50, math.floor(min(nObjects, 3000) / numberOfSteps))
     #step = 200
 
     targetResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))
     pValuesResults = np.zeros((numberOfSteps, pairs, nAttempts))
     modelPredictions = np.zeros((numberOfSteps, pairs, 2))
+    meanPValues = np.zeros((numberOfSteps, pairs))
+    nPoints = np.zeros(pairs)
+    nThreshold = np.zeros(pairs)
+    threshold = 0.05
 
     xSteps = (range(0, numberOfSteps) + np.ones(numberOfSteps)) * step
     data = {'steps': xSteps, 'taskName': taskName, 'step': 0, 'nAttempts': nAttempts}
@@ -216,18 +220,28 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 targetResults[iStep, curIdx] = tValue
                 pValuesResults[iStep, curIdx, :] = pValues
                 modelPredictions[iStep, curIdx, :] = modelPrediction
+                meanPValues[iStep, curIdx] = np.mean(pValues)
+
+                if iStep > 0:
+                    curRatio = abs(meanPValues[iStep, curIdx] / meanPValues[iStep - 1, curIdx] - 1)
+                    if curRatio < threshold and nPoints[curIdx] != 0:
+                        nPoints[curIdx] = currentObjects
+                        nThreshold[curIdx] = curRatio
 
                 data['pValuesResults'] = pValuesResults
+                data['meanPValue'] = meanPValues
                 data['targetResults'] = targetResults
                 data['pairIndex'] = curIdx
                 data['classes'] = '{:} vs {:}'.format(iClass, jClass)
                 data['fast'] = fastResults
                 data['names'] = names
                 data['model'] = modelPredictions
+                data['nPoints'] = nPoints
+                data['thresholds'] = nThreshold
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
                 visualizePValues(data)
-                #saveDataForVisualization(data)
+                saveDataForVisualization(data)
 
             curIdx += 1
 
