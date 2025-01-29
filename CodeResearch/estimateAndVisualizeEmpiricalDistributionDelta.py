@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
+from CodeResearch.Visualization.saveDataForLatex import saveDataForTable
 from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
@@ -171,7 +172,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     alpha = 0.001
     beta = 0.01
 
-    nModelAttempts = 100
+    nModelAttempts = 10
     nAttempts = 100
     nClasses = len(np.unique(target))
 
@@ -189,13 +190,14 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     medianPValues = np.zeros((numberOfSteps, pairs))
     nPoints = np.zeros((pairs, 4), dtype=int)
     xSteps = np.zeros((numberOfSteps, pairs), dtype=int)
+    eachTaskResult = []
 
     epsilon = math.sqrt(math.log(2 * nFeatures/alpha))
     data = {'taskName': taskName, 'step': 0, 'nAttempts': nAttempts, 'epsilon': epsilon, 'alpha': alpha, 'beta': beta}
     names = []
     curIdx = 0
 
-    #setToCompare = set([0, 4])
+    #setToCompare = set([1, 3, 5, 8])
     setToCompare = set(np.unique(target))
 
     for iClass in range(0, nClasses):
@@ -209,20 +211,18 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
             totalObjects = (iObjectsCount + jObjectsCount)
             step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
+            step = 100
 
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
             data['steps'] = xSteps
 
             print('Current pair of classes: {:}/{:}, task {:}, objects {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, step * numberOfSteps, step))
-            names.append('{:}/{:}'.format(iClass, jClass))
+            names.append('{:} vs {:}'.format(iClass, jClass))
             meanSlopesInd = []
             medianSlopesInd = []
             lowSlopesInd = []
 
             for iStep in range(0, numberOfSteps):
-                if iStep == numberOfSteps - 1:
-                    print(iStep)
-
                 currentObjects = (iStep + 1) * step
 
                 if iObjectsCount + jObjectsCount < currentObjects:
@@ -237,8 +237,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #stochasticResults[iStep, curIdx] = ijpValue
 
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp
                 targetResults[iStep, curIdx] = tValue
@@ -249,9 +249,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
                 if iStep > 1:
                     currentRange = range((iStep + 1))
-                    meanSlope = calculateSlopeGradient(xSteps[currentRange], meanPValues[currentRange, curIdx])
-                    medianSlope = calculateSlopeGradient(xSteps[currentRange], medianPValues[currentRange, curIdx])
-                    lowSlope = calculateSlopeGradient(xSteps[currentRange], fastResults[currentRange, curIdx])
+                    meanSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], meanPValues[currentRange, curIdx])
+                    medianSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], medianPValues[currentRange, curIdx])
+                    lowSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], fastResults[currentRange, curIdx])
 
                     meanSlopesInd.append(meanSlope)
                     medianSlopesInd.append(medianSlope)
@@ -280,6 +280,10 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
                 visualizePValues(data)
                 saveDataForVisualization(data)
+
+            curResult = {'Classes': names[curIdx], 'total': totalObjects, 'iClass':  iObjectsCount, 'jClass': jObjectsCount, 'nPoints':  nPoints[curIdx, :] * step, 'KSl': fastResults[-1, curIdx], 'KSu': fastResultsUp[-1, curIdx]}
+            eachTaskResult.append(curResult)
+            saveDataForTable(eachTaskResult, taskName, names[curIdx])
 
             curIdx += 1
 

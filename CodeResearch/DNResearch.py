@@ -262,14 +262,14 @@ lObj = 2000
 #checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
 #checkTask('circles', l=lObj, c=2, m='delta')
-#checkTask('circles', l=lObj, c=4, m='delta')
+checkTask('circles', l=lObj, c=4, m='delta')
 #checkTask('random', l=lObj, f=2, m='delta')
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
 
 #checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
-checkTask(186, m='delta') #wine
+#checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
 #checkTask('mnist', t=10, m='delta')
