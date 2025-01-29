@@ -13,9 +13,11 @@ def getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass):
     iClassIdx = np.where(target == iClass)[0]
     jClassIdx = np.where(target == jClass)[0]
 
+    #print('Total objects: {:}, iClass: {:}, jClass: {:}, currentObjects: {:}'.format(dataSet.shape[0], len(iClassIdx), len(jClassIdx), currentObjects))
+
     partIClass = len(iClassIdx) / (len(iClassIdx) + len(jClassIdx))
 
-    iObjectsCount = math.ceil(partIClass * currentObjects)
+    iObjectsCount = math.ceil(partIClass * currentObjects) if partIClass < 0.5 else math.floor(partIClass * currentObjects)
     jObjectsCount = currentObjects - iObjectsCount
 
     iClassObjects = GetObjectsPerClass(target, iClass, iObjectsCount)
@@ -83,11 +85,11 @@ def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttem
     pValue = len(np.where(values < targetValue)[0]) / len(values)
     return min(pValue, 1 - pValue)
 
-def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
+def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), 10, target[objectsIdx])['accuracy']
+    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
     for iAttempt in range(nAttempts):
@@ -99,14 +101,17 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts):
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
     pValue = len(np.where(values < targetValue)[0]) / len(values)
-    return min(pValue, 1 - pValue), targetValue, values, precision
+    quantile = np.quantile(values, beta)
+    quantileUp = np.quantile(values, 1 - beta)
 
-def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts):
+    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
+
+def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
 
     objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), 10, target[objectsIdx])['accuracy']
+    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     parallel = Parallel(n_jobs=-1, return_as="generator")
     output_generator = parallel(delayed(calcRTFastParallel)(currentObjects, dataSet, target, iClass, jClass, iAttempt) for iAttempt in range(nAttempts))
@@ -114,20 +119,22 @@ def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAtt
     values = np.array(list(output_generator))
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
-    pValue = len(np.where(values < targetValue)[0]) / len(values)
+    #pValue = len(np.where(values < targetValue)[0]) / len(values)
+    quantile = np.quantile(values, beta)
+    quantileUp = np.quantile(values, 1 - beta)
 
-    return min(pValue, 1 - pValue), targetValue, values, precision
+    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
 
 def calcRTFastParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
     if iAttempt%100 == 0:
         print("Attempt# {:}".format(iAttempt))
     newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
 
-    return getMaximumDiviserFast(newSet, newTarget)[0]
+    fast = getMaximumDiviserFast(newSet, newTarget)[0]
+    return fast
     #stochastic = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
 
     #return max(fast, stochastic)
-    #return fast
 
 def calcStochasticParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
     if iAttempt%100 == 0:

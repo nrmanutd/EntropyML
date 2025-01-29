@@ -9,6 +9,7 @@ from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisua
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel
+from CodeResearch.slopeCalculator import calculateSlope, getBestSlopeMedian, getBestSlopeMax, calculateSlopeGradient
 
 
 def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
@@ -166,33 +167,35 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     target = enc.fit_transform(np.ravel(target))
 
     nObjects = len(target)
+    nFeatures = dataSet.shape[1]
+    alpha = 0.001
+    beta = 0.01
 
-    nAttempts = 1000
+    nModelAttempts = 100
+    nAttempts = 100
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
     numberOfSteps = kwargs.get('t', None)
-    numberOfSteps = 5 if numberOfSteps is None else numberOfSteps
-
-    step = min(50, math.floor(min(nObjects, 3000) / numberOfSteps))
-    #step = 200
+    numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
     targetResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))
+    fastResultsUp = np.zeros((numberOfSteps, pairs))
     pValuesResults = np.zeros((numberOfSteps, pairs, nAttempts))
     modelPredictions = np.zeros((numberOfSteps, pairs, 2))
     meanPValues = np.zeros((numberOfSteps, pairs))
-    nPoints = np.zeros(pairs)
-    nThreshold = np.zeros(pairs)
-    threshold = 0.05
+    medianPValues = np.zeros((numberOfSteps, pairs))
+    nPoints = np.zeros((pairs, 4), dtype=int)
+    xSteps = np.zeros((numberOfSteps, pairs), dtype=int)
 
-    xSteps = (range(0, numberOfSteps) + np.ones(numberOfSteps)) * step
-    data = {'steps': xSteps, 'taskName': taskName, 'step': 0, 'nAttempts': nAttempts}
+    epsilon = math.sqrt(math.log(2 * nFeatures/alpha))
+    data = {'taskName': taskName, 'step': 0, 'nAttempts': nAttempts, 'epsilon': epsilon, 'alpha': alpha, 'beta': beta}
     names = []
     curIdx = 0
 
-    #setToCompare = set([6, 2])
+    #setToCompare = set([0, 4])
     setToCompare = set(np.unique(target))
 
     for iClass in range(0, nClasses):
@@ -201,11 +204,31 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             if iClass not in setToCompare or jClass not in setToCompare:
                 continue
 
-            print('Current pair of classes: {:}/{:}, task {:}'.format(iClass, jClass, taskName))
+            iObjectsCount = len(np.where(target == iClass)[0])
+            jObjectsCount = len(np.where(target == jClass)[0])
+
+            totalObjects = (iObjectsCount + jObjectsCount)
+            step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
+
+            xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
+            data['steps'] = xSteps
+
+            print('Current pair of classes: {:}/{:}, task {:}, objects {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, step * numberOfSteps, step))
             names.append('{:}/{:}'.format(iClass, jClass))
+            meanSlopesInd = []
+            medianSlopesInd = []
+            lowSlopesInd = []
 
             for iStep in range(0, numberOfSteps):
+                if iStep == numberOfSteps - 1:
+                    print(iStep)
+
                 currentObjects = (iStep + 1) * step
+
+                if iObjectsCount + jObjectsCount < currentObjects:
+                    print('Objects of class {:}: {:}, of class {:}: {:}'.format(iClass, iObjectsCount, jClass, jObjectsCount))
+                    break
+
                 c1 = time.time()
                 print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
                 data['step'] = iStep
@@ -214,30 +237,45 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #stochasticResults[iStep, curIdx] = ijpValue
 
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                ijpValue, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                #ijpValue, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts)
+                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 fastResults[iStep, curIdx] = ijpValue
+                fastResultsUp[iStep, curIdx] = ijpValueUp
                 targetResults[iStep, curIdx] = tValue
                 pValuesResults[iStep, curIdx, :] = pValues
                 modelPredictions[iStep, curIdx, :] = modelPrediction
                 meanPValues[iStep, curIdx] = np.mean(pValues)
+                medianPValues[iStep, curIdx] = np.median(pValues)
 
-                if iStep > 0:
-                    curRatio = abs(meanPValues[iStep, curIdx] / meanPValues[iStep - 1, curIdx] - 1)
-                    if curRatio < threshold and nPoints[curIdx] != 0:
-                        nPoints[curIdx] = currentObjects
-                        nThreshold[curIdx] = curRatio
+                if iStep > 1:
+                    currentRange = range((iStep + 1))
+                    meanSlope = calculateSlopeGradient(xSteps[currentRange], meanPValues[currentRange, curIdx])
+                    medianSlope = calculateSlopeGradient(xSteps[currentRange], medianPValues[currentRange, curIdx])
+                    lowSlope = calculateSlopeGradient(xSteps[currentRange], fastResults[currentRange, curIdx])
+
+                    meanSlopesInd.append(meanSlope)
+                    medianSlopesInd.append(medianSlope)
+                    lowSlopesInd.append(lowSlope)
+
+                    nPoints[curIdx, 0] = getBestSlopeMedian(meanSlopesInd)
+                    nPoints[curIdx, 1] = getBestSlopeMedian(medianSlopesInd)
+                    nPoints[curIdx, 2] = getBestSlopeMedian(lowSlopesInd)
+
+                    mfr = min(fastResults[currentRange, curIdx])
+                    nPoints[curIdx, 3] = fastResults[currentRange, curIdx].tolist().index(mfr)
 
                 data['pValuesResults'] = pValuesResults
                 data['meanPValue'] = meanPValues
+                data['medianPValue'] = medianPValues
                 data['targetResults'] = targetResults
                 data['pairIndex'] = curIdx
                 data['classes'] = '{:} vs {:}'.format(iClass, jClass)
                 data['fast'] = fastResults
+                data['fastUp'] = fastResultsUp
                 data['names'] = names
                 data['model'] = modelPredictions
                 data['nPoints'] = nPoints
-                data['thresholds'] = nThreshold
+
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
                 visualizePValues(data)

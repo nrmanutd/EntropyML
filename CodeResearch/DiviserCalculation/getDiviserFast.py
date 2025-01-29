@@ -112,8 +112,8 @@ def getMaximumDiviserFast(dataSet, target):
     nClasses, counts = np.unique(target, return_counts=True)
 
     if len(nClasses) != 2:
-        #raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
-        print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
+        raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        #print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
 
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
     c1Banalce, c1diviser = getMaximumDiviserPerClassFast(dataSet, valuedTarget1)

@@ -59,10 +59,10 @@ def checkCircles(l, c, m):
 
     if m == 'delta':
         estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'circles')
-        estimateAndVisualizeEmpiricalDistributionDelta(transformedDataSet, target, 'radian_circles')
+        #estimateAndVisualizeEmpiricalDistributionDelta(transformedDataSet, target, 'radian_circles')
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'circles')
-        calculateAndVisualizeEmpiricalDistribution(transformedDataSet, target, 'radian_circles')
+        #calculateAndVisualizeEmpiricalDistribution(transformedDataSet, target, 'radian_circles')
 
 
 def checkRandom(l, f, m):
@@ -253,10 +253,10 @@ def checkTask(task, *args, **kwargs):
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
-lObj = 1000
+lObj = 2000
 
-checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
-checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
@@ -269,7 +269,7 @@ checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
 
 #checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
-#checkTask(186, m='delta') #wine
+checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
 #checkTask('mnist', t=10, m='delta')

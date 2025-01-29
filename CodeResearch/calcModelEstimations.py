@@ -110,6 +110,6 @@ def calcModel(dataSet, nObjects, nAttempts, target):
 
     for iModel in np.arange(nModels):
         acc[iModel] = np.mean(accuracy[iModel, :])
-        sigma[iModel] = np.std(accuracy[iModel, :])
+        sigma[iModel] = np.std(accuracy[iModel, :], ddof=1)
 
     return {'accuracy': acc, 'modelSigma': sigma}
