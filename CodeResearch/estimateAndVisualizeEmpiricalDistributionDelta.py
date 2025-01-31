@@ -172,8 +172,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     alpha = 0.001
     beta = 0.01
 
-    nModelAttempts = 10
-    nAttempts = 100
+    nModelAttempts = 1
+    nAttempts = 10
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
@@ -197,10 +197,10 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     names = []
     curIdx = 0
 
-    #setToCompare = set([1, 3, 5, 8])
+    #setToCompare = set([5, 8])
     setToCompare = set(np.unique(target))
 
-    for iClass in range(0, nClasses):
+    for iClass in range(3, nClasses):
         for jClass in range(0, iClass):
 
             if iClass not in setToCompare or jClass not in setToCompare:
@@ -210,7 +210,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             jObjectsCount = len(np.where(target == jClass)[0])
 
             totalObjects = (iObjectsCount + jObjectsCount)
-            step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
+            #step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
             step = 100
 
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
@@ -223,7 +223,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             lowSlopesInd = []
 
             for iStep in range(0, numberOfSteps):
-                currentObjects = (iStep + 1) * step
+                currentObjects = max(2, (iStep + 1) * step)
 
                 if iObjectsCount + jObjectsCount < currentObjects:
                     print('Objects of class {:}: {:}, of class {:}: {:}'.format(iClass, iObjectsCount, jClass, jObjectsCount))
@@ -237,8 +237,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #stochasticResults[iStep, curIdx] = ijpValue
 
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp
                 targetResults[iStep, curIdx] = tValue
@@ -248,7 +248,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 medianPValues[iStep, curIdx] = np.median(pValues)
 
                 if iStep > 1:
-                    currentRange = range((iStep + 1))
+                    currentRange = range(iStep + 1)
                     meanSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], meanPValues[currentRange, curIdx])
                     medianSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], medianPValues[currentRange, curIdx])
                     lowSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], fastResults[currentRange, curIdx])
@@ -281,9 +281,11 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 visualizePValues(data)
                 saveDataForVisualization(data)
 
-            curResult = {'Classes': names[curIdx], 'total': totalObjects, 'iClass':  iObjectsCount, 'jClass': jObjectsCount, 'nPoints':  nPoints[curIdx, :] * step, 'KSl': fastResults[-1, curIdx], 'KSu': fastResultsUp[-1, curIdx]}
+            curResult = {'Classes': names[curIdx], 'total': totalObjects, 'iClass':  iObjectsCount, 'jClass': jObjectsCount, 'nPoints':  (1 + nPoints[curIdx, :]) * step, 'KSl': meanPValues[-1, curIdx], 'KSu': fastResultsUp[-1, curIdx]}
             eachTaskResult.append(curResult)
             saveDataForTable(eachTaskResult, taskName, names[curIdx])
+            visualizePValues(data)
+            saveDataForVisualization(data)
 
             curIdx += 1
 

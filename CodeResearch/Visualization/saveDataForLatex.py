@@ -13,10 +13,10 @@ def getBestM(mValues):
 
 def getKSD(ksValue):
     if ksValue > 0.95:
-        return '\\longrightarrow 1'
+        return '$\\longrightarrow 1$'
 
     if ksValue < 0.05:
-        return '\\longrightarrow 0'
+        return '$\\longrightarrow 0$'
 
     return '{:.2f}'.format(ksValue)
 
@@ -29,16 +29,16 @@ def convert(data):
     description = getBestM(data['nPoints'])
     KSdescription = getKSD(data['KSl'])
 
-    return '{:}&{:}({:.0f}/{:.0f})&{:}&{:}\n'.format(data['Classes'], objc, iClass / objc * 100, jClass / objc * 100, description, KSdescription)
+    return '{:}&{:}({:.0f}/{:.0f})&{:}&{:}\\\\\n'.format(data['Classes'], objc, iClass / objc * 100, jClass / objc * 100, description, KSdescription)
 
 
 def getSortedIdx(data):
 
     vals = np.zeros(len(data))
     for i in range(len(data)):
-        vals[i] = max(data[i]['nPoints'])
+        vals[i] = data[i]['KSl']
 
-    idx = np.argsort(-vals)
+    idx = np.argsort(vals)
     return idx
 
 def saveDataForTable(data, task, classes):
@@ -48,5 +48,5 @@ def saveDataForTable(data, task, classes):
 
     with open(fileName, "w") as write:
         for i in range(len(idx)):
-            s = convert( data[idx[i]])
+            s = convert(data[idx[i]])
             write.write(s)

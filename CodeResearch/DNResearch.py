@@ -262,7 +262,7 @@ lObj = 2000
 #checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
 #checkTask('circles', l=lObj, c=2, m='delta')
-checkTask('circles', l=lObj, c=4, m='delta')
+#checkTask('circles', l=lObj, c=4, m='delta')
 #checkTask('random', l=lObj, f=2, m='delta')
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
@@ -275,7 +275,7 @@ checkTask('circles', l=lObj, c=4, m='delta')
 #checkTask('mnist', t=10, m='delta')
 #checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-#checkTask('cifar', t=10, m='delta')
+checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

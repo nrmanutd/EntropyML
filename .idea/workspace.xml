@@ -1400,19 +1400,11 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_7.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_8.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_9.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_1 vs 0.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_2 vs 0.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_2 vs 1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_3 vs 0.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_3 vs 1.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/latex_circles_3 vs 2.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/slopeCalculator.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Tricks/datafile.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Tricks/serialization.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
     </list>
@@ -1535,22 +1527,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00017" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720884374132</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1720884374132</updated>
-    </task>
-    <task id="LOCAL-00018" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720884411038</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1720884411038</updated>
     </task>
     <task id="LOCAL-00019" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -1928,7 +1904,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738151928060</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1738189092331</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1738189092331</updated>
+    </task>
+    <task id="LOCAL-00067" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1738189134136</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1738189134136</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -2092,7 +2084,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py</url>
-          <line>114</line>
+          <line>116</line>
           <option name="timeStamp" value="239" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -2101,9 +2093,19 @@
           <option name="timeStamp" value="243" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py</url>
-          <line>48</line>
-          <option name="timeStamp" value="245" />
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>283</line>
+          <option name="timeStamp" value="246" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>287</line>
+          <option name="timeStamp" value="247" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>286</line>
+          <option name="timeStamp" value="248" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

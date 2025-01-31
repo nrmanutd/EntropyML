@@ -81,10 +81,11 @@ def getBestComplexity(indicies, modelValues):
             bestInd = indicies[i]
             bestNumber = i
 
-    methods = ['med', 'mean', 'low', 'min']
+    #methods = ['med', 'mean', 'low', 'min']
+    methods = ['M1', 'M2', 'M3', 'M4']
 
     description = makeFullDescription(methods[bestNumber], bestInd, modelValues)
-    return bestInd, description
+    return bestInd, methods[bestNumber]
 
 
 def visualizePValues(data):
@@ -108,36 +109,36 @@ def visualizePValues(data):
     beta = data['beta']
 
     px = 1 / plt.rcParams['figure.dpi']
-    fig, ax = plt.subplots(2, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
+    fig, ax = plt.subplots(1, 1, sharex=True, tight_layout=True, figsize=(1920 * px, 1280 * px))
 
     pairedClasses = fast.shape[1]
 
     idx = range(0, iStep + 1)
     maxIndex, description = getBestComplexity(nPoints[pairIdx, :], model[idx, pairIdx, :])
 
-    header = 'Comparison values of classes {:}. Complexity is {:}, efficiency is {:}'.format(pairsNames[pairIdx], xSteps[maxIndex, pairIdx], description)
+    header = 'KS statistic estimation for {:} {:} task. Complexity: {:} ({:}), KS = {:.2f}'.format(pairsNames[pairIdx], taskName, xSteps[maxIndex, pairIdx], description, meanPValues[iStep, pairIdx])
 
-
-    ax[0].title.set_text(header)
-    ax[0].grid()
+    ax.title.set_text(header)
+    ax.title.set_size(25)
+    ax.grid()
 
     # plot values
     #for i in np.arange(pairedClasses):
     #ax[0].plot(xSteps[idx], targetResults[idx, pairIdx], label="Theoretical bound #{0}".format(pairIdx), ls=':', marker='X')
-    ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0], label="XGBoost", ls='-', marker='o')
-    ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0] - model[idx, pairIdx, 1], label="XGBoost - sigma", ls=':', marker='o', color='blue', markersize=3)
-    ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0] + model[idx, pairIdx, 1], label="XGBoost + sigma", ls=':', marker='o', color='blue', markersize=3)
+    #ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0], label="XGBoost", ls='-', marker='o')
+    #ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0] - model[idx, pairIdx, 1], label="XGBoost - sigma", ls=':', marker='o', color='blue', markersize=3)
+    #ax[0].plot(xSteps[idx, pairIdx], model[idx, pairIdx, 0] + model[idx, pairIdx, 1], label="XGBoost + sigma", ls=':', marker='o', color='blue', markersize=3)
 
     #ax[0].plot(xSteps[idx], model[idx, pairIdx, 1], label="NN", ls=':', marker='x')
-    ax[0].plot(xSteps[idx, pairIdx], fast[idx, pairIdx], label="Mean - quantile {:}".format(beta), ls='--', color='blueviolet', linewidth=2)
-    ax[0].plot(xSteps[idx, pairIdx], fastUp[idx, pairIdx], label="Mean + quantile {:}".format(beta), ls='--', color='blueviolet', linewidth=2)
-    ax[0].plot(xSteps[idx, pairIdx], np.maximum(0, meanPValues[idx, pairIdx] - np.ones(len(idx))*epsilon/np.sqrt(xSteps[idx, pairIdx])), label="Mean - {:}".format(alpha), ls=':', color='red', linewidth=2)
-    ax[0].plot(xSteps[idx, pairIdx], meanPValues[idx, pairIdx], label="Mean pValue", ls='-', marker='*')
-    ax[0].plot(xSteps[idx, pairIdx], medianPValues[idx, pairIdx], label="Median pValue", ls='-', marker='*', color='blue')
-    ax[0].plot(xSteps[idx, pairIdx], np.minimum(1, meanPValues[idx, pairIdx] + np.ones(len(idx))*epsilon/np.sqrt(xSteps[idx, pairIdx])), label="Mean + {:}".format(alpha), ls=':', color='red', linewidth=2)
+    ax.plot(xSteps[idx, pairIdx], fast[idx, pairIdx], label="KS Mean ±{:}/{:}q".format(beta, 1 - beta), ls='--', color='blueviolet', linewidth=2)
+    ax.plot(xSteps[idx, pairIdx], fastUp[idx, pairIdx], label="_Mean + quantile {:}".format(beta), ls='--', color='blueviolet', linewidth=2)
+    ax.plot(xSteps[idx, pairIdx], np.maximum(0, meanPValues[idx, pairIdx] - np.ones(len(idx))*epsilon/np.sqrt(xSteps[idx, pairIdx])), label="Mean ±{:}/{:}q (DWK)".format(alpha, 1 - alpha), ls=':', color='red', linewidth=2)
+    ax.plot(xSteps[idx, pairIdx], meanPValues[idx, pairIdx], label="KS Mean", ls='-', marker='*')
+    #ax[0].plot(xSteps[idx, pairIdx], medianPValues[idx, pairIdx], label="Median pValue", ls='-', marker='*', color='blue')
+    ax.plot(xSteps[idx, pairIdx], np.minimum(1, meanPValues[idx, pairIdx] + np.ones(len(idx))*epsilon/np.sqrt(xSteps[idx, pairIdx])), label="_Mean + {:}".format(alpha), ls=':', color='red', linewidth=2)
 
     for i in range(nAttempts):
-        ax[0].plot(xSteps[idx, pairIdx], pValuesResults[idx, pairIdx, i], label="_FastRT #{0}".format(pairIdx), ls='', marker='x')
+        ax.plot(xSteps[idx, pairIdx], pValuesResults[idx, pairIdx, i], label="_FastRT #{0}".format(pairIdx), ls='', marker='x')
         #ax[0].plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')
 
     if iStep > 1:
@@ -147,26 +148,31 @@ def visualizePValues(data):
         lowD = makeFullDescription('low', nPoints[pairIdx, 2], model[idx, pairIdx, :])
         minD = makeFullDescription('min', nPoints[pairIdx, 3], model[idx, pairIdx, :])
 
-        ax[0].plot((xSteps[nPoints[pairIdx, 0], pairIdx], xSteps[nPoints[pairIdx, 0], pairIdx]), (medianPValues[nPoints[pairIdx, 0], pairIdx], medianPValues[nPoints[pairIdx, 0], pairIdx]), label=medD, color='blue', ls='', marker='X', markersize=15)
-        ax[0].plot((xSteps[nPoints[pairIdx, 1], pairIdx], xSteps[nPoints[pairIdx, 1], pairIdx]), (meanPValues[nPoints[pairIdx, 1], pairIdx], meanPValues[nPoints[pairIdx, 1], pairIdx]), label=meanD, color='red', ls='', marker='X', markersize=15)
-        ax[0].plot((xSteps[nPoints[pairIdx, 2], pairIdx], xSteps[nPoints[pairIdx, 2], pairIdx]), (fast[nPoints[pairIdx, 2], pairIdx], fast[nPoints[pairIdx, 2], pairIdx]), label=lowD, color='green', ls='', marker='X', markersize=15)
-        ax[0].plot((xSteps[nPoints[pairIdx, 3], pairIdx], xSteps[nPoints[pairIdx, 3], pairIdx]), (fast[nPoints[pairIdx, 3], pairIdx], fast[nPoints[pairIdx, 3], pairIdx]), label=minD, color='orange', ls='', marker='X', markersize=15)
+        ax.plot((xSteps[nPoints[pairIdx, 0], pairIdx], xSteps[nPoints[pairIdx, 0], pairIdx]), (medianPValues[nPoints[pairIdx, 0], pairIdx], medianPValues[nPoints[pairIdx, 0], pairIdx]), label='M1', color='blue', ls='', marker='X', markersize=15)
+        ax.plot((xSteps[nPoints[pairIdx, 1], pairIdx], xSteps[nPoints[pairIdx, 1], pairIdx]), (meanPValues[nPoints[pairIdx, 1], pairIdx], meanPValues[nPoints[pairIdx, 1], pairIdx]), label='M2', color='red', ls='', marker='X', markersize=15)
+        ax.plot((xSteps[nPoints[pairIdx, 2], pairIdx], xSteps[nPoints[pairIdx, 2], pairIdx]), (fast[nPoints[pairIdx, 2], pairIdx], fast[nPoints[pairIdx, 2], pairIdx]), label='M3', color='green', ls='', marker='X', markersize=15)
+        ax.plot((xSteps[nPoints[pairIdx, 3], pairIdx], xSteps[nPoints[pairIdx, 3], pairIdx]), (fast[nPoints[pairIdx, 3], pairIdx], fast[nPoints[pairIdx, 3], pairIdx]), label='M4', color='orange', ls='', marker='X', markersize=15)
 
-    ax[0].legend()
+    ax.set_xlabel('Sub-sample size', fontsize=20)
+    ax.set_ylabel('KS value', fontsize=20)
+    ax.tick_params(axis='x', labelsize=18)
+    ax.tick_params(axis='y', labelsize=18)
 
-    ax[1].title.set_text('PValue of classes {:}'.format(pairsNames[pairIdx]))
-    ax[1].grid()
+    ax.legend(fontsize=18)
+
+    #ax[1].title.set_text('PValue of classes {:}'.format(pairsNames[pairIdx]))
+    #ax[1].grid()
 
     idx = range(0, iStep + 1)
     # plot values
     #for i in np.arange(pairedClasses):
-    ax[1].plot(xSteps[idx, pairIdx], fast[idx, pairIdx], label="FastRT #{0}".format(classesPair), ls=':', marker='X')
-    ax[1].plot(xSteps[idx, pairIdx], meanPValues[idx, pairIdx] - fast[idx, pairIdx], label="Lower epsilon - {1} #{0}".format(classesPair, beta), ls=':', marker='X')
-    ax[1].plot(xSteps[idx, pairIdx], fastUp[idx, pairIdx] - fast[idx, pairIdx],
-               label="Delta epsilon - {1} #{0}".format(classesPair, beta), ls=':', marker='X')
+    #ax[1].plot(xSteps[idx, pairIdx], fast[idx, pairIdx], label="FastRT #{0}".format(classesPair), ls=':', marker='X')
+    #ax[1].plot(xSteps[idx, pairIdx], meanPValues[idx, pairIdx] - fast[idx, pairIdx], label="Lower epsilon - {1} #{0}".format(classesPair, beta), ls=':', marker='X')
+    #ax[1].plot(xSteps[idx, pairIdx], fastUp[idx, pairIdx] - fast[idx, pairIdx],
+    #           label="Delta epsilon - {1} #{0}".format(classesPair, beta), ls=':', marker='X')
         # ax[0].plot(xSteps[idx], stochastic[idx, i], label="StochasticRT #{0}".format(i), marker='P')
 
-    ax[1].legend()
+    #ax[1].legend()
 
     plt.savefig('PValuesFigures\\pValues_par_{0}_{1}.png'.format(taskName, classesPair), format='png')
     plt.close(fig)

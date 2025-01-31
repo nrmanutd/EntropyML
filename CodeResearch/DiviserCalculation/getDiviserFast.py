@@ -1,6 +1,7 @@
 import numpy as np
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict, prepareDataSet
+
 
 def calcDelta(curSet, valuedTarget1):
     delta = 0
@@ -109,6 +110,7 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
     return abs(maxBalance), maxState
 
 def getMaximumDiviserFast(dataSet, target):
+    dataSet, target = prepareDataSet(dataSet, target)
     nClasses, counts = np.unique(target, return_counts=True)
 
     if len(nClasses) != 2:
