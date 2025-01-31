@@ -163,4 +163,6 @@ cython_debug/
 
 *.png
 *.txt
-*.csv
+*.csv!/Tricks/datafile.json
+/CodeResearch/PValuesFigures/
+/CodeResearch/DataSets/
