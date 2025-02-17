@@ -1,7 +1,9 @@
 import numpy as np
+from numba import jit, prange
 from rtree import index
 from sortedcontainers import SortedDict
 
+@jit(nopython=True)
 def GetValuedTarget(target, c1, c1p, c2p):
 
     res = np.zeros(len(target))
@@ -25,6 +27,20 @@ def GetSortedDict(dataSet):
                 curDict[v] = {iObject}
             else:
                 curDict[v].add(iObject)
+
+    return res
+
+@jit(nopython=True)
+def getSortedSet(dataSet):
+
+    nFeatures = dataSet.shape[1]
+    nObjects = dataSet.shape[0]
+
+    res = np.zeros((nObjects, nFeatures), dtype=int)
+
+    for iFeature in prange(0, nFeatures):
+        sortedObjects = np.argsort(dataSet[:, iFeature])
+        res[:, iFeature] = sortedObjects
 
     return res
 
@@ -131,14 +147,16 @@ def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveI
 
     return bestDiviser, bestScore
 
-def prepareDataSet(dataSet, target):
+@jit(nopython=True)
+def prepareDataSet(dataSet):
     nFeatures = dataSet.shape[1]
 
-    usefulFeatures = []
+    usefulFeatures = np.zeros(nFeatures)
 
     for iFeature in range(0, nFeatures):
         uf = np.unique(dataSet[:, iFeature])
         if len(uf) != 1:
-            usefulFeatures.append(iFeature)
+            usefulFeatures[iFeature] = 1
 
-    return dataSet[:, usefulFeatures], target
+    idx = np.nonzero(usefulFeatures)[0]
+    return dataSet[:, idx]

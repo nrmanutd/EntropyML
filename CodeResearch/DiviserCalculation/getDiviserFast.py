@@ -24,7 +24,7 @@ def calcDelta(curSet, valuedTarget1):
         for iObj in curItemsToOmit:
             curDelta = valuedTarget1[iObj]
 
-            if curDelta < 0 and alreadyPositive:
+            if curDelta < 0 and alreadyPositive:#todo: fix bug for different objects on same values. Not finishing...
                 return delta, itemsToOmit
 
             if curDelta > 0:
@@ -110,7 +110,7 @@ def getMaximumDiviserPerClassFast(dataSet, valuedTarget1):
     return abs(maxBalance), maxState
 
 def getMaximumDiviserFast(dataSet, target):
-    dataSet, target = prepareDataSet(dataSet, target)
+    dataSet = prepareDataSet(dataSet)
     nClasses, counts = np.unique(target, return_counts=True)
 
     if len(nClasses) != 2:

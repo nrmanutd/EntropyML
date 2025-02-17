@@ -1,12 +1,13 @@
 import numpy as np
 
-from CodeResearch.DiviserCalculation.diviserCalcuation import getMaximumDiviser
-from CodeResearch.DiviserCalculation.getCorrectDiviser import getMaximumDiviserCorrect
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
-from CodeResearch.DiviserCalculation.getDiviserProd import getMaximumDiviserProd
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
-from CodeResearch.DiviserCalculation.statisticsCalculation import getMaximumPossibleByAnalysis
+
+temp = np.array([1, 3, 2, 8, 5])
+print(np.argsort(temp))
+print(np.argsort(-temp))
+pass
 
 s = np.array([[1,0,0], [0,1,0], [0,0,1], [3, 2, -1], [2, 3, -1], [2, 2, 0]])
 c = np.array([1, 1, 1, -1, -1, -1])

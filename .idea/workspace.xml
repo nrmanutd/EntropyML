@@ -7,6 +7,7 @@
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated algorithm, added permutation logic calculation and visualization">
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataSets/fashion-mnist_test.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataSets/fashion-mnist_train.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_Breast Cancer Wisconsin (Diagnostic)_1 vs 0_0.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_Breast Cancer Wisconsin (Diagnostic)_1 vs 0_1.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_Breast Cancer Wisconsin (Diagnostic)_1 vs 0_10.txt" afterDir="false" />
@@ -1400,13 +1401,17 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_7.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_8.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_9.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/Tricks/datafile.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Tricks/gpuTricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForLatex.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/tricks.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -1438,11 +1443,14 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor": "Run",
     "Python.DNResearch.executor": "Run",
     "Python.calcEntropy.executor": "Debug",
     "Python.calculateDistributionDelta.executor": "Debug",
     "Python.car.executor": "Run",
     "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
+    "Python.gpuTricks.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
     "Python.imagesTricks.executor": "Run",
     "Python.main.executor": "Run",
@@ -1451,17 +1459,23 @@
     "Python.serialization.executor": "Run",
     "Python.tricks.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Current/Work/Science/CodeResearch/DiviserCalculation",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Current\Work\Science\CodeResearch\Tests" />
       <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
-    <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba">
+    <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -1496,7 +1510,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Tricks/tricks.py" />
+      <option name="SCRIPT_NAME" value="C:\Current\Work\Science\CodeResearch\Tests\tricks.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -1505,9 +1519,40 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Python tests for test_getDiviserFastNumba.TestDiviserFastNumba" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Science" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/CodeResearch/Tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_getDiviserFastNumba.TestDiviserFastNumba&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Science" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/CodeResearch/Tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.DNResearch" />
+        <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba" />
+        <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6" />
         <item itemvalue="Python.tricks" />
       </list>
     </recent_temporary>
@@ -1527,22 +1572,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00019" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720891041705</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1720891041705</updated>
-    </task>
-    <task id="LOCAL-00020" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1720900703059</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1720900703060</updated>
     </task>
     <task id="LOCAL-00021" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -1920,7 +1949,23 @@
       <option name="project" value="LOCAL" />
       <updated>1738189134136</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1738316777880</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1738316777880</updated>
+    </task>
+    <task id="LOCAL-00069" summary="updated algorithm, added permutation logic calculation and visualization">
+      <option name="closed" value="true" />
+      <created>1738317958605</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1738317958605</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -1936,6 +1981,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <MESSAGE value="added gitignore commit" />
     <MESSAGE value="added main.py file" />
     <MESSAGE value="added entropy calculation" />
@@ -2091,21 +2137,6 @@
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py</url>
           <line>32</line>
           <option name="timeStamp" value="243" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>283</line>
-          <option name="timeStamp" value="246" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>287</line>
-          <option name="timeStamp" value="247" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>286</line>
-          <option name="timeStamp" value="248" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

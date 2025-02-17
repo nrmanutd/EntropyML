@@ -200,7 +200,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     #setToCompare = set([5, 8])
     setToCompare = set(np.unique(target))
 
-    for iClass in range(3, nClasses):
+    for iClass in range(0, nClasses):
         for jClass in range(0, iClass):
 
             if iClass not in setToCompare or jClass not in setToCompare:

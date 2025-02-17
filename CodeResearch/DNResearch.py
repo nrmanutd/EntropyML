@@ -255,7 +255,7 @@ def checkTask(task, *args, **kwargs):
 
 lObj = 2000
 
-#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
@@ -275,7 +275,7 @@ lObj = 2000
 #checkTask('mnist', t=10, m='delta')
 #checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-checkTask('cifar', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

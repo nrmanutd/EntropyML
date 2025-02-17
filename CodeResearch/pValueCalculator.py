@@ -4,6 +4,7 @@ import numpy as np
 from joblib import Parallel, delayed
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.permutationHelpers import GetObjectsPerClass
@@ -130,11 +131,8 @@ def calcRTFastParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt
         print("Attempt# {:}".format(iAttempt))
     newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
 
-    fast = getMaximumDiviserFast(newSet, newTarget)[0]
-    return fast
-    #stochastic = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
-
-    #return max(fast, stochastic)
+    return getMaximumDiviserFastNumba(newSet, newTarget)[0]
+    #return getMaximumDiviserFast(newSet, newTarget)[0]
 
 def calcStochasticParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
     if iAttempt%100 == 0:
