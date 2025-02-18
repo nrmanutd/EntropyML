@@ -1,124 +1,99 @@
 import numpy as np
+import numba as nb
 from numba import jit, prange
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, f2s, bv2s, \
+    iv2s
 
 
-@jit(nopython=True)
-def calcDelta(curSet, valuedTarget1):
-    delta = 0
-    itemsToOmit = []
-    alreadyPositive = False
-    setPositive = False
-
-    totalElements = len(curSet)
-    currentElementIndex = 0
-
-    for keyPair in curSet:
-        if currentElementIndex == totalElements - 1:
-            return delta, itemsToOmit
-
-        d = 0
-        curItemsToOmit = curSet[keyPair]
-
-        if len(curItemsToOmit) == 0:
-            raise ValueError('Items to omit shouldnt be empty')
-
-        for iObj in curItemsToOmit:
-            curDelta = valuedTarget1[iObj]
-
-            if curDelta < 0 and alreadyPositive:  #todo: fix bug for different objects on same values. Not finishing...
-                return delta, itemsToOmit
-
-            if curDelta > 0:
-                setPositive = True
-
-            d += curDelta
-
-        alreadyPositive |= setPositive
-        delta += d
-        itemsToOmit += curItemsToOmit
-        currentElementIndex += 1
-
-    return delta, itemsToOmit
-
-
-@jit(nopython=True)
-def getNextStepFast(sortedDataSet, valuedTarget1):
-    nFeatures = len(sortedDataSet)
-
-    bestFeature = -1
-    bestDelta = 0
-    bestItemsToOmit = []
-
-    for iFeature in range(0, nFeatures):
-        curSet = sortedDataSet[iFeature]
-        curDelta, curItemsToOmit = calcDelta(curSet, valuedTarget1)
-
-        #print('Feature {:}: delta = {:}, items to omit = {:}'.format(iFeature, curDelta, curItemsToOmit))
-
-        if len(curItemsToOmit) == 0:
-            continue
-
-        if curDelta > bestDelta:
-            bestDelta = curDelta
-            bestFeature = iFeature
-            bestItemsToOmit = curItemsToOmit
-
-    return bestFeature, bestDelta, bestItemsToOmit
-
-
-@jit(nopython=True)
-def updateToNewState(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta):
+@jit(nopython=True, parallel=True)
+def updateToNewState(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateState):
     nFeatures = len(currentState)
-    delta = 0
 
     for iFeature in prange(0, nFeatures):
         for iSortedObject in range(currentState[iFeature], -1, -1):
-            curObject = sortedDataSet[iSortedObject, iFeature]
+            iObject = sortedDataSet[iSortedObject, iFeature]
 
-            if omitedObjects[curObject] is False and valuedTarget[curObject] < 0:
-                currentState[iFeature] = iSortedObject
-                break
+            if not omitedObjects[iObject]:
+                if valuedTarget[iObject] < 0:
+                    if updateState:
+                        currentState[iFeature] = iSortedObject
+                    break
 
-            if omitedObjects[curObject] is False:
-                delta += valuedTarget[curObject]
-                omitedObjects[curObject] = True
+                omitedDelta[iObject] = True
 
-    return currentState, delta, omitedObjects
+    return currentState, omitedDelta
 
 @jit(nopython=True)
-def updateOmitedObjects(currentState, sortedFeature, feature, valuedTarget, omitedObjects):
+def updateOmitedObjects(currentState, sortedFeature, feature, valuedTarget, omitedObjects, omitedDelta):
 
-    omitedDelta = np.zeros(len(omitedObjects))
-    iOmitedIdx = 0
     wasPositive = False
     positiveValue = 0
-    delta = 0
 
-    for iSortedObject in prange(currentState, -1, -1):
+    for iSortedObject in range(currentState, -1, -1):
         iObject = sortedFeature[iSortedObject]
 
-        if wasPositive and valuedTarget[iObject] < 0 and feature[iObject] != positiveValue:
+        if wasPositive and valuedTarget[iObject] < 0 and feature[iObject] != positiveValue:#todo: fix bug when same value and positive was first but then i'm stopping at this value. Should just make sorting in sortedDataSet so negative values are going first and then positive (targetValues)
             break
 
-        if omitedObjects[iSortedObject] is True:
+        if omitedObjects[iObject]:
             continue
 
-        omitedDelta[iOmitedIdx] = iObject
-        iOmitedIdx += 1
-        delta += valuedTarget[iObject]
+        omitedDelta[iObject] = True
 
         if valuedTarget[iObject] > 0:
-            positiveValue = feature[iObject] if wasPositive is False else positiveValue
+            positiveValue = positiveValue if wasPositive else feature[iObject]
             wasPositive |= True
 
-    return omitedDelta, delta
+    return omitedDelta
 
+@jit(nopython=True, parallel=True)
+def getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix):
+    nFeatures = dataSet.shape[1]
+    deltas = np.zeros(nFeatures)
 
-@jit(nopython=True)
+    print('Total features: ', str(nFeatures))
+    for iFeature in prange(0, nFeatures):
+        delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix[:, iFeature], False)[2]
+        print('Feature: {' + str(iFeature) + '} Delta: {' + f2s(delta) + '}')
+        deltas[iFeature] = delta
+
+    bestFeature = np.argmax(deltas)
+    print('Best Feature: ', bestFeature)
+    return np.argmax(deltas)
+
+@jit(nopython=True, parallel=True)
+def calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, updateOmited):
+    print('Valued target: ', valuedTarget)
+    print('Before: ' + str(iFeature) + ' ', str(len(omitedDelta)))
+
+    omitedDelta = updateOmitedObjects(currentState[iFeature], sortedDataSet[:, iFeature],
+                                      dataSet[:, iFeature], valuedTarget, omitedObjects, omitedDelta)
+
+    print('After: ' + str(iFeature) + ' ', bv2s(omitedDelta))
+    currentState, omitedDelta = updateToNewState(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateOmited)
+
+    delta = 0
+    for iObject in prange(0, len(omitedDelta)):
+        if not omitedDelta[iObject]:
+            continue
+
+        omitedDelta[iObject] = False
+
+        if updateOmited:
+            omitedObjects[iObject] = True
+
+        delta += valuedTarget[iObject]
+
+    print('Delta: ', delta)
+
+    return currentState, omitedObjects, delta
+
+@jit(nopython=True, parallel=True)
 def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, nClasses, counts):
     sortedDataSet = getSortedSet(dataSet)
+    print(dataSet)
+    print(sortedDataSet)
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
     maxLeft = max(nClasses[0] * counts[0], nClasses[1] * counts[1])
@@ -126,29 +101,26 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, nClasses, counts):
     curBalance = 0
     maxBalance = 0
     maxState = np.zeros(nFeatures)
-    currentState = np.ones(nFeatures) * (nObjects - 1)
-    omitedObjects = np.zeros(nObjects, dtype=bool)
+    currentState = np.ones(nFeatures, dtype=nb.int64) * (nObjects - 1)
+    omitedObjects = np.zeros(nObjects, dtype=nb.bool)
+    omitedDelta = np.zeros(nObjects, dtype=nb.bool)
+    omitedMatrix = np.zeros((nObjects, nFeatures), dtype=nb.int64)
+    iStep = 0
 
     while True:
-        iFeature = getNextStepFast(sortedDataSet, valuedTarget, currentState)
+        print('Inside while true...')
+        iFeature = getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix)
+        print('Selected feature: ', iFeature)
+        print('Current state: ', iv2s(currentState))
 
         if iFeature == -1:
             break
 
-        omitedDelta, delta = updateOmitedObjects(currentState[iFeature], sortedDataSet[:, iFeature],
-                                                   dataSet[:, iFeature], valuedTarget, omitedObjects)
+        currentState, omitedObjects, delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
+
         curBalance += delta
-
-        currentState, delta, omitedDelta = updateToNewState(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta)
-        curBalance += delta
-
-        for iObject in prange(0, len(omitedObjects)):
-            if omitedDelta[iObject] == 0:
-                break
-
-            omitedObjects[omitedDelta[iObject]] = True
-
-        #print('Step: i#{:}, d{:}, to omit:{:}. Cur balance: {:}, best balance: {:}'.format(iFeature, delta, itemsToOmit, curBalance, maxBalance))
+        print('Omited objects: ', bv2s(omitedObjects))
+        print('Feature: i#{' + str(iFeature) + '}, d{' + f2s(delta) + '}. Cur balance: {' + f2s(curBalance) + '}, best balance: {' + f2s(maxBalance) + '}')
 
         if curBalance > maxBalance:
             maxBalance = curBalance

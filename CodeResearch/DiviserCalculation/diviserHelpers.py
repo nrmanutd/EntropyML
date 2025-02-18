@@ -1,3 +1,4 @@
+import numba as nb
 import numpy as np
 from numba import jit, prange
 from rtree import index
@@ -31,12 +32,37 @@ def GetSortedDict(dataSet):
     return res
 
 @jit(nopython=True)
+def iv2s(f):
+    s = ''
+    for _ in f:
+        s = s + ', ' + str(_)
+    return s
+
+@jit(nopython=True)
+def bv2s(f):
+    s = ''
+    for _ in f:
+        s = s + ' ' + ('T' if _ else 'F')
+    return s
+
+@jit(nopython=True)
+def f2s(f, precision=2):
+    if np.isnan(f):
+        return 'NaN'
+    s = str(int(np.floor(f))) + '.'
+    digits = f%1
+    for _ in range(precision):
+        digits *= 10
+        s += str(int(np.floor(digits)))
+    return s
+
+@jit(nopython=True, parallel=True)
 def getSortedSet(dataSet):
 
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
 
-    res = np.zeros((nObjects, nFeatures), dtype=int)
+    res = np.zeros((nObjects, nFeatures), dtype=nb.int64)
 
     for iFeature in prange(0, nFeatures):
         sortedObjects = np.argsort(dataSet[:, iFeature])
