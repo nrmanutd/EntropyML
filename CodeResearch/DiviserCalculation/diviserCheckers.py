@@ -42,25 +42,3 @@ def calculateDeltaIndependently2(dataSet, targetValues, point):
         curSum += targetValues[tIdx]
 
     return abs(curSum)
-
-@jit(nopython=True, parallel=True)
-def calculateDeltaIndependently3(dataSet, targetValues, point):
-    nObjects = len(targetValues)
-    allIdx = np.zeros(nObjects, dtype=nb.int64)
-    nFeatures = dataSet.shape[1]
-
-    for iObject in prange(nObjects):
-        objectOut = False
-        for iFeature in range(nFeatures):
-            if dataSet[iObject, iFeature] > point[iFeature]:
-                objectOut = True
-                break
-
-        if not objectOut:
-            allIdx[iObject] = 1
-
-    curSum = 0
-    for tIdx in prange(nObjects):
-        curSum += targetValues[tIdx] * allIdx[tIdx]
-
-    return abs(curSum)
