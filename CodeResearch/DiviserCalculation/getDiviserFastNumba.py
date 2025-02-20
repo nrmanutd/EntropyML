@@ -161,25 +161,25 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
         if stoppingCriteria:
             break
 
-        with objmode(t1='f8'):
-            t1 = time.time()
+        #with objmode(t1='f8'):
+        #    t1 = time.time()
 
         iFeature = getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix)
-        with objmode(t2='f8'):
-            t2 = time.time()
+        #with objmode(t2='f8'):
+        #    t2 = time.time()
 
-        getFastTime += (t2 - t1)
+        #getFastTime += (t2 - t1)
 
-        with objmode(t1='f8'):
-            t1 = time.time()
+        #with objmode(t1='f8'):
+        #    t1 = time.time()
         currentState, omitedObjects, addedPositives, delta, step, update, clear = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
-        stepAll += step
-        updateAll += update
-        clearAll += clear
+        #stepAll += step
+        #updateAll += update
+        #clearAll += clear
 
-        with objmode(t2='f8'):
-            t2 = time.time()
-        makeStepTime += (t2 - t1)
+        #with objmode(t2='f8'):
+        #    t2 = time.time()
+        #makeStepTime += (t2 - t1)
 
         maxLeft -= addedPositives
 
@@ -196,8 +196,8 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
         if maxLeft + curBalance <= maxBalance:
             break
 
-    print('Steps: ' + str(iSteps) + ' Getting feature: ' + f2s(getFastTime) + ' Making step: ' + f2s(makeStepTime))
-    print('Making step: ' + f2s(stepAll) + ' Updating: ' + f2s(updateAll) + ' Clearing: ' + f2s(clearAll))
+    #print('Steps: ' + str(iSteps) + ' Getting feature: ' + f2s(getFastTime) + ' Making step: ' + f2s(makeStepTime))
+    #print('Making step: ' + f2s(stepAll) + ' Updating: ' + f2s(updateAll) + ' Clearing: ' + f2s(clearAll))
     #print('Max state = ', fv2s(maxState))
 
     return abs(maxBalance), maxState

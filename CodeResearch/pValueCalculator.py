@@ -107,6 +107,27 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, n
 
     return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
 
+def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
+    iObjects = list(np.where(target == iClass)[0])
+    jObjects = list(np.where(target == jClass)[0])
+    objectsIdx = iObjects + jObjects
+    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
+
+    values = np.zeros(nAttempts)
+    for iAttempt in range(nAttempts):
+        if iAttempt % 100 == 0:
+            print('Attempt # ', iAttempt)
+
+        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
+
+    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
+    #pValue = len(np.where(values < targetValue)[0]) / len(values)
+    quantile = np.quantile(values, beta)
+    quantileUp = np.quantile(values, 1 - beta)
+
+    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
+
 def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])

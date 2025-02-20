@@ -9,7 +9,8 @@ from CodeResearch.Visualization.saveDataForLatex import saveDataForTable
 from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
-from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel
+from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel, \
+    calcPValueFastNumba
 from CodeResearch.slopeCalculator import calculateSlope, getBestSlopeMedian, getBestSlopeMax, calculateSlopeGradient
 
 
@@ -239,6 +240,10 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet,
+                                                                                                target, iClass, jClass,
+                                                                                                nAttempts,
+                                                                                                nModelAttempts, beta)
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp
                 targetResults[iStep, curIdx] = tValue
