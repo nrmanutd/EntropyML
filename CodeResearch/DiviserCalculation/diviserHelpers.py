@@ -1,3 +1,5 @@
+import math
+
 import numba as nb
 import numpy as np
 from numba import jit, prange
@@ -32,10 +34,17 @@ def GetSortedDict(dataSet):
     return res
 
 @jit(nopython=True)
+def fv2s(f):
+    s = ''
+    for _ in f:
+        s = s + f2s(_) + ', '
+    return s
+
+@jit(nopython=True)
 def iv2s(f):
     s = ''
     for _ in f:
-        s = s + ', ' + str(_)
+        s = s + str(_) + ', '
     return s
 
 @jit(nopython=True)
@@ -47,17 +56,104 @@ def bv2s(f):
 
 @jit(nopython=True)
 def f2s(f, precision=2):
+    sign = '' if f >= 0 else '-'
+    f = abs(f)
+
     if np.isnan(f):
         return 'NaN'
-    s = str(int(np.floor(f))) + '.'
-    digits = f%1
+    ss = int(np.floor(f))
+    s = sign + str(ss) + '.'
+    digits = f - ss
     for _ in range(precision):
         digits *= 10
-        s += str(int(np.floor(digits)))
+        ss = int(np.floor(digits))
+        digits = digits - ss
+        s += str(ss)
     return s
 
+@jit(nopython=True)
+def cut_trail(f_str):
+    cut = 0
+    for c in f_str[::-1]:
+        if c == "0":
+            cut += 1
+        else:
+            break
+    if cut == 0:
+        for c in f_str[::-1]:
+            if c == "9":
+                cut += 1
+            else:
+                cut -= 1
+                break
+    if cut > 0:
+        f_str = f_str[:-cut]
+    if f_str == "":
+        f_str = "0"
+    return f_str
+
+@jit(nopython=True)
+def float2str(value):
+    if math.isnan(value):
+        return "nan"
+    elif value == 0.0:
+        return "0.0"
+    elif value < 0.0:
+        return "-" + float2str(-value)
+    elif math.isinf(value):
+        return "inf"
+    else:
+        max_digits = 16
+        min_digits = -4
+        e10 = math.floor(math.log10(value)) if value != 0.0 else 0
+        if min_digits < e10 < max_digits:
+            i_part = math.floor(value)
+            f_part = math.floor((1 + value % 1) * 10.0 ** max_digits)
+            i_str = str(i_part)
+            f_str = cut_trail(str(f_part)[1:max_digits - e10])
+            return i_str + "." + f_str
+        else:
+            m10 = value / 10.0 ** e10
+            exp_str_len = 4
+            i_part = math.floor(m10)
+            f_part = math.floor((1 + m10 % 1) * 10.0 ** max_digits)
+            i_str = str(i_part)
+            f_str = cut_trail(str(f_part)[1:max_digits])
+            e_str = str(e10)
+            if e10 >= 0:
+                e_str = "+" + e_str
+            return i_str + "." + f_str + "e" + e_str
+
+
+@jit(nopython=True)
+def getSortedByTarget(sortedObjects, dataSet, target):
+
+    nObjects = len(dataSet)
+    startIndex = 0
+    prevObject = dataSet[sortedObjects[0]]
+    result = np.zeros(nObjects, dtype=nb.int64)
+
+    for iObject in range(1, nObjects):
+        curObject = dataSet[sortedObjects[iObject]]
+
+        if curObject == prevObject:
+            continue
+
+        curSlice = sortedObjects[startIndex:iObject]
+        idx = np.argsort(target[curSlice])
+        result[startIndex:iObject] = curSlice[idx]
+
+        startIndex = iObject
+        prevObject = curObject
+
+    curSlice = sortedObjects[startIndex:nObjects]
+    idx = np.argsort(target[curSlice])
+    result[startIndex:nObjects] = curSlice[idx]
+
+    return result
+
 @jit(nopython=True, parallel=True)
-def getSortedSet(dataSet):
+def getSortedSet(dataSet, target):
 
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
@@ -66,7 +162,8 @@ def getSortedSet(dataSet):
 
     for iFeature in prange(0, nFeatures):
         sortedObjects = np.argsort(dataSet[:, iFeature])
-        res[:, iFeature] = sortedObjects
+        sortedByTarget = getSortedByTarget(sortedObjects, dataSet[:, iFeature], -target)
+        res[:, iFeature] = sortedByTarget
 
     return res
 

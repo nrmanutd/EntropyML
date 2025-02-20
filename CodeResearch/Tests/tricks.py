@@ -1,5 +1,6 @@
 import numpy as np
 
+from CodeResearch.DiviserCalculation.diviserHelpers import f2s
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
@@ -127,9 +128,14 @@ def showResults(s, c):
     showConcrete(diviser, values, 'Stochastic')
     pass
 
-showResults(s, c)
-showResults(s1, c1)
-showResults(s2, c2)
-showResults(s3, c3)
-showResults(s4, c4)
-showResults(s5, c5)
+a = 0.337
+b = 0.225
+
+print(f2s(a + b))
+
+#showResults(s, c)
+#showResults(s1, c1)
+#showResults(s2, c2)
+#showResults(s3, c3)
+#showResults(s4, c4)
+#showResults(s5, c5)
