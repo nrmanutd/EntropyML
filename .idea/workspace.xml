@@ -1401,7 +1401,6 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_8.txt" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/PValuesFigures/PValuesLogs/pValues_pairs_random_1 vs 0_9.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCheckers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCheckers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" afterDir="false" />
     </list>
@@ -1473,7 +1472,7 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba">
+  <component name="RunManager" selected="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -1573,9 +1572,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random" />
         <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba" />
         <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random" />
-        <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random" />
         <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random" />
         <item itemvalue="Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6" />
       </list>
@@ -1596,14 +1595,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00024" summary="added entropy calculation">
-      <option name="closed" value="true" />
-      <created>1736081556822</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1736081556822</updated>
     </task>
     <task id="LOCAL-00025" summary="added entropy calculation">
       <option name="closed" value="true" />
@@ -1989,7 +1980,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740011029155</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="numba tests">
+      <option name="closed" value="true" />
+      <created>1740053004634</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1740053004634</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -2012,7 +2011,8 @@
     <MESSAGE value="improved visualization" />
     <MESSAGE value="updated algorithm" />
     <MESSAGE value="updated algorithm, added permutation logic calculation and visualization" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated algorithm, added permutation logic calculation and visualization" />
+    <MESSAGE value="numba tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="numba tests" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

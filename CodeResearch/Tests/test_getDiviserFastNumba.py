@@ -192,7 +192,7 @@ class TestDiviserFastNumba(TestCase):
     def test_numba_result_correct_random(self):
         for i in range(1, 100):
             print('Attempt #: ', i)
-            self.template_numba_result_correct_random(500, 4)
+            self.template_numba_result_correct_random(5000, 40)
 
     def template_fast_result_correct_random(self, nObjects, nFeatures):
         dataSet = np.random.rand(nObjects, nFeatures)
