@@ -56,7 +56,7 @@ def calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omit
                                       dataSet[:, iFeature], valuedTarget, omitedObjects, omitedDelta)
 
     if idx == -1:
-        return None, None, None, None
+        return currentState, omitedObjects, -1, -2
 
     currentState, omitedDelta = updateStateOnOtherFeatures(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateOmited)
 
@@ -76,22 +76,19 @@ def calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omit
 
     return currentState, omitedObjects, addedPositives, delta
 
-@jit(nopython=True)
+@jit(nopython=True, parallel=True)
 def getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix):
     nFeatures = dataSet.shape[1]
+    res = np.full(nFeatures, -2, dtype=nb.float64)
 
-    bestDelta = -2
-    bestIndex = -1
-
-    for iFeature in range(0, nFeatures):
+    for iFeature in prange(0, nFeatures):
         delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix[:, iFeature], False)[3]
+        res[iFeature] = delta
 
-        if delta is None:
-            continue
+    bestIndex = np.argmax(res)
 
-        if delta > bestDelta:
-            bestDelta = delta
-            bestIndex = iFeature
+    if res[bestIndex] < -1:
+        return -1
 
     return bestIndex
 
