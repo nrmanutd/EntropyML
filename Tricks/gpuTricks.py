@@ -8,7 +8,7 @@ def increment_by_one(an_array):
     if pos < an_array.size:
         an_array[pos] += 1
 
-an_array = np.ones(10)
+an_array = np.ones(1000000000)
 print(an_array)
 
 threadsperblock = 32

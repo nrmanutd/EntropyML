@@ -132,11 +132,6 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
 
     iSteps = 0
 
-    print('Min positives: ' + iv2s(minPositives))
-    maxIdx = sortedDataSet[nObjects - 1, :]
-    targets = valuedTarget[maxIdx]
-    print('First objects ' + fv2s(targets, 5))
-
     while True:
         iSteps += 1
 
