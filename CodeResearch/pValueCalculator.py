@@ -116,7 +116,7 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     values = np.zeros(nAttempts)
     for iAttempt in range(nAttempts):
         if iAttempt % 100 == 0:
-            print('Attempt # ', iAttempt)
+            print('Attempt #', iAttempt)
 
         newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
         values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]

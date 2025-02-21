@@ -4,7 +4,8 @@ import numba as nb
 import numpy as np
 from numba import jit, prange, objmode
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, f2s, fv2s
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, f2s, fv2s, \
+    iv2s, bv2s
 
 
 @jit(nopython=True)
@@ -35,7 +36,7 @@ def makeStepForConcreteFeature(currentState, sortedFeature, feature, valuedTarge
         iObject = sortedFeature[iSortedObject]
 
         if wasPositive and valuedTarget[iObject] < 0 and feature[iObject] != positiveValue:
-            break
+            return omitedDelta, iSortedObject
 
         if omitedObjects[iObject]:
             continue
@@ -46,44 +47,19 @@ def makeStepForConcreteFeature(currentState, sortedFeature, feature, valuedTarge
             positiveValue = positiveValue if wasPositive else feature[iObject]
             wasPositive |= True
 
-    return omitedDelta
-
-@jit(nopython=True)
-def getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix):
-    nFeatures = dataSet.shape[1]
-    deltas = np.zeros(nFeatures)
-
-    for iFeature in range(0, nFeatures):
-        delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix[:, iFeature], False)[3]
-        deltas[iFeature] = delta
-
-    return np.argmax(deltas)
+    return omitedDelta, -1
 
 @jit(nopython=True)
 def calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, updateOmited):
 
-    with objmode(t1='f8'):
-        t1 = time.time()
-    omitedDelta = makeStepForConcreteFeature(currentState[iFeature], sortedDataSet[:, iFeature],
+    omitedDelta, idx = makeStepForConcreteFeature(currentState[iFeature], sortedDataSet[:, iFeature],
                                       dataSet[:, iFeature], valuedTarget, omitedObjects, omitedDelta)
 
-    with objmode(t2='f8'):
-        t2 = time.time()
+    if idx == -1:
+        return None, None, None, None
 
-    makingStepTime = t2 - t1
-    #print('Making step...' + f2s(t2 - t1, 10))
-
-    with objmode(t1='f8'):
-        t1 = time.time()
     currentState, omitedDelta = updateStateOnOtherFeatures(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateOmited)
-    with objmode(t2='f8'):
-        t2 = time.time()
 
-    updatingOnOtherFeatures = t2 - t1
-    #print('Updating...' + f2s(t2 - t1, 10))
-
-    with objmode(t1='f8'):
-        t1 = time.time()
     delta = 0
     addedPositives = 0
     for iObject in range(0, len(omitedDelta)):
@@ -98,12 +74,26 @@ def calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omit
         delta += valuedTarget[iObject]
         addedPositives += valuedTarget[iObject] if valuedTarget[iObject] > 0 else 0
 
-    with objmode(t2='f8'):
-        t2 = time.time()
-    #print('Calculating delta...' + f2s(t2 - t1, 10))
-    calculatingDelta = t2 - t1
+    return currentState, omitedObjects, addedPositives, delta
 
-    return currentState, omitedObjects, addedPositives, delta, makingStepTime, updatingOnOtherFeatures, calculatingDelta
+@jit(nopython=True)
+def getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix):
+    nFeatures = dataSet.shape[1]
+
+    bestDelta = -2
+    bestIndex = -1
+
+    for iFeature in range(0, nFeatures):
+        delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix[:, iFeature], False)[3]
+
+        if delta is None:
+            continue
+
+        if delta > bestDelta:
+            bestDelta = delta
+            bestIndex = iFeature
+
+    return bestIndex
 
 @jit(nopython=True, parallel=True)
 def getMinPositives(sortedDataSet, valuedTarget):
@@ -134,24 +124,21 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
     maxBalance = 0
     maxState = np.zeros(nFeatures)
     currentState = np.ones(nFeatures, dtype=nb.int64) * (nObjects - 1)
-    omitedObjects = np.zeros(nObjects, dtype=nb.bool)
-    omitedDelta = np.zeros(nObjects, dtype=nb.bool)
-    omitedMatrix = np.zeros((nObjects, nFeatures), dtype=nb.int64)
+    omitedObjects = np.full(nObjects, False, dtype=nb.bool)
+    omitedDelta = np.full(nObjects, False,  dtype=nb.bool)
+    omitedMatrix = np.full((nObjects, nFeatures), False, dtype=nb.bool)
     stoppingCriteria = False
     maxLeft = 1
 
-    #print('Current minPositives: ', minPositives)
-
-    getFastTime = 0
-    makeStepTime = 0
-    stepAll = 0
-    updateAll = 0
-    clearAll = 0
     iSteps = 0
+
+    print('Min positives: ' + iv2s(minPositives))
+    maxIdx = sortedDataSet[nObjects - 1, :]
+    targets = valuedTarget[maxIdx]
+    print('First objects ' + fv2s(targets, 5))
 
     while True:
         iSteps += 1
-        #print('Current state: ', currentState)
 
         for iFeature in range(nFeatures):
             if minPositives[iFeature] > currentState[iFeature]:
@@ -161,30 +148,16 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
         if stoppingCriteria:
             break
 
-        #with objmode(t1='f8'):
-        #    t1 = time.time()
-
         iFeature = getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix)
-        #with objmode(t2='f8'):
-        #    t2 = time.time()
+        if iFeature == -1:
+            break
 
-        #getFastTime += (t2 - t1)
-
-        #with objmode(t1='f8'):
-        #    t1 = time.time()
-        currentState, omitedObjects, addedPositives, delta, step, update, clear = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
-        #stepAll += step
-        #updateAll += update
-        #clearAll += clear
-
-        #with objmode(t2='f8'):
-        #    t2 = time.time()
-        #makeStepTime += (t2 - t1)
+        currentState, omitedObjects, addedPositives, delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
 
         maxLeft -= addedPositives
 
         curBalance += delta
-        #print('Feature: #{' + str(iFeature) + '}, d{' + f2s(delta) + '}. Cur balance: {' + f2s(curBalance) + '}, best balance: {' + f2s(maxBalance) + '}')
+        #print('Feature: #{' + str(iFeature) + '}, d{' + f2s(delta, 20) + '}. Cur balance: {' + f2s(curBalance, 20) + '}, best balance: {' + f2s(maxBalance, 10) + '}')
 
         if curBalance > maxBalance:
             maxBalance = curBalance
@@ -196,10 +169,6 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
         if maxLeft + curBalance <= maxBalance:
             break
 
-    #print('Steps: ' + str(iSteps) + ' Getting feature: ' + f2s(getFastTime) + ' Making step: ' + f2s(makeStepTime))
-    #print('Making step: ' + f2s(stepAll) + ' Updating: ' + f2s(updateAll) + ' Clearing: ' + f2s(clearAll))
-    #print('Max state = ', fv2s(maxState))
-
     return abs(maxBalance), maxState
 
 
@@ -207,7 +176,7 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
 def getMaximumDiviserFastNumba(dataSet, target):
     dataSet = prepareDataSet(dataSet)
     nClasses = np.unique(target)
-    counts = np.zeros(2)
+    counts = np.zeros(2, dtype=nb.int64)
     counts[0] = len(np.where(target == nClasses[0])[0])
     counts[1] = len(np.where(target == nClasses[1])[0])
 

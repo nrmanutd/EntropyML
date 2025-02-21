@@ -2,7 +2,6 @@ import numba
 import numpy as np
 from numba import cuda
 
-
 @cuda.jit
 def increment_by_one(an_array):
     pos = numba.cuda.grid(1)

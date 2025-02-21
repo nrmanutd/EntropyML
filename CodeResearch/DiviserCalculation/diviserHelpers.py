@@ -34,10 +34,10 @@ def GetSortedDict(dataSet):
     return res
 
 @jit(nopython=True)
-def fv2s(f):
+def fv2s(f, precision=2):
     s = ''
     for _ in f:
-        s = s + f2s(_) + ', '
+        s = s + f2s(_, precision) + ', '
     return s
 
 @jit(nopython=True)

@@ -2,15 +2,14 @@ import math
 import os
 
 import numpy as np
-from tensorflow.keras.datasets import mnist
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.utils import to_categorical
 import pandas as pd
+from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.utils import to_categorical
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
-    estimatePValuesForClassesSeparation
+from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta
 
 
 def empiricalDistributionById(id, t, m):
@@ -253,7 +252,7 @@ def checkTask(task, *args, **kwargs):
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
-lObj = 2000
+lObj = 1000
 
 checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
 checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')

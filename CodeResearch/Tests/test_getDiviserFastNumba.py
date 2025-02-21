@@ -123,6 +123,17 @@ class TestDiviserFastNumba(TestCase):
         c = np.array([0, 0, 0, 0, 1, 1, 1, 1])
         self.datasets.append([s, c])
 
+        s = np.array([[1.1, 1.2],
+                      [1.2, 1.1],
+                      [1.3, 1.4],
+                      [1.2, 1.3],
+                      [5.1, 5.2],
+                      [6.1, 6.2],
+                      [5.2, 5.1],
+                      [6.2, 6.1]])
+        c = np.array([0, 0, 0, 0, 1, 1, 1, 1])
+        self.datasets.append([s, c])
+
     def assertDeltaIndependently(self, dataSet, c, numbaResult):
         point = numbaResult[1]
 
@@ -246,6 +257,37 @@ class TestDiviserFastNumba(TestCase):
         d = self.datasets[6]
         self.template_numba_and_fast(d[0], d[1])
 
+    def test_get_maximum_diviser_fast_numba_case7(self):
+        d = self.datasets[7]
+        self.template_numba_and_fast(d[0], d[1])
+
+    def generate_separated_dataset(self, l, alpha):
+        elements = l - l % 2
+
+        dataSet = np.zeros((elements, 3))
+        target = np.zeros(elements, dtype=int)
+        a = 10
+        center = 2 * a * alpha
+
+        for i in np.arange(elements):
+            c = 0 if i < elements / 2 else center
+
+            x = np.random.uniform(-a + c, c + a)
+            y = np.random.uniform(-a, a)
+            z = np.random.uniform(-a, a)
+
+            dataSet[i, 0] = x
+            dataSet[i, 1] = y
+            dataSet[i, 2] = z
+
+            target[i] = 1 if i < elements / 2 else -1
+
+        return dataSet, target
+
+    def test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects(self):
+        d = self.generate_separated_dataset(2000, 5)
+        self.template_numba_and_fast(d[0], d[1])
+
     def test_get_maximum_diviser_fast_case0(self):
         d = self.datasets[0]
         self.template_fast(d, 1.0)
@@ -273,3 +315,7 @@ class TestDiviserFastNumba(TestCase):
     def test_get_maximum_diviser_fast_case6(self):
         d = self.datasets[6]
         self.template_fast(d, 0.5)
+
+    def test_get_maximum_diviser_fast_case7(self):
+        d = self.datasets[7]
+        self.template_fast(d, 1)

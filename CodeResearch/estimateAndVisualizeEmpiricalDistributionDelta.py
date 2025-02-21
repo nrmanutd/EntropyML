@@ -174,7 +174,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     beta = 0.01
 
     nModelAttempts = 1
-    nAttempts = 10
+    nAttempts = 100
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
@@ -211,8 +211,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             jObjectsCount = len(np.where(target == jClass)[0])
 
             totalObjects = (iObjectsCount + jObjectsCount)
-            #step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
-            step = 100
+            step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
+            #step = 100
 
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
             data['steps'] = xSteps
@@ -238,7 +238,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #stochasticResults[iStep, curIdx] = ijpValue
 
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet,
                                                                                                 target, iClass, jClass,
