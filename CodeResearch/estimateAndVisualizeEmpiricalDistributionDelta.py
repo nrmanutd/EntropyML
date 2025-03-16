@@ -194,12 +194,12 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     eachTaskResult = []
 
     epsilon = math.sqrt(math.log(2 * nFeatures/alpha))
-    data = {'taskName': taskName, 'step': 0, 'nAttempts': nAttempts, 'epsilon': epsilon, 'alpha': alpha, 'beta': beta}
+    data =   {'taskName': taskName, 'step': 0, 'nAttempts': nAttempts, 'epsilon': epsilon, 'alpha': alpha, 'beta': beta}
     names = []
     curIdx = 0
 
-    setToCompare = set([5, 8])
-    #setToCompare = set(np.unique(target))
+    #setToCompare = set([5, 8])
+    setToCompare = set(np.unique(target))
 
     for iClass in range(0, nClasses):
         for jClass in range(0, iClass):

@@ -4,6 +4,7 @@ import numpy as np
 from unittest import TestCase
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCuda
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 
 
@@ -180,12 +181,42 @@ class TestDiviserFastNumba(TestCase):
         if shouldCheckVectors:
             self.assertEqual(fastResult[1].tolist(), numbaResult[1].tolist())
 
+    def template_numba_and_cuda(self, s, c):
+        t1 = time.time()
+        numbaResult = getMaximumDiviserFastNumba(s, c)
+        t2 = time.time()
+        print('Time of numba: {:}s'.format(t2 - t1))
+        self.assertDeltaIndependently(s, c, numbaResult)
+
+        t1 = time.time()
+        cudaResult = getMaximumDiviserFastCuda(s, c)
+        t2 = time.time()
+        print('Time of cuda: {:}s'.format(t2 - t1))
+
+        print('Cuda result: ', cudaResult[0])
+        print('Numba result: ', numbaResult[0])
+
+        self.assertGreaterEqual(numbaResult[0], cudaResult[0])
+        self.assertEqual(cudaResult[1].tolist(), numbaResult[1].tolist())
+
     def template_numba_random(self, nObjects, nFeatures):
         dataSet = np.random.rand(nObjects, nFeatures)
         target = np.zeros(nObjects)
         target[((int)(np.floor(nObjects/2))):nObjects] = 1
 
         self.template_numba_and_fast(dataSet, target, False)
+
+    def template_cuda_random(self, nObjects, nFeatures):
+        dataSet = np.random.rand(nObjects, nFeatures)
+        target = np.zeros(nObjects)
+        target[((int)(np.floor(nObjects/2))):nObjects] = 1
+
+        self.template_numba_and_cuda(dataSet, target)
+
+    def test_cuda_random(self):
+        for i in range(1, 50):
+            print('Attempt # ', i)
+            self.template_cuda_random(500, 10)
 
     def test_numba_random(self):
         for i in range(1, 50):

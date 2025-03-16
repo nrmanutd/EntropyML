@@ -85,7 +85,11 @@ def getNextStepFast(dataSet, sortedDataSet, valuedTarget, currentState, omitedOb
         delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedMatrix[:, iFeature], False)[3]
         res[iFeature] = delta
 
+    print(res)
+
     bestIndex = np.argmax(res)
+
+    print('Best index: ', bestIndex)
 
     if res[bestIndex] < -1:
         return -1

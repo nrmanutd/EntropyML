@@ -10,10 +10,22 @@ from sortedcontainers import SortedDict
 def GetValuedTarget(target, c1, c1p, c2p):
 
     res = np.zeros(len(target))
-    for iObject in range(0, len(target)):
+    for iObject in range(len(target)):
         res[iObject] = c1p if target[iObject] == c1 else c2p
 
     return res
+
+def GetValuedAndBoolTarget(target, c1, c1p, c2p):
+
+    res = np.zeros(len(target), dtype=np.float32)
+    resBool = np.full(len(target), False, dtype=np.bool)
+
+    for iObject in range(len(target)):
+        res[iObject] = c1p if target[iObject] == c1 else c2p
+        if target[iObject] == c1:
+            resBool[iObject] = True
+
+    return res, resBool
 
 def GetSortedDict(dataSet):
     res = []
@@ -131,7 +143,7 @@ def getSortedByTarget(sortedObjects, dataSet, target):
     nObjects = len(dataSet)
     startIndex = 0
     prevObject = dataSet[sortedObjects[0]]
-    result = np.zeros(nObjects, dtype=nb.int64)
+    result = np.zeros(nObjects, dtype=np.int32)
 
     for iObject in range(1, nObjects):
         curObject = dataSet[sortedObjects[iObject]]
@@ -158,7 +170,7 @@ def getSortedSet(dataSet, target):
     nFeatures = dataSet.shape[1]
     nObjects = dataSet.shape[0]
 
-    res = np.zeros((nObjects, nFeatures), dtype=nb.int64)
+    res = np.zeros((nObjects, nFeatures), dtype=np.int32)
 
     for iFeature in prange(0, nFeatures):
         sortedObjects = np.argsort(dataSet[:, iFeature])
