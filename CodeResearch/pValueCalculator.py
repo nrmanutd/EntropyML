@@ -1,9 +1,11 @@
 import math
+import time
 
 import numpy as np
 from joblib import Parallel, delayed
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCuda
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcModelEstimations import calcModel
@@ -114,12 +116,39 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
+    currentTime = time.time()
+
     for iAttempt in range(nAttempts):
-        if iAttempt % 100 == 0:
-            print('Attempt #', iAttempt)
+        if iAttempt % 10 == 0:
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime))
+            currentTime = time.time()
 
         newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
         values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
+
+    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
+    #pValue = len(np.where(values < targetValue)[0]) / len(values)
+    quantile = np.quantile(values, beta)
+    quantileUp = np.quantile(values, 1 - beta)
+
+    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
+
+def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
+    iObjects = list(np.where(target == iClass)[0])
+    jObjects = list(np.where(target == jClass)[0])
+    objectsIdx = iObjects + jObjects
+    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
+
+    values = np.zeros(nAttempts)
+    currentTime = time.time()
+
+    for iAttempt in range(nAttempts):
+        if iAttempt % 10 == 0:
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime))
+            currentTime = time.time()
+
+        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        values[iAttempt] = getMaximumDiviserFastCuda(newSet, newTarget)[0]
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
     #pValue = len(np.where(values < targetValue)[0]) / len(values)

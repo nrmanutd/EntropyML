@@ -192,12 +192,13 @@ class TestDiviserFastNumba(TestCase):
         cudaResult = getMaximumDiviserFastCuda(s, c)
         t2 = time.time()
         print('Time of cuda: {:}s'.format(t2 - t1))
+        self.assertDeltaIndependently(s, c, cudaResult)
 
         print('Cuda result: ', cudaResult[0])
         print('Numba result: ', numbaResult[0])
 
-        self.assertGreaterEqual(numbaResult[0], cudaResult[0])
-        self.assertEqual(cudaResult[1].tolist(), numbaResult[1].tolist())
+        #self.assertGreaterEqual(cudaResult[0], numbaResult[0])
+        #self.assertEqual(cudaResult[1].tolist(), numbaResult[1].tolist())
 
     def template_numba_random(self, nObjects, nFeatures):
         dataSet = np.random.rand(nObjects, nFeatures)
@@ -214,9 +215,9 @@ class TestDiviserFastNumba(TestCase):
         self.template_numba_and_cuda(dataSet, target)
 
     def test_cuda_random(self):
-        for i in range(1, 50):
+        for i in range(1, 5):
             print('Attempt # ', i)
-            self.template_cuda_random(500, 10)
+            self.template_cuda_random(10000, 3000)
 
     def test_numba_random(self):
         for i in range(1, 50):

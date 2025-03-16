@@ -10,7 +10,7 @@ from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisua
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel, \
-    calcPValueFastNumba
+    calcPValueFastNumba, calcPValueFastCuda
 from CodeResearch.slopeCalculator import calculateSlope, getBestSlopeMedian, getBestSlopeMax, calculateSlopeGradient
 
 
@@ -217,7 +217,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
             data['steps'] = xSteps
 
-            print('Current pair of classes: {:}/{:}, task {:}, objects {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, step * numberOfSteps, step))
+            print('Current pair of classes: {:}/{:}, task {:}, objects {:}, nFeatures {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, nFeatures, step * numberOfSteps, step))
             names.append('{:} vs {:}'.format(iClass, jClass))
             meanSlopesInd = []
             medianSlopesInd = []
@@ -240,10 +240,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet,
-                                                                                                target, iClass, jClass,
-                                                                                                nAttempts,
-                                                                                                nModelAttempts, beta)
+                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp
                 targetResults[iStep, curIdx] = tValue
