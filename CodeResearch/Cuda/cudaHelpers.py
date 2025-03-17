@@ -1,10 +1,11 @@
 import cupy as cp
 import numba
 import numpy as np
+from numba import jit, cuda
 
 
 # Устройственная функция для преобразования float32 в uint32
-@numba.cuda.jit(device=True)
+@cuda.jit(device=True)
 def float_to_int(f):
     u = np.uint32(np.float32(f).view(np.uint32))
     if f >= 0:
@@ -14,7 +15,7 @@ def float_to_int(f):
 
 
 # Кернел для создания ключей
-@numba.cuda.jit
+@cuda.jit
 def create_keys(matrix, weights, keys):
     i, j = numba.cuda.grid(2)
     if i < matrix.shape[0] and j < matrix.shape[1]:
@@ -23,12 +24,12 @@ def create_keys(matrix, weights, keys):
         keys[i, j] = (np.uint64(val_int) << 32) | np.uint64(weight_int)
 
 
-def sort_columns(matrix, weights):
+def getSortedSetCuda(matrix, weights):
     N, d = matrix.shape
 
     # Переносим данные на GPU
-    matrix_d = cp.asarray(matrix, dtype=cp.float32)
-    weights_d = cp.asarray(weights, dtype=cp.float32)
+    matrix_d = cp.asarray(matrix.astype(np.float32), dtype=cp.float32)
+    weights_d = cp.asarray(-weights, dtype=cp.float32)
     keys_d = cp.zeros((N, d), dtype=cp.uint64)
 
     # Настраиваем сетку и блоки
@@ -46,4 +47,4 @@ def sort_columns(matrix, weights):
     for j in range(d):
         result[:, j] = cp.argsort(keys_d[:, j])
 
-    return result
+    return result.get()
