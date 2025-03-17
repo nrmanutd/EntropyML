@@ -5,13 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for numba and fast">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Cuda/cudaHelpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/cudaTricks.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/tricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/tricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/datafile.json" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/datafile.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/gpuTricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/gpuTricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/imagesTricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/imagesTricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/pgeTricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/pgeTricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/rTreeTricks.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/rTreeTricks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Tricks/serialization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/serialization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,12 +100,14 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests\Tricks" />
+      <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests" />
       <recent name="C:\Current\Work\Science\CodeResearch\Tests" />
       <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
+  <component name="RunManager">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -221,14 +230,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00029" summary="improved visualization">
-      <option name="closed" value="true" />
-      <created>1736637486331</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1736637486331</updated>
     </task>
     <task id="LOCAL-00030" summary="improved visualization">
       <option name="closed" value="true" />
@@ -614,7 +615,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740180850335</updated>
     </task>
-    <option name="localTasksCounter" value="78" />
+    <task id="LOCAL-00078" summary="tests are passing correctly for numba and fast">
+      <option name="closed" value="true" />
+      <created>1742121179654</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1742121179654</updated>
+    </task>
+    <option name="localTasksCounter" value="79" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -664,12 +673,12 @@
           <option name="timeStamp" value="103" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Tricks/imagesTricks.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Tests/Tricks/imagesTricks.py</url>
           <line>63</line>
           <option name="timeStamp" value="113" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Tricks/imagesTricks.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Tests/Tricks/imagesTricks.py</url>
           <line>27</line>
           <option name="timeStamp" value="114" />
         </line-breakpoint>
@@ -739,12 +748,12 @@
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Tricks/rTreeTricks.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Tests/Tricks/rTreeTricks.py</url>
           <line>33</line>
           <option name="timeStamp" value="168" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Tricks/rTreeTricks.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Tests/Tricks/rTreeTricks.py</url>
           <line>28</line>
           <option name="timeStamp" value="169" />
         </line-breakpoint>
@@ -754,7 +763,7 @@
           <option name="timeStamp" value="172" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/Tricks/rTreeTricks.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Tests/Tricks/rTreeTricks.py</url>
           <line>14</line>
           <option name="timeStamp" value="202" />
         </line-breakpoint>

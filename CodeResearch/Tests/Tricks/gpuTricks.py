@@ -17,7 +17,7 @@ def update(an_array, second_array):
         an_array[second_array[pos]] = True
 
 total = 20
-N = 100000
+N = 100
 threadsperblock = 32
 blockspergrid = (N + (threadsperblock - 1)) // threadsperblock
 

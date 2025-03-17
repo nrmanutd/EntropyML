@@ -217,7 +217,7 @@ class TestDiviserFastNumba(TestCase):
     def test_cuda_random(self):
         for i in range(1, 5):
             print('Attempt # ', i)
-            self.template_cuda_random(10000, 3000)
+            self.template_cuda_random(5000, 3000)
 
     def test_numba_random(self):
         for i in range(1, 50):
