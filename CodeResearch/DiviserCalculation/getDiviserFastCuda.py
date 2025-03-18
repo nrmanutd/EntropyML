@@ -107,7 +107,7 @@ def calculate_best_index(scores_pos, scores_neg, posValue, negValue, bestIndex, 
                 cuda.atomic.min(bestIndex, 0, thread_idx)
 
 @cuda.jit
-def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentState, omitedObjects, scores_pos, scores_neg, nObjects, nFeatures, shared_memory_elements):
+def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentState, omitedObjects, scores_pos, scores_neg, scores_result, posValue, negValue, nObjects, nFeatures, shared_memory_elements):
     shared_mem = cuda.shared.array(shape=0, dtype=np.uint32)
     result_score = cuda.shared.array(shape=2, dtype=np.float64)
 
@@ -165,6 +165,7 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
                 wasPositive |= True
 
         if currentResult == -1:
+            scores_result[curBlock] = -cp.inf
             scores_pos[curBlock] = -2
             scores_neg[curBlock] = 0
 
@@ -197,12 +198,13 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
     cuda.syncthreads()
 
     if thread_idx == 0:
+        scores_result[curBlock] = result_score[0] * posValue + result_score[1] * negValue
         scores_pos[curBlock] = result_score[0]
         scores_neg[curBlock] = result_score[1]
 
     return
 
-def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos, scores_neg):
+def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos, scores_neg, scores_result):
     currentState_device = cuda.to_device(currentState)
     omitedObjects_device = cuda.to_device(omitedObjects)
 
@@ -216,7 +218,7 @@ def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_devic
     words = (nObjects + bits_per_word - 1) // bits_per_word
     shared_memory_size = words * 4
 
-    calculate_scores_kernel[blocks_per_grid, threads_per_block, 0, shared_memory_size](dataSet_device, sortedDataSet_device, valuedTargetBool_device, currentState_device, omitedObjects_device, scores_pos, scores_neg, nObjects, nFeatures, words)
+    calculate_scores_kernel[blocks_per_grid, threads_per_block, 0, shared_memory_size](dataSet_device, sortedDataSet_device, valuedTargetBool_device, currentState_device, omitedObjects_device, scores_pos, scores_neg, scores_result, classValues[0], classValues[1], nObjects, nFeatures, words)
     cuda.synchronize()
 
     bestValue = cuda.device_array(1, dtype=np.float64)
@@ -229,6 +231,9 @@ def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_devic
     cuda.synchronize()
 
     bestIndexHost = bestIndex.copy_to_host()[0]
+    #alternativeIndex = cp.argmax(scores_result)
+
+    #print('Cuda logic: ' + str(bestIndexHost) + ' cupy: ' + str(alternativeIndex))
 
     return bestIndexHost if bestIndexHost != nFeatures else -1
 
@@ -248,45 +253,6 @@ def getMinPositives(sortedDataSet, valuedTarget):
                 break
 
     return firstPositiveObjects
-
-
-def checkStoppingCriteria(minPositives, currentState):
-    nFeatures = len(currentState)
-
-    for iFeature in range(nFeatures):
-        if minPositives[iFeature] > currentState[iFeature]:
-            return True
-
-@cuda.jit
-def calculate_stop_criterion(minPositives, currentState, nFeatures, result):
-    stride = cuda.blockDim.x
-
-    thread_idx = cuda.threadIdx.x + stride * cuda.blockIdx.x
-
-    result[0] = False
-    cuda.syncthreads()
-
-    if thread_idx < nFeatures:
-        if result[0]:
-            return
-
-        result[0] = result[0] | (minPositives[thread_idx] > currentState[thread_idx])
-
-def checkStoppingCriteriaCuda(minPositives_device, currentState):
-
-    nFeatures = len(currentState)
-    currentState_device = cuda.to_device(currentState)
-
-    result = cuda.device_array(1, dtype=np.bool)
-
-    threads_per_block = 8
-    blocks_per_grid = (nFeatures + threads_per_block  - 1) // threads_per_block
-
-    calculate_stop_criterion[blocks_per_grid, threads_per_block](minPositives_device, currentState_device, nFeatures, result)
-    cuda.synchronize()
-
-    res = result.copy_to_host()
-    return res[0]
 
 def checkStoppingCriteriaCupy(minPositives_device, currentState):
 
@@ -313,8 +279,8 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
 
     sortedDataSet_device = cuda.to_device(sortedDataSet)
     valuedTargetBool_device = cuda.to_device(valuedTargetBool)
-    minPositives_device = cuda.to_device(minPositives)
     minPositives_cupy = cp.array(minPositives)
+    scores_result_device = cp.zeros(nFeatures, dtype=cp.float64)
     scores_pos_device = cuda.device_array(nFeatures, dtype=np.int32)
     scores_neg_device = cuda.device_array(nFeatures, dtype=np.int32)
 
@@ -355,7 +321,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
             break
 
         t1 = time.time()
-        iFeature = getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device)
+        iFeature = getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device, scores_result_device)
         t2 = time.time()
         if iFeature == -1:
             break

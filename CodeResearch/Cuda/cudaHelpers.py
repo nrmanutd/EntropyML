@@ -28,7 +28,7 @@ def getSortedSetCuda(matrix, weights):
     N, d = matrix.shape
 
     # Переносим данные на GPU
-    matrix_d = cp.asarray(matrix.astype(np.float32), dtype=cp.float32)
+    matrix_d = cp.asarray(matrix, dtype=cp.float32)
     weights_d = cp.asarray(-weights, dtype=cp.float32)
     keys_d = cp.zeros((N, d), dtype=cp.uint64)
 
