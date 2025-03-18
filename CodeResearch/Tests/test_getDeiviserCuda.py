@@ -3,11 +3,11 @@ from unittest import TestCase
 
 import numpy as np
 
-from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
+from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCuda
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 
 
-class TestDiviserFastNumba(TestCase):
+class TestDiviserCuda(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -161,105 +161,40 @@ class TestDiviserFastNumba(TestCase):
 
         self.assertAlmostEqual(abs(curSum), numbaResult[0])
 
-    def template_numba_and_fast(self, s, c, shouldCheckVectors = True):
+    def template_numba_and_cuda(self, s, c, checkVectors=True):
         t1 = time.time()
         numbaResult = getMaximumDiviserFastNumba(s, c)
         t2 = time.time()
-        print('Time of fast numba: {:}s'.format(t2 - t1))
+        print('Time of numba: {:}s'.format(t2 - t1))
         self.assertDeltaIndependently(s, c, numbaResult)
 
         t1 = time.time()
-        fastResult = getMaximumDiviserFast(s, c)
+        cudaResult = getMaximumDiviserFastCuda(s, c)
         t2 = time.time()
-        print('Time of fast: {:}s'.format(t2 - t1))
+        print('Time of cuda: {:}s'.format(t2 - t1))
+        self.assertDeltaIndependently(s, c, cudaResult)
 
-        print('Fast result: ', fastResult[0])
+        print('Cuda result: ', cudaResult[0])
         print('Numba result: ', numbaResult[0])
 
-        self.assertGreaterEqual(numbaResult[0], fastResult[0])
-        if shouldCheckVectors:
-            self.assertEqual(fastResult[1].tolist(), numbaResult[1].tolist())
+        print('Cuda vector: ', cudaResult[1].tolist())
+        print('Numba vector: ', numbaResult[1].tolist())
 
-    def template_numba_random(self, nObjects, nFeatures):
+        self.assertLessEqual(abs(cudaResult[0] - numbaResult[0]), 0.01)
+        if checkVectors:
+            self.assertEqual(cudaResult[1].tolist(), numbaResult[1].tolist())
+
+    def template_cuda_random(self, nObjects, nFeatures, checkVectors = True):
         dataSet = np.random.rand(nObjects, nFeatures)
         target = np.zeros(nObjects)
         target[((int)(np.floor(nObjects/2))):nObjects] = 1
 
-        self.template_numba_and_fast(dataSet, target, False)
+        self.template_numba_and_cuda(dataSet, target, checkVectors)
 
-    def test_numba_random(self):
+    def test_cuda_random(self):
         for i in range(1, 50):
             print('Attempt # ', i)
-            self.template_numba_random(500, 10)
-
-    def template_numba_result_correct_random(self, nObjects, nFeatures):
-        dataSet = np.random.rand(nObjects, nFeatures)
-        target = np.zeros(nObjects)
-        target[((int)(np.floor(nObjects/2))):nObjects] = 1
-
-        numbaResult = getMaximumDiviserFastNumba(dataSet, target)
-        self.assertDeltaIndependently(dataSet, target, numbaResult)
-
-    def test_numba_result_correct_random(self):
-        for i in range(1, 100):
-            print('Attempt #: ', i)
-            self.template_numba_result_correct_random(500, 10)
-
-    def template_fast_result_correct_random(self, nObjects, nFeatures):
-        dataSet = np.random.rand(nObjects, nFeatures)
-        target = np.zeros(nObjects)
-        target[((int)(np.floor(nObjects/2))):nObjects] = 1
-
-        numbaResult = getMaximumDiviserFast(dataSet, target)
-        self.assertDeltaIndependently(dataSet, target, numbaResult)
-
-    def test_fast_result_correct_random(self):
-        for i in range(1, 100):
-            self.template_fast_result_correct_random(500, 4)
-
-    def template_fast(self, d, expected):
-        fastResult = getMaximumDiviserFast(d[0], d[1])
-        self.assertDeltaIndependently(d[0], d[1], fastResult)
-
-        self.assertAlmostEqual(expected, fastResult[0])
-
-    def test_get_maximum_diviser_fast_numba_case0(self):
-
-        d = self.datasets[0]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case1(self):
-
-        d = self.datasets[1]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case2(self):
-
-        d = self.datasets[2]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case3(self):
-
-        d = self.datasets[3]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case4(self):
-
-        d = self.datasets[4]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case5(self):
-
-        d = self.datasets[5]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case6(self):
-        d = self.datasets[6]
-        self.template_numba_and_fast(d[0], d[1])
-
-    def test_get_maximum_diviser_fast_numba_case7(self):
-        d = self.datasets[7]
-        self.template_numba_and_fast(d[0], d[1])
+            self.template_cuda_random(5000, 3000, False)
 
     def generate_separated_dataset(self, l, alpha):
         elements = l - l % 2
@@ -286,36 +221,36 @@ class TestDiviserFastNumba(TestCase):
 
     def test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects(self):
         d = self.generate_separated_dataset(2000, 5)
-        self.template_numba_and_fast(d[0], d[1])
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case0(self):
+    def test_get_maximum_diviser_numba_cuda_case0(self):
         d = self.datasets[0]
-        self.template_fast(d, 1.0)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case1(self):
+    def test_get_maximum_diviser_numba_cuda_case1(self):
         d = self.datasets[1]
-        self.template_fast(d, 1.0)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case2(self):
+    def test_get_maximum_diviser_numba_cuda_case2(self):
         d = self.datasets[2]
-        self.template_fast(d, 1.0)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case3(self):
+    def test_get_maximum_diviser_numba_cuda_case3(self):
         d = self.datasets[3]
-        self.template_fast(d, 0.5)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case4(self):
+    def test_get_maximum_diviser_numba_cuda_case4(self):
         d = self.datasets[4]
-        self.template_fast(d, 0.375)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case5(self):
+    def test_get_maximum_diviser_numba_cuda_case5(self):
         d = self.datasets[5]
-        self.template_fast(d, 0.5833333)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case6(self):
+    def test_get_maximum_diviser_numba_cuda_case6(self):
         d = self.datasets[6]
-        self.template_fast(d, 0.5)
+        self.template_numba_and_cuda(d[0], d[1])
 
-    def test_get_maximum_diviser_fast_case7(self):
+    def test_get_maximum_diviser_numba_cuda_case7(self):
         d = self.datasets[7]
-        self.template_fast(d, 1)
+        self.template_numba_and_cuda(d[0], d[1])

@@ -68,6 +68,13 @@ def bv2s(f):
 
 @jit(nopython=True)
 def f2s(f, precision=2):
+
+    if f == np.inf:
+        return 'inf'
+
+    if f == -np.inf:
+        return '-inf'
+
     sign = '' if f >= 0 else '-'
     f = abs(f)
 

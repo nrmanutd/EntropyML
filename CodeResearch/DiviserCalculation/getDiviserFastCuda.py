@@ -7,7 +7,7 @@ from numba import jit, prange, cuda, njit
 
 from CodeResearch.Cuda.cudaHelpers import getSortedSetCuda
 from CodeResearch.DiviserCalculation.diviserHelpers import prepareDataSet, getSortedSet, \
-    GetValuedAndBoolTarget, fv2s
+    GetValuedAndBoolTarget, fv2s, iv2s
 
 
 @jit(nopython=True)
@@ -109,7 +109,8 @@ def calculate_best_index(scores_pos, scores_neg, posValue, negValue, bestIndex, 
 @cuda.jit
 def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentState, omitedObjects, scores_pos, scores_neg, scores_result, posValue, negValue, nObjects, nFeatures, shared_memory_elements):
     shared_mem = cuda.shared.array(shape=0, dtype=np.uint32)
-    result_score = cuda.shared.array(shape=2, dtype=np.float64)
+    result_score = cuda.shared.array(shape=2, dtype=np.int32)
+    currentResult = cuda.shared.array(shape=1, dtype=np.int32)
 
     thread_idx = cuda.threadIdx.x
     stride = cuda.blockDim.x
@@ -120,23 +121,23 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
         shared_mem[i] = 0
 
     cuda.syncthreads()
+    curBlock = cuda.blockIdx.x
 
     for i in range(thread_idx, nObjects, stride):
         if omitedObjects[i]:
             word = i // bits_per_word
             bit = i % bits_per_word
+
             cuda.atomic.or_(shared_mem, word, 1 << bit)
 
     cuda.syncthreads()
 
-    curBlock = cuda.blockIdx.x
-    startPosition = currentState[curBlock]
-
-    currentResult = -1
-    result_score[0] = 0
-    result_score[1] = 0
-
     if thread_idx == 0:
+        currentResult[0] = -1
+        startPosition = currentState[curBlock]
+        result_score[0] = 0
+        result_score[1] = 0
+
         wasPositive = False
         positiveValue = 0
 
@@ -144,7 +145,7 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
             iObject = sortedDataSet[iSortedObject, curBlock]
 
             if wasPositive and not valuedTargetBool[iObject] and dataSet[iObject, curBlock] != positiveValue:
-                currentResult = iSortedObject
+                currentResult[0] = iSortedObject
                 break
 
             curObject = iObject // bits_per_word
@@ -164,14 +165,14 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
                 positiveValue = positiveValue if wasPositive else dataSet[iObject, curBlock]
                 wasPositive |= True
 
-        if currentResult == -1:
-            scores_result[curBlock] = -cp.inf
+        if currentResult[0] == -1:
+            scores_result[curBlock] = -np.inf
             scores_pos[curBlock] = -2
             scores_neg[curBlock] = 0
 
     cuda.syncthreads()
 
-    if scores_pos[curBlock] == -2:
+    if currentResult[0] == -1:
         return
 
     for iFeature in range(thread_idx, nFeatures, stride):
@@ -180,7 +181,7 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
 
             curObject = iObject // bits_per_word
             bit = iObject % bits_per_word
-            wasOmitted = (shared_mem[curObject] & (1 << bit)) != 0
+            wasOmitted = ((shared_mem[curObject] & (1 << bit)) != 0)
 
             if not valuedTargetBool[iObject]:
                 if not wasOmitted:
@@ -231,9 +232,6 @@ def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_devic
     cuda.synchronize()
 
     bestIndexHost = bestIndex.copy_to_host()[0]
-    #alternativeIndex = cp.argmax(scores_result)
-
-    #print('Cuda logic: ' + str(bestIndexHost) + ' cupy: ' + str(alternativeIndex))
 
     return bestIndexHost if bestIndexHost != nFeatures else -1
 
@@ -259,13 +257,11 @@ def checkStoppingCriteriaCupy(minPositives_device, currentState):
     currentState_device = cp.array(currentState)
     comparison_result = minPositives_device > currentState_device  # Массив булевых значений
 
-    return cp.any(comparison_result).item()
+    return cp.any(comparison_result)
 
 def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, valuedTargetBool, classValues):
-    tt1 = time.time()
     sortedDataSet = getSortedSet(dataSet, valuedTarget)
     minPositives = getMinPositives(sortedDataSet, valuedTarget)
-    tt2 = time.time()
 
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
@@ -280,7 +276,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
     sortedDataSet_device = cuda.to_device(sortedDataSet)
     valuedTargetBool_device = cuda.to_device(valuedTargetBool)
     minPositives_cupy = cp.array(minPositives)
-    scores_result_device = cp.zeros(nFeatures, dtype=cp.float64)
+    scores_result_device = cuda.device_array(nFeatures, dtype=np.float32)
     scores_pos_device = cuda.device_array(nFeatures, dtype=np.int32)
     scores_neg_device = cuda.device_array(nFeatures, dtype=np.int32)
 
@@ -292,26 +288,11 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
 
     kernelTime = 0
     deltaTime = 0
-    minPositivesTime = 0
     minPositivesTimeCuPy = 0
     updatingTime = 0
-    clearKernelTime = 0
-    todevice = 0
-    resArray = 0
-    tohost = 0
-
-    tt4 = time.time()
 
     while True:
         iSteps += 1
-
-        t1 = time.time()
-
-        #stoppingCriteria = checkStoppingCriteria(minPositives,  currentState)
-        #stoppingCriteria = checkStoppingCriteriaCuda(minPositives_device, currentState)
-        #cuda.synchronize()
-
-        minPositivesTime += (time.time() - t1)
 
         t1 = time.time()
         stoppingCriteria = checkStoppingCriteriaCupy(minPositives_cupy, currentState)
@@ -334,19 +315,18 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
         deltaTime += (t2 - t1)
 
         maxLeft -= addedPositives
-
         curBalance += delta
-        #print('Feature: #{' + str(iFeature) + '}, d{' + f2s(delta, 20) + '}. Cur balance: {' + f2s(curBalance, 20) + '}, best balance: {' + f2s(maxBalance, 10) + '}')
 
         t1 = time.time()
         if curBalance > maxBalance:
             maxBalance = curBalance
 
-            #for kFeature in range(nFeatures):
-            #    objectIdx = sortedDataSet[currentState[kFeature], kFeature]
-            #    maxState[kFeature] = dataSet[objectIdx, kFeature]
+            for kFeature in range(nFeatures):
+                objectIdx = sortedDataSet[currentState[kFeature], kFeature]
+                maxState[kFeature] = dataSet[objectIdx, kFeature]
 
         updatingTime += (time.time() - t1)
+
         if maxLeft + curBalance <= maxBalance:
             break
 
