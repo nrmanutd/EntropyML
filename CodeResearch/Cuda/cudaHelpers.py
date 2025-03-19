@@ -235,3 +235,65 @@ def bucket_sort_with_order(sorted_indices, subset_ids, num_buckets=100):
         result[i] = elements_map[result[i]]
 
     return result
+
+@jit(nopython=True, parallel=True)
+def convertSortedSetToBackMap(sortedSet):
+    nFeatures = sortedSet.shape[1]
+    nObjects = sortedSet.shape[0]
+
+    result = np.zeros((nObjects, nFeatures), dtype=np.int32)
+
+    for iFeature in prange(nFeatures):
+        for iObject in range(nObjects):
+            result[sortedSet[iObject, iFeature], iFeature] = iObject
+
+    return result
+
+def updateSortedSetCupy(pseudoSortedSet):
+
+    nFeatures = pseudoSortedSet.shape[1]
+    nObjects = pseudoSortedSet.shape[0]
+
+    result = np.zeros((nObjects, nFeatures), dtype=np.int32)
+
+    for iFeature in range(nFeatures):
+        arr = cp.asarray(pseudoSortedSet[:, iFeature])
+        sorted = cp.argsort(arr)
+
+        result[:, iFeature] = sorted.get()
+
+    return result
+
+@cuda.jit
+def filterSortedSetByCuda(sortedSet, nObjects, nFeatures, index, result):
+    thread_idx = cuda.grid(1)
+
+    if thread_idx < nFeatures:
+        currentIndex = 0
+        for i in range(nObjects):
+            curObjectIndex = index[sortedSet[i, thread_idx]]
+            if curObjectIndex != -1:
+                result[currentIndex, thread_idx] = curObjectIndex
+                currentIndex += 1
+
+def filterSortedSetByIndex(sortedSet, index):
+    nFeatures = sortedSet.shape[1]
+    nObjects = sortedSet.shape[0]
+    newObjects = len(index)
+
+    sortedSet_device = cuda.to_device(sortedSet)
+    targetIndex = np.full(nObjects, -1, dtype=np.int32)
+    targetIndex[index] = index
+
+    index_device = cuda.to_device(targetIndex)
+    result = np.zeros((newObjects, nFeatures), dtype=np.int32)
+    result_device = cuda.to_device(result)
+
+    threads_per_block = 64
+    blocks_per_grid = (nFeatures + threads_per_block - 1) // threads_per_block
+
+    filterSortedSetByCuda[blocks_per_grid, threads_per_block](sortedSet_device, nObjects, nFeatures, index_device, result_device)
+    cuda.synchronize()
+
+    result = result_device.copy_to_host()
+    return result
