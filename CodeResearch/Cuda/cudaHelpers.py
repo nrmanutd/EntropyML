@@ -2,6 +2,8 @@ import cupy as cp
 import numpy as np
 from numba import jit, cuda, prange, njit
 
+from CodeResearch.DiviserCalculation.diviserHelpers import iv2s
+
 
 # Устройственная функция для преобразования float32 в uint32
 @cuda.jit(device=True)
@@ -176,7 +178,7 @@ def sort_matrix(matrix, weights):
     return sorted_indices
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def updateSortedSetByBucketNumba(matrix, indexes):
     nFeatures = matrix.shape[1]
     newObjects = len(indexes)
@@ -184,10 +186,10 @@ def updateSortedSetByBucketNumba(matrix, indexes):
     result = np.zeros((newObjects, nFeatures), dtype=np.int32)
 
     for iFeature in prange(nFeatures):
-        result[:, iFeature] = bucket_sort_with_order(matrix[:, iFeature], indexes)
+        r = bucket_sort_with_order(matrix[:, iFeature], indexes)
+        result[:, iFeature] = r
 
     return result
-
 
 @njit
 def bucket_sort_with_order(sorted_indices, subset_ids, num_buckets=100):
@@ -196,26 +198,17 @@ def bucket_sort_with_order(sorted_indices, subset_ids, num_buckets=100):
 
     # Создаем словарь для быстрого доступа к позициям идентификаторов
 
-    #position_map = {idx: pos for pos, idx in enumerate(sorted_indices)}
-    #elements_map = {idx: pos for pos, idx in enumerate(subset_ids)}
-
-    position_map = dict()
-    for i in range(len(sorted_indices)):
-        position_map[sorted_indices[i]] = i
-
-    elements_map = dict()
-    for i in range(len(subset_ids)):
-        elements_map[subset_ids[i]] = i
-
+    position_map = {idx: pos for pos, idx in enumerate(sorted_indices)}
+    elements_map = {idx: pos for pos, idx in enumerate(subset_ids)}
 
     # Вычисляем максимальный размер каждого бакета
-    max_bucket_size = (K + num_buckets - 1) // num_buckets
+    max_bucket_size = (N + num_buckets - 1) // num_buckets
 
     # Создаем массив для хранения бакетов
-    buckets = np.zeros((num_buckets, max_bucket_size), dtype=np.int64)
+    buckets = np.zeros((num_buckets, max_bucket_size), dtype=np.int32)
 
     # Создаем массив для хранения количества элементов в каждом бакете
-    bucket_counts = np.zeros(num_buckets, dtype=np.int64)
+    bucket_counts = np.zeros(num_buckets, dtype=np.int32)
 
     # Размещаем элементы по бакетам
     for idx in subset_ids:
@@ -232,6 +225,7 @@ def bucket_sort_with_order(sorted_indices, subset_ids, num_buckets=100):
     # Конкатенируем бакеты
     result = np.zeros(K, dtype=np.int32)
     index = 0
+
     for i in range(num_buckets):
         if bucket_counts[i] > 0:
             result[index:index + bucket_counts[i]] = buckets[i, :bucket_counts[i]]

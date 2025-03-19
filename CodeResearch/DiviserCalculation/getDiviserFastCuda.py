@@ -321,13 +321,13 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sorted
         if curBalance > maxBalance:
             maxBalance = curBalance
 
-            for kFeature in range(nFeatures):
-                objectIdx = sortedSet[currentState[kFeature], kFeature]
-                maxState[kFeature] = dataSet[objectIdx, kFeature]
+            #for kFeature in range(nFeatures):
+            #    objectIdx = sortedSet[currentState[kFeature], kFeature]
+            #    maxState[kFeature] = dataSet[objectIdx, kFeature]
 
         updatingTime += (time.time() - t1)
 
-        if maxLeft + curBalance <= maxBalance:
+        if (maxLeft + curBalance - maxBalance) <= 0.001:
             break
 
     #print('Total time: ' + str(time.time() - tt1) + ' Preparation time: ' + str(tt2 - tt1) + ' Before while time: ' + str(tt4 - tt1) + ' Min positives time: ' + str(minPositivesTime) + ' Min positives cupy time: ' + str(minPositivesTimeCuPy) + ' Updating time: ' + str(updatingTime) + ' Clear kernel time: ' + str(clearKernelTime) + ' To device: ' + str(todevice) + ' To host: ' + str(tohost) + ' Array: ' + str(resArray) + ' Kernel time: ' + str(kernelTime) + ' Delta time: ' + str(deltaTime))

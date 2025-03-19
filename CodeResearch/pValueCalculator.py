@@ -9,7 +9,7 @@ from CodeResearch.Cuda.cudaHelpers import updateSortedSetNumba, updateSortedSetB
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCuda, \
-    getMaximumDiviserFastCudaPreloadedToDevice
+    getMaximumDiviserFastCudaPreloadedToDevice, getMaximumDiviserFastCudaCore
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcModelEstimations import calcModel
@@ -152,18 +152,18 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     values = np.zeros(nAttempts)
     currentTime = time.time()
 
-    ds = np.zeros((len(objectsIdx), dataSet.shape[1]), dtype=np.float32)
-    t = np.zeros(len(objectsIdx), dtype=np.int32)
+    #ds = np.zeros((len(objectsIdx), dataSet.shape[1]), dtype=np.float32)
+    #t = np.zeros(len(objectsIdx), dtype=np.int32)
 
-    ds[:, :] = dataSet[objectsIdx, :]
-    t[:] = target[objectsIdx]
+    #ds[:, :] = dataSet[objectsIdx, :]
+    #t[:] = target[objectsIdx]
 
-    nClasses, counts = np.unique(t, return_counts=True)
-    valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(t, nClasses[0], 1 / counts[0], -1 / counts[1])
-    valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(t, nClasses[1], 1 / counts[1], -1 / counts[0])
+    #nClasses, counts = np.unique(t, return_counts=True)
+    #valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(t, nClasses[0], 1 / counts[0], -1 / counts[1])
+    #valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(t, nClasses[1], 1 / counts[1], -1 / counts[0])
 
-    sds1 = getSortedSet(ds, valuedTarget1)
-    sds2 = getSortedSet(ds, valuedTarget2)
+    #sds1 = getSortedSet(ds, valuedTarget1)
+    #sds2 = getSortedSet(ds, valuedTarget2)
 
     updateTimeNumba = 0
 
@@ -173,40 +173,41 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
             currentTime = time.time()
             updateTimeNumba = 0
 
-        #newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-        # values[iAttempt] = getMaximumDiviserFastCuda(newSet, newTarget)[0]
+        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        values[iAttempt] = getMaximumDiviserFastCuda(newSet, newTarget)[0]
 
-        iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
-        idx = list(iClassIdx) + list(jClassIdx)
+        #iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
+        #idx = list(iClassIdx) + list(jClassIdx)
 
-        dsClasses = ds[idx, :]
-        dsClasses_device = cuda.to_device(dsClasses)
-        tClasses = t[idx]
+        #dsClasses = ds[idx, :]
+        #dsClasses_device = cuda.to_device(dsClasses)
+        #tClasses = t[idx]
 
-        vt1 = valuedTarget1[idx]
+        #vt1 = valuedTarget1[idx]
         #bvt1 = boolValuedTarget1[idx]
 
-        t1 = time.time()
+        #t1 = time.time()
         #ss1 = updateSortedSetNumba(sds1, idx)
         #ss1 = getSortedSet(dsClasses, vt1)
 
-        ss1 = updateSortedSetByBucketNumba(sds1, idx)
-        updateTimeNumba += time.time() - t1
+        #ss1 = updateSortedSetByBucketNumba(sds1, idx)
+        #updateTimeNumba += time.time() - t1
 
-        ss1_device = cuda.to_device(ss1)
+        #ss1_device = cuda.to_device(ss1)
 
-        vt2 = valuedTarget2[idx]
+        #vt2 = valuedTarget2[idx]
         #bvt2 = boolValuedTarget2[idx]
 
-        t1 = time.time()
+        #t1 = time.time()
         #ss2 = getSortedSet(dsClasses, vt2)
         #ss2 = updateSortedSetNumba(sds2, idx)
-        ss2 = updateSortedSetByBucketNumba(sds2, idx)
-        updateTimeNumba += time.time() - t1
+        #ss2 = updateSortedSetByBucketNumba(sds2, idx)
+        #updateTimeNumba += time.time() - t1
 
-        ss2_device = cuda.to_device(ss2)
+        #ss2_device = cuda.to_device(ss2)
 
-        values[iAttempt] = getMaximumDiviserFastCudaPreloadedToDevice(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, ss2, ss2_device)[0]
+        #values[iAttempt] = getMaximumDiviserFastCudaPreloadedToDevice(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, ss2, ss2_device)[0]
+        #values[iAttempt] = getMaximumDiviserFastCudaCore(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2)[0]
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
     #pValue = len(np.where(values < targetValue)[0]) / len(values)
