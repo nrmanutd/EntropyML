@@ -276,14 +276,15 @@ def filterSortedSetByCuda(sortedSet, nObjects, nFeatures, index, result):
                 result[currentIndex, thread_idx] = curObjectIndex
                 currentIndex += 1
 
-def filterSortedSetByIndex(sortedSet, index):
-    nFeatures = sortedSet.shape[1]
-    nObjects = sortedSet.shape[0]
+    return
+
+def filterSortedSetByIndex(sortedSet_device, nObjects, nFeatures, index):
+
     newObjects = len(index)
 
-    sortedSet_device = cuda.to_device(sortedSet)
     targetIndex = np.full(nObjects, -1, dtype=np.int32)
-    targetIndex[index] = index
+    for i in range(len(index)):
+        targetIndex[index[i]] = i
 
     index_device = cuda.to_device(targetIndex)
     result = np.zeros((newObjects, nFeatures), dtype=np.int32)

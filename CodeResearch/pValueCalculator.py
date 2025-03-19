@@ -161,10 +161,10 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(t, nClasses[1], 1 / counts[1], -1 / counts[0])
 
     sds1 = getSortedSet(ds, valuedTarget1)
-    #psds1 = convertSortedSetToBackMap(sds1)
+    sds1_device = cuda.to_device(sds1)
 
     sds2 = getSortedSet(ds, valuedTarget2)
-    #psds2 = convertSortedSetToBackMap(sds2)
+    sds2_device = cuda.to_device(sds2)
 
     updateTimeNumba = 0
     preparationTime = 0
@@ -191,15 +191,15 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
         vt2, bvt2 = GetValuedAndBoolTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
 
         t1 = time.time()
-        ss1 = filterSortedSetByIndex(sds1, idx)
-        print(ss1)
+        ss1 = filterSortedSetByIndex(sds1_device, sds1.shape[0], sds1.shape[1], idx)
+        #print(ss1)
         #ss1 = updateSortedSetCupy(psds1[idx])
         #ss1 = updateSortedSetNumba(sds1, idx)
         #ss1 = getSortedSet(dsClasses, vt1)
 
         #ss1 = updateSortedSetByBucketNumba(sds1, idx)
         #ss2 = updateSortedSetCupy(psds2[idx])
-        ss2 = filterSortedSetByIndex(sds2, idx)
+        ss2 = filterSortedSetByIndex(sds2_device, sds2.shape[0], sds2.shape[1], idx)
 
         #ss2 = getSortedSet(dsClasses, vt2)
         #ss2 = updateSortedSetNumba(sds2, idx)
