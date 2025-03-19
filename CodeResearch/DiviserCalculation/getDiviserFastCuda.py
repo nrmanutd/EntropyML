@@ -8,6 +8,7 @@ from numba import jit, prange, cuda, njit
 from CodeResearch.Cuda.cudaHelpers import getSortedSetCuda
 from CodeResearch.DiviserCalculation.diviserHelpers import prepareDataSet, getSortedSet, \
     GetValuedAndBoolTarget, fv2s, iv2s
+from CodeResearch.rademacherHelpers import GetSortedData
 
 
 @jit(nopython=True)
@@ -94,14 +95,14 @@ def calculate_best_index(scores_pos, scores_neg, posValue, negValue, bestIndex, 
 
     if thread_idx < scores_pos.size:
         if scores_pos[thread_idx] != -2:
-            curValue = scores_pos[thread_idx] * posValue + scores_neg[thread_idx] * negValue
+            curValue = scores_pos[thread_idx] / posValue - scores_neg[thread_idx] / negValue
             cuda.atomic.max(bestValue, 0, curValue)
 
     cuda.syncthreads()
 
     if thread_idx < scores_pos.size:
         if scores_pos[thread_idx] != -2:
-            curValue = scores_pos[thread_idx] * posValue + scores_neg[thread_idx] * negValue
+            curValue = scores_pos[thread_idx] / posValue - scores_neg[thread_idx] / negValue
             #print(' curValue = ' + str(curValue))
             if curValue == bestValue[0]:
                 cuda.atomic.min(bestIndex, 0, thread_idx)
@@ -199,7 +200,7 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
     cuda.syncthreads()
 
     if thread_idx == 0:
-        scores_result[curBlock] = result_score[0] * posValue + result_score[1] * negValue
+        scores_result[curBlock] = result_score[0] / posValue - result_score[1] / negValue
         scores_pos[curBlock] = result_score[0]
         scores_neg[curBlock] = result_score[1]
 
@@ -259,9 +260,9 @@ def checkStoppingCriteriaCupy(minPositives_device, currentState):
 
     return cp.any(comparison_result)
 
-def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, valuedTargetBool, classValues):
-    sortedDataSet = getSortedSet(dataSet, valuedTarget)
-    minPositives = getMinPositives(sortedDataSet, valuedTarget)
+def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sortedSet_device, valuedTarget, boolValuedTarget, classValues):
+
+    minPositives = getMinPositives(sortedSet, valuedTarget)
 
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
@@ -273,8 +274,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
     currentState = np.ones(nFeatures, dtype=np.int32) * (nObjects - 1)
     omitedObjects = np.full(nObjects, False, dtype=np.bool)
 
-    sortedDataSet_device = cuda.to_device(sortedDataSet)
-    valuedTargetBool_device = cuda.to_device(valuedTargetBool)
+    valuedTargetBool_device = cuda.to_device(boolValuedTarget)
     minPositives_cupy = cp.array(minPositives)
     scores_result_device = cuda.device_array(nFeatures, dtype=np.float32)
     scores_pos_device = cuda.device_array(nFeatures, dtype=np.int32)
@@ -302,7 +302,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
             break
 
         t1 = time.time()
-        iFeature = getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device, scores_result_device)
+        iFeature = getNextStepCuda(dataSet_device, sortedSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device, scores_result_device)
         t2 = time.time()
         if iFeature == -1:
             break
@@ -310,7 +310,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
         kernelTime += (t2 - t1)
 
         t1 = time.time()
-        currentState, omitedObjects, addedPositives, delta = calcDelta(iFeature, dataSet, sortedDataSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
+        currentState, omitedObjects, addedPositives, delta = calcDelta(iFeature, dataSet, sortedSet, valuedTarget, currentState, omitedObjects, omitedDelta, True)
         t2 = time.time()
         deltaTime += (t2 - t1)
 
@@ -322,7 +322,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
             maxBalance = curBalance
 
             for kFeature in range(nFeatures):
-                objectIdx = sortedDataSet[currentState[kFeature], kFeature]
+                objectIdx = sortedSet[currentState[kFeature], kFeature]
                 maxState[kFeature] = dataSet[objectIdx, kFeature]
 
         updatingTime += (time.time() - t1)
@@ -333,6 +333,33 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget, val
     #print('Total time: ' + str(time.time() - tt1) + ' Preparation time: ' + str(tt2 - tt1) + ' Before while time: ' + str(tt4 - tt1) + ' Min positives time: ' + str(minPositivesTime) + ' Min positives cupy time: ' + str(minPositivesTimeCuPy) + ' Updating time: ' + str(updatingTime) + ' Clear kernel time: ' + str(clearKernelTime) + ' To device: ' + str(todevice) + ' To host: ' + str(tohost) + ' Array: ' + str(resArray) + ' Kernel time: ' + str(kernelTime) + ' Delta time: ' + str(deltaTime))
     return abs(maxBalance), maxState
 
+def getMaximumDiviserFastCudaCore(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2):
+    nClasses, counts = np.unique(target, return_counts=True)
+
+    if len(nClasses) != 2:
+        # raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
+
+    c1Banalce, c1diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, [counts[0], counts[1]])
+    c2Banalce, c2diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2, [counts[1], counts[0]])
+
+    if c1Banalce > c2Banalce:
+        return c1Banalce, c1diviser
+
+    return c2Banalce, c2diviser
+
+def getMaximumDiviserFastCudaPreloadedToDevice(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, sortedSet2, sortedSet2_device):
+    nClasses, counts = np.unique(target, return_counts=True)
+
+    if len(nClasses) != 2:
+        # raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
+
+    valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
+    valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
+
+    return getMaximumDiviserFastCudaCore(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2)
+
 def getMaximumDiviserFastCuda(dataSet, target):
     dataSet = prepareDataSet(dataSet)
     nClasses, counts = np.unique(target, return_counts=True)
@@ -342,13 +369,13 @@ def getMaximumDiviserFastCuda(dataSet, target):
         print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
 
     dataSet_device = cuda.to_device(dataSet)
+
     valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget1, boolValuedTarget1, [1 / counts[0], -1 / counts[1]])
+    sortedSet1 = getSortedSet(dataSet, valuedTarget1)
+    sortedSet1_device = cuda.to_device(sortedSet1)
 
     valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, valuedTarget2, boolValuedTarget2, [1 / counts[1], -1 / counts[0]])
+    sortedSet2 = getSortedSet(dataSet, valuedTarget2)
+    sortedSet2_device = cuda.to_device(sortedSet2)
 
-    if c1Banalce > c2Banalce:
-        return c1Banalce, c1diviser
-
-    return c2Banalce, c2diviser
+    return getMaximumDiviserFastCudaCore(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2)

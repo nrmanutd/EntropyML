@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for numba and fast">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_getDeiviserCuda.py" afterDir="false" />
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for cuda, fixed threadsafe bugs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_getDiviserFastNumba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -179,7 +178,7 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
+    <configuration name="Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0" type="tests" factoryName="Unittests" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,7 +189,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1&quot;" />
+      <option name="_new_target" value="&quot;test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -212,10 +211,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda" />
+        <item itemvalue="Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0" />
         <item itemvalue="Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random" />
         <item itemvalue="Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2" />
         <item itemvalue="Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5" />
-        <item itemvalue="Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1" />
       </list>
     </recent_temporary>
   </component>
@@ -234,14 +233,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00033" summary="improved visualization">
-      <option name="closed" value="true" />
-      <created>1736860793087</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1736860793087</updated>
     </task>
     <task id="LOCAL-00034" summary="improved visualization">
       <option name="closed" value="true" />
@@ -627,7 +618,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742275823623</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1742336416302</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1742336416302</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -651,7 +650,8 @@
     <MESSAGE value="updated algorithm" />
     <MESSAGE value="updated algorithm, added permutation logic calculation and visualization" />
     <MESSAGE value="tests are passing correctly for numba and fast" />
-    <option name="LAST_COMMIT_MESSAGE" value="tests are passing correctly for numba and fast" />
+    <MESSAGE value="tests are passing correctly for cuda, fixed threadsafe bugs" />
+    <option name="LAST_COMMIT_MESSAGE" value="tests are passing correctly for cuda, fixed threadsafe bugs" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

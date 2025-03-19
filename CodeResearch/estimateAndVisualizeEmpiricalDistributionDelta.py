@@ -211,7 +211,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             jObjectsCount = len(np.where(target == jClass)[0])
 
             totalObjects = (iObjectsCount + jObjectsCount)
-            step = math.floor(min(totalObjects / 2, 3000) / numberOfSteps)
+            step = math.floor(min(totalObjects / 2, 10000) / numberOfSteps)
             #step = 100
 
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step

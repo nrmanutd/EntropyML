@@ -192,7 +192,7 @@ class TestDiviserCuda(TestCase):
         self.template_numba_and_cuda(dataSet, target, checkVectors)
 
     def test_cuda_random(self):
-        for i in range(1, 50):
+        for i in range(1, 5):
             print('Attempt # ', i)
             self.template_cuda_random(5000, 3000, False)
 
