@@ -1,7 +1,6 @@
 import cupy as cp
-import numba as nb
 import numpy as np
-from numba import jit, cuda, prange
+from numba import jit, cuda, prange, njit
 
 
 # Устройственная функция для преобразования float32 в uint32
@@ -65,9 +64,180 @@ def updateSortedSetNumba(matrix, indexes):
 
     for iFeature in prange(nFeatures):
         for iObject in range(nObjects):
+
             curObjectIdx = matrix[iObject, iFeature]
             if curObjectIdx in map:
                 result[currentState[iFeature], iFeature] = map[curObjectIdx]
                 currentState[iFeature] += 1
+
+    return result
+
+# Устройственная функция для сортировки слиянием
+@cuda.jit(device=True)
+def merge_sort(arr, weights, indices, start, end):
+    if end - start > 1:
+        mid = (start + end) // 2
+        merge_sort(arr, weights, indices, start, mid)
+        merge_sort(arr, weights, indices, mid, end)
+        merge(arr, weights, indices, start, mid, end)
+
+# Устройственная функция для слияния двух отсортированных частей
+@cuda.jit(device=True)
+def merge(arr, weights, indices, start, mid, end):
+    temp = cuda.local.array(shape=1024, dtype=np.float32)  # Временный массив для значений
+    temp_weights = cuda.local.array(shape=1024, dtype=np.float32)  # Временный массив для весов
+    temp_indices = cuda.local.array(shape=1024, dtype=np.int32)  # Временный массив для индексов
+    i = start
+    j = mid
+    k = 0
+
+    # Слияние двух частей
+    while i < mid and j < end:
+        if arr[i] < arr[j] or (arr[i] == arr[j] and weights[i] < weights[j]):
+            temp[k] = arr[i]
+            temp_weights[k] = weights[i]
+            temp_indices[k] = indices[i]
+            i += 1
+        else:
+            temp[k] = arr[j]
+            temp_weights[k] = weights[j]
+            temp_indices[k] = indices[j]
+            j += 1
+        k += 1
+
+    # Копируем оставшиеся элементы
+    while i < mid:
+        temp[k] = arr[i]
+        temp_weights[k] = weights[i]
+        temp_indices[k] = indices[i]
+        i += 1
+        k += 1
+    while j < end:
+        temp[k] = arr[j]
+        temp_weights[k] = weights[j]
+        temp_indices[k] = indices[j]
+        j += 1
+        k += 1
+
+    # Копируем результат обратно в исходные массивы
+    for idx in range(k):
+        arr[start + idx] = temp[idx]
+        weights[start + idx] = temp_weights[idx]
+        indices[start + idx] = temp_indices[idx]
+
+# CUDA-ядро для сортировки каждого столбца
+@cuda.jit
+def sort_columns_kernel(matrix, weights, sorted_indices):
+    col = cuda.blockIdx.x  # Текущий столбец
+    tid = cuda.threadIdx.x  # Текущий поток
+    n = matrix.shape[0]  # Количество объектов
+
+    # Копируем столбец и веса в локальную память
+    local_arr = cuda.local.array(shape=1024, dtype=np.float32)
+    local_weights = cuda.local.array(shape=1024, dtype=np.float32)
+    local_indices = cuda.local.array(shape=1024, dtype=np.int32)
+
+    # Обрабатываем часть столбца
+    chunk_size = 1024  # Количество элементов, обрабатываемых одним блоком
+    start = tid * chunk_size
+    end = min(start + chunk_size, n)
+
+    for i in range(start, end):
+        local_arr[i - start] = matrix[i, col]
+        local_weights[i - start] = weights[i]
+        local_indices[i - start] = i  # Изначальные индексы
+
+    # Сортируем часть столбца
+    merge_sort(local_arr, local_weights, local_indices, 0, end - start)
+
+    # Сохраняем отсортированные индексы в результирующий массив
+    for i in range(start, end):
+        sorted_indices[i, col] = local_indices[i - start]
+
+def sort_matrix(matrix, weights):
+    n, d = matrix.shape
+
+    # Копируем матрицу и веса на устройство
+    d_matrix = cuda.to_device(matrix)
+    d_weights = cuda.to_device(weights)
+
+    # Создаем массив для отсортированных индексов на устройстве
+    d_sorted_indices = cuda.device_array((n, d), dtype=np.int32)
+
+    # Задаем размер блока и сетки
+    threads_per_block = 1024  # Количество потоков в блоке
+    blocks_per_grid = d  # Количество блоков равно количеству столбцов
+
+    # Запускаем ядро
+    sort_columns_kernel[blocks_per_grid, threads_per_block](d_matrix, d_weights, d_sorted_indices)
+
+    # Копируем результат обратно на хост
+    sorted_indices = d_sorted_indices.copy_to_host()
+    return sorted_indices
+
+
+@jit(nopython=True, parallel=True)
+def updateSortedSetByBucketNumba(matrix, indexes):
+    nFeatures = matrix.shape[1]
+    newObjects = len(indexes)
+
+    result = np.zeros((newObjects, nFeatures), dtype=np.int32)
+
+    for iFeature in prange(nFeatures):
+        result[:, iFeature] = bucket_sort_with_order(matrix[:, iFeature], indexes)
+
+    return result
+
+
+@njit
+def bucket_sort_with_order(sorted_indices, subset_ids, num_buckets=100):
+    N = len(sorted_indices)  # Общее количество элементов
+    K = len(subset_ids)  # Количество элементов в подмножестве
+
+    # Создаем словарь для быстрого доступа к позициям идентификаторов
+
+    #position_map = {idx: pos for pos, idx in enumerate(sorted_indices)}
+    #elements_map = {idx: pos for pos, idx in enumerate(subset_ids)}
+
+    position_map = dict()
+    for i in range(len(sorted_indices)):
+        position_map[sorted_indices[i]] = i
+
+    elements_map = dict()
+    for i in range(len(subset_ids)):
+        elements_map[subset_ids[i]] = i
+
+
+    # Вычисляем максимальный размер каждого бакета
+    max_bucket_size = (K + num_buckets - 1) // num_buckets
+
+    # Создаем массив для хранения бакетов
+    buckets = np.zeros((num_buckets, max_bucket_size), dtype=np.int64)
+
+    # Создаем массив для хранения количества элементов в каждом бакете
+    bucket_counts = np.zeros(num_buckets, dtype=np.int64)
+
+    # Размещаем элементы по бакетам
+    for idx in subset_ids:
+        pos = position_map[idx]  # Позиция элемента в отсортированном массиве
+        bucket_index = pos * num_buckets // N  # Вычисляем номер бакета
+        buckets[bucket_index, bucket_counts[bucket_index]] = idx
+        bucket_counts[bucket_index] += 1
+
+    # Сортируем каждый бакет
+    for i in range(num_buckets):
+        if bucket_counts[i] > 0:
+            buckets[i, :bucket_counts[i]] = np.sort(buckets[i, :bucket_counts[i]])
+
+    # Конкатенируем бакеты
+    result = np.zeros(K, dtype=np.int32)
+    index = 0
+    for i in range(num_buckets):
+        if bucket_counts[i] > 0:
+            result[index:index + bucket_counts[i]] = buckets[i, :bucket_counts[i]]
+            index += bucket_counts[i]
+
+    for i in range(len(result)):
+        result[i] = elements_map[result[i]]
 
     return result

@@ -5,7 +5,7 @@ import numpy as np
 from numba import cuda
 from joblib import Parallel, delayed
 
-from CodeResearch.Cuda.cudaHelpers import updateSortedSetNumba
+from CodeResearch.Cuda.cudaHelpers import updateSortedSetNumba, updateSortedSetByBucketNumba
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCuda, \
@@ -188,7 +188,9 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
 
         t1 = time.time()
         #ss1 = updateSortedSetNumba(sds1, idx)
-        ss1 = getSortedSet(dsClasses, vt1)
+        #ss1 = getSortedSet(dsClasses, vt1)
+
+        ss1 = updateSortedSetByBucketNumba(sds1, idx)
         updateTimeNumba += time.time() - t1
 
         ss1_device = cuda.to_device(ss1)
@@ -196,10 +198,10 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
         vt2 = valuedTarget2[idx]
         #bvt2 = boolValuedTarget2[idx]
 
-
         t1 = time.time()
-        ss2 = getSortedSet(dsClasses, vt2)
+        #ss2 = getSortedSet(dsClasses, vt2)
         #ss2 = updateSortedSetNumba(sds2, idx)
+        ss2 = updateSortedSetByBucketNumba(sds2, idx)
         updateTimeNumba += time.time() - t1
 
         ss2_device = cuda.to_device(ss2)
