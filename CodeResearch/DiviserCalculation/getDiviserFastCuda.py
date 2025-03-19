@@ -207,26 +207,29 @@ def calculate_scores_kernel(dataSet, sortedDataSet, valuedTargetBool, currentSta
     return
 
 def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos, scores_neg, scores_result):
+
     currentState_device = cuda.to_device(currentState)
     omitedObjects_device = cuda.to_device(omitedObjects)
 
     nObjects = len(omitedObjects)
     nFeatures = len(currentState)
 
-    threads_per_block = 512
+    threads_per_block = 64
     blocks_per_grid = nFeatures
 
     bits_per_word = 32
     words = (nObjects + bits_per_word - 1) // bits_per_word
     shared_memory_size = words * 4
 
+    t1 = time.time()
     calculate_scores_kernel[blocks_per_grid, threads_per_block, 0, shared_memory_size](dataSet_device, sortedDataSet_device, valuedTargetBool_device, currentState_device, omitedObjects_device, scores_pos, scores_neg, scores_result, classValues[0], classValues[1], nObjects, nFeatures, words)
     cuda.synchronize()
+    clearKernelTime = time.time() - t1
 
     bestValue = cuda.device_array(1, dtype=np.float64)
     bestIndex = cuda.device_array(1, dtype=np.int64)
 
-    threads_per_block = 32
+    threads_per_block = 64
     blocks_per_grid = (nFeatures + threads_per_block - 1) // threads_per_block
 
     calculate_best_index[blocks_per_grid, threads_per_block](scores_pos, scores_neg, classValues[0], classValues[1], bestIndex, bestValue)
@@ -234,7 +237,9 @@ def getNextStepCuda(dataSet_device, sortedDataSet_device, valuedTargetBool_devic
 
     bestIndexHost = bestIndex.copy_to_host()[0]
 
-    return bestIndexHost if bestIndexHost != nFeatures else -1
+    res =bestIndexHost if bestIndexHost != nFeatures else -1
+
+    return res, clearKernelTime
 
 @jit(nopython=True, parallel=True)
 def getMinPositives(sortedDataSet, valuedTarget):
@@ -261,7 +266,7 @@ def checkStoppingCriteriaCupy(minPositives_device, currentState):
     return cp.any(comparison_result)
 
 def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sortedSet_device, valuedTarget, boolValuedTarget, classValues):
-
+    tt1 = time.time()
     minPositives = getMinPositives(sortedSet, valuedTarget)
 
     nObjects = dataSet.shape[0]
@@ -287,6 +292,8 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sorted
     iSteps = 0
 
     kernelTime = 0
+    clearKernelTime = 0
+    bestIndexCalculation = 0
     deltaTime = 0
     minPositivesTimeCuPy = 0
     updatingTime = 0
@@ -302,11 +309,12 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sorted
             break
 
         t1 = time.time()
-        iFeature = getNextStepCuda(dataSet_device, sortedSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device, scores_result_device)
+        iFeature, cct = getNextStepCuda(dataSet_device, sortedSet_device, valuedTargetBool_device, classValues, currentState, omitedObjects, scores_pos_device, scores_neg_device, scores_result_device)
         t2 = time.time()
         if iFeature == -1:
             break
 
+        clearKernelTime += cct
         kernelTime += (t2 - t1)
 
         t1 = time.time()
@@ -330,7 +338,7 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sorted
         if (maxLeft + curBalance - maxBalance) <= 0.001:
             break
 
-    #print('Total time: ' + str(time.time() - tt1) + ' Preparation time: ' + str(tt2 - tt1) + ' Before while time: ' + str(tt4 - tt1) + ' Min positives time: ' + str(minPositivesTime) + ' Min positives cupy time: ' + str(minPositivesTimeCuPy) + ' Updating time: ' + str(updatingTime) + ' Clear kernel time: ' + str(clearKernelTime) + ' To device: ' + str(todevice) + ' To host: ' + str(tohost) + ' Array: ' + str(resArray) + ' Kernel time: ' + str(kernelTime) + ' Delta time: ' + str(deltaTime))
+    print('Total time: ' + str(time.time() - tt1) + ' Min positives cupy time: ' + str(minPositivesTimeCuPy) + ' Updating time: ' + str(updatingTime) + ' Kernel time: ' + str(kernelTime) + ' Clear kernel time: ' + str(clearKernelTime) + ' Best index calculation: ' + str(bestIndexCalculation) + ' Delta time: ' + str(deltaTime))
     return abs(maxBalance), maxState
 
 def getMaximumDiviserFastCudaCore(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2):

@@ -1,18 +1,18 @@
+import time
+
 import numpy as np
 import cupy as cp
 
-# Создаем два массива в NumPy
-np_array1 = np.array([2, 2, 3, 4])
-np_array2 = np.array([2, 2, 2, 5])
+delta = 0
 
-# Преобразуем массивы NumPy в CuPy-массивы
-array1 = cp.asarray(np_array1)  # Преобразуем в CuPy-массив
-array2 = cp.asarray(np_array2)  # Преобразуем в CuPy-массив
+total = 3000
 
-# Покомпонентное сравнение
-comparison_result = array1 < array2  # Массив булевых значений
+for i in range(total):
+    np_array1 = np.random.randint(size=(500), low=0, high=1000)
+    t1 = time.time()
+    array1 = cp.asarray(np_array1)  # Преобразуем в CuPy-массив
+    sorted = cp.argsort(array1)
+    delta += (time.time() - t1)
 
-# Проверяем, есть ли хотя бы один True
-flag = cp.any(comparison_result).item()  # Преобразуем в Python bool
-
-print("Результат сравнения:", flag)
+print('Average time: ', delta/total)
+print('Average time: ', delta)
