@@ -1,7 +1,8 @@
 from unittest import TestCase
 import numpy as np
+from numpy.testing import assert_array_equal
 
-from CodeResearch.Cuda.cudaHelpers import getSortedSetCuda
+from CodeResearch.Cuda.cudaHelpers import getSortedSetCuda, updateSortedSetNumba
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet
 
 
@@ -42,3 +43,14 @@ class Test(TestCase):
         for i in range(50):
             self.test_get_sorted_set_numba_template(2000, 200)
             self.test_get_sorted_set_numba_template(2000, 200, False)
+
+    def test_get_updated_numba(self):
+        matrix = np.array([[0, 3], [1, 2], [2, 1], [3, 0], [4, 4], [5, 5]])
+
+        indexes = np.array([1, 3, 5])
+        expected = np.array([[0, 1], [1, 0], [2, 2]])
+
+        result = updateSortedSetNumba(matrix, indexes)
+        print(result)
+        print(expected)
+        assert_array_equal(result, expected)

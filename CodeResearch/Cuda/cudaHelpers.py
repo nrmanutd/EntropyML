@@ -1,7 +1,7 @@
 import cupy as cp
-import numba
+import numba as nb
 import numpy as np
-from numba import jit, cuda
+from numba import jit, cuda, prange
 
 
 # Устройственная функция для преобразования float32 в uint32
@@ -17,7 +17,7 @@ def float_to_int(f):
 # Кернел для создания ключей
 @cuda.jit
 def create_keys(matrix, weights, keys):
-    i, j = numba.cuda.grid(2)
+    i, j = cuda.grid(2)
     if i < matrix.shape[0] and j < matrix.shape[1]:
         val_int = float_to_int(matrix[i, j])
         weight_int = float_to_int(weights[i])
@@ -48,3 +48,26 @@ def getSortedSetCuda(matrix, weights):
         result[:, j] = cp.argsort(keys_d[:, j])
 
     return result.get()
+
+@jit(nopython=True, parallel=True)
+def updateSortedSetNumba(matrix, indexes):
+    nFeatures = matrix.shape[1]
+    nObjects = matrix.shape[0]
+    newObjects = len(indexes)
+
+    result = np.zeros((newObjects, nFeatures), dtype=np.int32)
+
+    map = dict()
+    for i in range(newObjects):
+        map[indexes[i]] = i
+
+    currentState = np.zeros(nFeatures, dtype=np.int32)
+
+    for iFeature in prange(nFeatures):
+        for iObject in range(nObjects):
+            curObjectIdx = matrix[iObject, iFeature]
+            if curObjectIdx in map:
+                result[currentState[iFeature], iFeature] = map[curObjectIdx]
+                currentState[iFeature] += 1
+
+    return result
