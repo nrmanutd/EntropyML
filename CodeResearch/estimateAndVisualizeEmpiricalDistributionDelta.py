@@ -4,6 +4,7 @@ import time
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.Visualization.saveDataForLatex import saveDataForTable
 from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization
@@ -164,9 +165,20 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
 
     return
 
+def doubleDataSet(dataSet):
+    newDataSet = np.zeros((dataSet.shape[0], 2 * dataSet.shape[1]), dtype=np.float32)
+    nFeatures = dataSet.shape[1]
+
+    newDataSet[:, 0:nFeatures] = dataSet
+    newDataSet[:, nFeatures:2*nFeatures] = -dataSet
+
+    return newDataSet
+
 def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwargs):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
+
+    #dataSet = doubleDataSet(dataSet)
 
     nObjects = len(target)
     nFeatures = dataSet.shape[1]
@@ -174,13 +186,18 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     beta = 0.01
 
     nModelAttempts = 1
-    nAttempts = 100
+    nAttempts = 10
+    commonVisualzation = True
+
     nClasses = len(np.unique(target))
 
     pairs = math.floor(nClasses * (nClasses - 1) / 2)
 
     numberOfSteps = kwargs.get('t', None)
     numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
+
+    commonPairs = []
+    labels = []
 
     targetResults = np.zeros((numberOfSteps, pairs))
     fastResults = np.zeros((numberOfSteps, pairs))
@@ -205,6 +222,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     #    for jClass in range(iClass - 1, -1, -1):
     for iClass in range(nClasses):
         for jClass in range(iClass):
+        #for jClass in range(iClass):
 
             if iClass not in setToCompare or jClass not in setToCompare:
                 continue
@@ -219,13 +237,16 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
             data['steps'] = xSteps
 
+            curPair = '{:}_{:}'.format(iClass, jClass)
+
             print('Current pair of classes: {:}/{:}, task {:}, objects {:}, nFeatures {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, nFeatures, step * numberOfSteps, step))
             names.append('{:} vs {:}'.format(iClass, jClass))
             meanSlopesInd = []
             medianSlopesInd = []
             lowSlopesInd = []
 
-            for iStep in range(0, numberOfSteps):
+            for iStep in range(numberOfSteps - 1, numberOfSteps):
+            #for iStep in range(0, numberOfSteps):
                 currentObjects = max(2, (iStep + 1) * step)
 
                 if iObjectsCount + jObjectsCount < currentObjects:
@@ -242,8 +263,10 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                if nFeatures <= 1000:
+                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                else:
+                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
 
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp
@@ -252,6 +275,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 modelPredictions[iStep, curIdx, :] = modelPrediction
                 meanPValues[iStep, curIdx] = np.mean(pValues)
                 medianPValues[iStep, curIdx] = np.median(pValues)
+
+                commonPairs.append(pValues)
+                labels.append(curPair)
 
                 if iStep > 1:
                     currentRange = range(iStep + 1)
@@ -284,14 +310,22 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
-                visualizePValues(data)
-                saveDataForVisualization(data)
+
+                if commonVisualzation:
+                    visualizeAndSaveKSForEachPair(commonPairs, labels, taskName, curPair)
+                else:
+                    visualizePValues(data)
+                    saveDataForVisualization(data)
 
             curResult = {'Classes': names[curIdx], 'total': totalObjects, 'iClass':  iObjectsCount, 'jClass': jObjectsCount, 'nPoints':  (1 + nPoints[curIdx, :]) * step, 'KSl': meanPValues[-1, curIdx], 'KSu': fastResultsUp[-1, curIdx]}
             eachTaskResult.append(curResult)
-            saveDataForTable(eachTaskResult, taskName, names[curIdx])
-            visualizePValues(data)
-            saveDataForVisualization(data)
+
+            if commonVisualzation:
+                visualizeAndSaveKSForEachPair(commonPairs, labels, taskName, curPair)
+            else:
+                saveDataForTable(eachTaskResult, taskName, names[curIdx])
+                visualizePValues(data)
+                saveDataForVisualization(data)
 
             curIdx += 1
 

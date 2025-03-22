@@ -6,7 +6,8 @@ from joblib import Parallel, delayed
 from numba import cuda
 
 from CodeResearch.Cuda.cudaHelpers import convertSortedSetToBackMap, updateSortedSetCupy, filterSortedSetByIndex
-from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget
+from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget, prepareDataSet, \
+    GetValuedTarget
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore, getMaximumDiviserFastCuda
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
@@ -127,12 +128,28 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     values = np.zeros(nAttempts)
     currentTime = time.time()
 
+    preparationTime = 0
+
     for iAttempt in range(nAttempts):
         if iAttempt % 10 == 0:
-            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime))
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime))
+            preparationTime = 0
             currentTime = time.time()
 
         newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+
+        t1 = time.time()
+        ds = prepareDataSet(newSet)
+        nClasses = np.unique(newTarget)
+        counts = np.zeros(2, dtype=np.int64)
+        counts[0] = len(np.where(newTarget == nClasses[0])[0])
+        counts[1] = len(np.where(newTarget == nClasses[1])[0])
+        valuedTarget1 = GetValuedTarget(newTarget, nClasses[0], 1 / counts[0], -1 / counts[1])
+        sortedDataSet1 = getSortedSet(ds, valuedTarget1)
+        valuedTarget2 = GetValuedTarget(newTarget, nClasses[1], 1 / counts[1], -1 / counts[0])
+        sortedDataSet2 = getSortedSet(ds, valuedTarget2)
+        preparationTime += (time.time() - t1)
+
         values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
