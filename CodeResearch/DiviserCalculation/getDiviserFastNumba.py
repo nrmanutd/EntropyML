@@ -110,8 +110,7 @@ def getMinPositives(sortedDataSet, valuedTarget):
     return firstPositiveObjects
 
 @jit(nopython=True, parallel=True)
-def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
-    sortedDataSet = getSortedSet(dataSet, valuedTarget)
+def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, sortedDataSet):
     minPositives = getMinPositives(sortedDataSet, valuedTarget)
 
     nObjects = dataSet.shape[0]
@@ -163,7 +162,6 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget):
 
     return abs(maxBalance), maxState
 
-
 @jit(nopython=True)
 def getMaximumDiviserFastNumba(dataSet, target):
     dataSet = prepareDataSet(dataSet)
@@ -177,10 +175,27 @@ def getMaximumDiviserFastNumba(dataSet, target):
         print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
 
     valuedTarget1 = GetValuedTarget(target, nClasses[0], 1 / counts[0], -1 / counts[1])
-    c1Banalce, c1diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget1)
-
     valuedTarget2 = GetValuedTarget(target, nClasses[1], 1 / counts[1], -1 / counts[0])
-    c2Banalce, c2diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget2)
+
+    sds1 = getSortedSet(dataSet, valuedTarget1)
+    sds2 = getSortedSet(dataSet, valuedTarget2)
+
+    return getMaximumDiviserFastNumbaCore(dataSet, target, valuedTarget1, sds1, valuedTarget2, sds2)
+
+@jit(nopython=True)
+def getMaximumDiviserFastNumbaCore(dataSet, target, valuedTarget1, sortedSet1, valuedTarget2, sortedSet2):
+
+    nClasses = np.unique(target)
+    counts = np.zeros(2, dtype=nb.int32)
+    counts[0] = len(np.where(target == nClasses[0])[0])
+    counts[1] = len(np.where(target == nClasses[1])[0])
+
+    if len(nClasses) != 2:
+        #raise ValueError('Number of classes should be equal to two, instead {:}'.format(len(nClasses)))
+        print('Error!!! Number of classes should be equal to two, instead ', len(nClasses))
+
+    c1Banalce, c1diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget1, sortedSet1)
+    c2Banalce, c2diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget2, sortedSet2)
 
     if c1Banalce > c2Banalce:
         return c1Banalce, c1diviser

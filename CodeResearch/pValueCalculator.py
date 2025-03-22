@@ -10,7 +10,8 @@ from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValu
     GetValuedTarget
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore, getMaximumDiviserFastCuda
-from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
+from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
+    getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.permutationHelpers import GetObjectsPerClass
@@ -128,6 +129,20 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     values = np.zeros(nAttempts)
     currentTime = time.time()
 
+    ds = dataSet[objectsIdx, :]
+    ds = prepareDataSet(ds)
+    t = target[objectsIdx]
+
+    nClasses, counts = np.unique(t, return_counts=True)
+    valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(t, nClasses[0], 1 / counts[0], -1 / counts[1])
+    valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(t, nClasses[1], 1 / counts[1], -1 / counts[0])
+
+    sds1 = getSortedSet(ds, valuedTarget1)
+    sds2 = getSortedSet(ds, valuedTarget2)
+
+    sds1_device = cuda.to_device(sds1)
+    sds2_device = cuda.to_device(sds2)
+
     preparationTime = 0
 
     for iAttempt in range(nAttempts):
@@ -136,21 +151,26 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
             preparationTime = 0
             currentTime = time.time()
 
-        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        #newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
+        # values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
 
         t1 = time.time()
-        ds = prepareDataSet(newSet)
-        nClasses = np.unique(newTarget)
-        counts = np.zeros(2, dtype=np.int64)
-        counts[0] = len(np.where(newTarget == nClasses[0])[0])
-        counts[1] = len(np.where(newTarget == nClasses[1])[0])
-        valuedTarget1 = GetValuedTarget(newTarget, nClasses[0], 1 / counts[0], -1 / counts[1])
-        sortedDataSet1 = getSortedSet(ds, valuedTarget1)
-        valuedTarget2 = GetValuedTarget(newTarget, nClasses[1], 1 / counts[1], -1 / counts[0])
-        sortedDataSet2 = getSortedSet(ds, valuedTarget2)
+
+        iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
+        idx = np.concatenate((iClassIdx, jClassIdx))
+
+        dsClasses = ds[idx, :]
+        tClasses = t[idx]
+
+        nClasses, counts = np.unique(tClasses, return_counts=True)
+        vt1 = GetValuedTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
+        vt2 = GetValuedTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
+        ss1 = filterSortedSetByIndex(sds1_device, sds1.shape[0], sds1.shape[1], idx)
+        ss2 = filterSortedSetByIndex(sds2_device, sds2.shape[0], sds2.shape[1], idx)
+
         preparationTime += (time.time() - t1)
 
-        values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
+        values[iAttempt] = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, ss1, vt2, ss2)[0]
 
     targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
     #pValue = len(np.where(values < targetValue)[0]) / len(values)
@@ -171,6 +191,7 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     objectsIdx = np.array(objectsIdx)
 
     ds = dataSet[objectsIdx, :]
+    ds = prepareDataSet(ds)
     t = target[objectsIdx]
 
     nClasses, counts = np.unique(t, return_counts=True)
@@ -188,7 +209,7 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
 
     for iAttempt in range(nAttempts):
         if iAttempt % 10 == 0:
-            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Update time numba: ' + str(updateTimeNumba) + ' Preparation: ' + str(preparationTime))
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Update time numba: ' + str(updateTimeNumba) + ' Cuda calculation: ' + str(preparationTime))
             currentTime = time.time()
             updateTimeNumba = 0
             preparationTime = 0

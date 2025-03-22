@@ -59,7 +59,7 @@ def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, curPair):
             plt.text(x_center, max_y + 0.01, f"{delta:.2f}", ha='center', va='bottom', fontsize=8, color='black')
         else:
             min_y = np.min(d)
-            plt.text(x_center, min_y - 0.03, f"{delta:.2f}", ha='center', va='bottom', fontsize=8, color='black')
+            plt.text(x_center, min_y - 0.01, f"{delta:.2f}", ha='center', va='bottom', fontsize=8, color='black')
 
     plt.xticks(range(1, len(sorted_data) + 1), [pairsNames[sorted_indices[i]] for i in range(len(sorted_data))], fontsize=6)
     plt.xlabel('Pairs of Classes')
