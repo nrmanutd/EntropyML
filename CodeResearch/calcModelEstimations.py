@@ -21,7 +21,7 @@ def calcXGBoost(X_train, Y_train, X_test, Y_test):
 
 def calcNN(X_train, Y_train, X_test, Y_test):
 
-    return 0
+    #return 0
 
     nFeatures = X_train.shape[1]
     nClasses = len(np.unique(Y_train))

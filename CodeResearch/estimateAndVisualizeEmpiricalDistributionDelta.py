@@ -188,6 +188,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     nModelAttempts = 1
     nAttempts = 100
     commonVisualzation = True
+    randomPermutation = False
+    calculateModel = True
 
     nClasses = len(np.unique(target))
 
@@ -218,11 +220,18 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     #setToCompare = set([5, 8])
     setToCompare = set(np.unique(target))
 
+    #pairsToCompare = [[3, 8], [3, 2], [3, 1], [8, 5], [5, 1], [9, 8], [9, 7]]
+
     #for iClass in range(nClasses - 1, -1, -1):
     #    for jClass in range(iClass - 1, -1, -1):
     for iClass in range(nClasses):
         for jClass in range(iClass):
-        #for jClass in range(iClass):
+        #for nPair in range(len(pairsToCompare)):
+        #    cp = pairsToCompare[nPair]
+        #    if iClass != cp[0]:
+        #        continue
+
+        #    jClass = cp[1]
 
             if iClass not in setToCompare or jClass not in setToCompare:
                 continue
@@ -264,9 +273,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
                 if nFeatures <= 1000:
-                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation, calculateModel)
                 else:
-                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
+                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation, calculateModel)
 
                 fastResults[iStep, curIdx] = ijpValue
                 fastResultsUp[iStep, curIdx] = ijpValueUp

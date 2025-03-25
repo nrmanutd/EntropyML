@@ -4,6 +4,7 @@ import time
 import numpy as np
 from joblib import Parallel, delayed
 from numba import cuda
+from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Cuda.cudaHelpers import convertSortedSetToBackMap, updateSortedSetCupy, filterSortedSetByIndex
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget, prepareDataSet, \
@@ -13,7 +14,7 @@ from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviser
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
     getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
-from CodeResearch.calcModelEstimations import calcModel
+from CodeResearch.calcModelEstimations import calcModel, calcNN
 from CodeResearch.permutationHelpers import GetObjectsPerClass
 
 
@@ -120,18 +121,21 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, n
 
     return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
 
-def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
+def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation=False, calculateModel=False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
+    #precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
     currentTime = time.time()
 
+    twoClassObjects = np.arange(len(objectsIdx))
     ds = dataSet[objectsIdx, :]
     ds = prepareDataSet(ds)
     t = target[objectsIdx]
+
+    enc = LabelEncoder()
 
     nClasses, counts = np.unique(t, return_counts=True)
     valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(t, nClasses[0], 1 / counts[0], -1 / counts[1])
@@ -159,6 +163,23 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
         iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
         idx = np.concatenate((iClassIdx, jClassIdx))
 
+        if calculateModel:
+            tt= enc.fit_transform(np.ravel(t))
+
+            dsClasses = ds[idx, :]
+            tClasses = tt[idx]
+
+            testIdx = np.setdiff1d(twoClassObjects, idx)
+            testDs = ds[testIdx, :]
+            testTClasses = tt[testIdx]
+
+            preparationTime += (time.time() - t1)
+            values[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            continue
+
+        if randomPermutation:
+            tClasses = np.random.permutation(tClasses)
+
         dsClasses = ds[idx, :]
         tClasses = t[idx]
 
@@ -177,13 +198,13 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     quantile = np.quantile(values, beta)
     quantileUp = np.quantile(values, 1 - beta)
 
-    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
+    return quantile, quantileUp, targetValue, values, (0, 0)#(precision['accuracy'][0], precision['modelSigma'][0])
 
-def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
+def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation = False, calculateModel = False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
+    #precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
     currentTime = time.time()
@@ -224,6 +245,9 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
         dsClasses = ds[idx, :]
         tClasses = t[idx]
 
+        if randomPermutation:
+            tClasses = np.random.permutation(tClasses)
+
         nClasses, counts = np.unique(tClasses, return_counts=True)
         vt1, bvt1 = GetValuedAndBoolTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
         vt2, bvt2 = GetValuedAndBoolTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
@@ -260,7 +284,7 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     quantile = np.quantile(values, beta)
     quantileUp = np.quantile(values, 1 - beta)
 
-    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
+    return quantile, quantileUp, targetValue, values, (0, 0)# (precision['accuracy'][0], precision['modelSigma'][0])
 
 def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])
