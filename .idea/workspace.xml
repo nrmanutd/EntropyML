@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showKS.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,6 +83,7 @@
     "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
     "Python tests.Unittests for test_getDiviserFastNumba.executor": "Run",
     "Python.DNResearch.executor": "Run",
+    "Python.VisualizeAndSaveCommonTopSubsamples.executor": "Run",
     "Python.calcEntropy.executor": "Debug",
     "Python.calculateDistributionDelta.executor": "Debug",
     "Python.car.executor": "Run",
@@ -92,6 +96,7 @@
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
     "Python.serialization.executor": "Run",
+    "Python.showKS.executor": "Run",
     "Python.tricks.executor": "Run",
     "Python.visualizeTest.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -237,14 +242,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00045" summary="improved visualization">
-      <option name="closed" value="true" />
-      <created>1737404818431</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1737404818431</updated>
     </task>
     <task id="LOCAL-00046" summary="improved visualization">
       <option name="closed" value="true" />
@@ -630,7 +627,15 @@
       <option name="project" value="LOCAL" />
       <updated>1742934844691</updated>
     </task>
-    <option name="localTasksCounter" value="94" />
+    <task id="LOCAL-00094" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1742994998589</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1742994998589</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

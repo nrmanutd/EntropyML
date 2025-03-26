@@ -121,11 +121,18 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, n
 
     return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
 
-def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation=False, calculateModel=False):
+def calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation=False, calculateModel=False):
+    nFeatures = dataSet.shape[1]
+
+    if nFeatures < 1000:
+        return calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation, calculateModel)
+    else:
+        return calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation, calculateModel)
+
+def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation=False, calculateModel=False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
-    #precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
     currentTime = time.time()
@@ -198,13 +205,12 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     quantile = np.quantile(values, beta)
     quantileUp = np.quantile(values, 1 - beta)
 
-    return quantile, quantileUp, targetValue, values, (0, 0)#(precision['accuracy'][0], precision['modelSigma'][0])
+    return values
 
-def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation = False, calculateModel = False):
+def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation = False, calculateModel = False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
-    #precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
 
     values = np.zeros(nAttempts)
     currentTime = time.time()
@@ -302,7 +308,7 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     quantile = np.quantile(values, beta)
     quantileUp = np.quantile(values, 1 - beta)
 
-    return quantile, quantileUp, targetValue, values, (0, 0)# (precision['accuracy'][0], precision['modelSigma'][0])
+    return values
 
 def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])

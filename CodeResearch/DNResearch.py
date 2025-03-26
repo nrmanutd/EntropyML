@@ -271,10 +271,10 @@ lObj = 1000
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
-#checkTask('mnist', t=10, m='delta')
+checkTask('mnist', t=10, m='delta')
 #checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-checkTask('cifar', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

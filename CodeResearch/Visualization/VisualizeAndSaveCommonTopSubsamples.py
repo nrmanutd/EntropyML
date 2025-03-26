@@ -14,16 +14,17 @@ def calculate_quantiles(data):
     }
     return quantiles
 
-def visualizeAndSaveKSForEachPairAndTwoDistributions(data1, data2, labels, taskName, curPair):
+def visualizeAndSaveKSForEachPairAndTwoDistributions(data1, data2, labels, taskName, curPair, folder='PValuesFigures'):
     # Расчет квантилей для каждого распределения
     quantiles_list1 = [calculate_quantiles(d) for d in data1]
     quantiles_list2 = [calculate_quantiles(d) for d in data2]
 
     # Расчет дельты между 99% и 1% квантилями для первого распределения
     deltas1 = [q['99%'] - q['1%'] for q in quantiles_list1]
+    m = [q['50%'] for q in quantiles_list1]
 
     # Сортировка пар классов по возрастанию дельты (по первому распределению)
-    sorted_indices = np.argsort(deltas1)
+    sorted_indices = np.argsort(m)
     sorted_data1 = [data1[i] for i in sorted_indices]
     sorted_data2 = [data2[i] for i in sorted_indices]
     sorted_quantiles1 = [quantiles_list1[i] for i in sorted_indices]
@@ -102,25 +103,26 @@ def visualizeAndSaveKSForEachPairAndTwoDistributions(data1, data2, labels, taskN
 
     plt.xlabel('Pairs of Classes', fontsize=12)
     plt.ylabel('Statistic Values', fontsize=12)
-    plt.title('Distribution of Statistics for Each Pair of Classes', fontsize=14)
+    plt.title('Distribution of Statistics for {:}'.format(taskName), fontsize=14)
     plt.legend()  # Легенда будет содержать только метки распределений
     plt.grid(True)
 
     # Сохранение графика в файл
     #plt.savefig('PValuesFigures\\statistics_distribution_two_distributions_{:}_{:}.png'.format(taskName, curPair), dpi=300, bbox_inches='tight')
-    plt.savefig('statistics_distribution_two_distributions_{:}_{:}.png'.format(taskName, curPair),
+    plt.savefig('{:}\\statistics_distribution_two_distributions_{:}_{:}.png'.format(folder, taskName, curPair),
                 dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, curPair):
+def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, nAttempts, curPair, folder='PValuesFigures'):
     # Расчет квантилей для каждой пары классов
     quantiles_list = [calculate_quantiles(d) for d in data]
 
     # Расчет дельты между 99% и 1% квантилями
     deltas = [q['99%'] - q['1%'] for q in quantiles_list]
+    ms = [q['50%'] for q in quantiles_list]
 
     # Сортировка пар классов по возрастанию дельты
-    sorted_indices = np.argsort(deltas)
+    sorted_indices = np.argsort(ms)
     sorted_data = [data[i] for i in sorted_indices]
     sorted_quantiles = [quantiles_list[i] for i in sorted_indices]
     sorted_deltas = [deltas[i] for i in sorted_indices]  # Отсортированные дельты
@@ -162,10 +164,10 @@ def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, curPair):
     plt.xticks(range(1, len(sorted_data) + 1), [pairsNames[sorted_indices[i]] for i in range(len(sorted_data))], fontsize=6)
     plt.xlabel('Pairs of Classes')
     plt.ylabel('Statistic Values')
-    plt.title('Distribution of Statistics for Each Pair of Classes')
+    plt.title('Distribution for {:} attempts {:}'.format(taskName, nAttempts))
     plt.legend()
     plt.grid(True)
 
     # Сохранение графика в файл
-    plt.savefig('PValuesFigures\\statistics_distribution_{:}_{:}.png'.format(taskName, curPair), dpi=300, bbox_inches='tight')  # Сохраняем в файл 'statistics_distribution.png'
+    plt.savefig('{:}\\statistics_distribution_{:}_{:}.png'.format(folder,taskName, curPair), dpi=300, bbox_inches='tight')  # Сохраняем в файл 'statistics_distribution.png'
     plt.close(fig)

@@ -7,11 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.Visualization.saveDataForLatex import saveDataForTable
-from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization
+from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization, \
+    serialize_labeled_list_of_arrays
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel, \
-    calcPValueFastNumba, calcPValueFastCuda
+    calcPValueFastNumba, calcPValueFastCuda, calcPValueFastPro
 from CodeResearch.slopeCalculator import calculateSlope, getBestSlopeMedian, getBestSlopeMax, calculateSlopeGradient
 
 
@@ -185,11 +186,11 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     alpha = 0.001
     beta = 0.01
 
-    nModelAttempts = 1
-    nAttempts = 100
+    nAttempts = 1000
+    permutationAttempts = 100
+    NNAttempts = 100
+
     commonVisualzation = True
-    randomPermutation = True
-    calculateModel = False
 
     nClasses = len(np.unique(target))
 
@@ -199,15 +200,12 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
     commonPairs = []
+    commonPermutationPairs = []
+    commonNNPairs = []
     labels = []
 
-    targetResults = np.zeros((numberOfSteps, pairs))
-    fastResults = np.zeros((numberOfSteps, pairs))
     fastResultsUp = np.zeros((numberOfSteps, pairs))
-    pValuesResults = np.zeros((numberOfSteps, pairs, nAttempts))
-    modelPredictions = np.zeros((numberOfSteps, pairs, 2))
     meanPValues = np.zeros((numberOfSteps, pairs))
-    medianPValues = np.zeros((numberOfSteps, pairs))
     nPoints = np.zeros((pairs, 4), dtype=int)
     xSteps = np.zeros((numberOfSteps, pairs), dtype=int)
     eachTaskResult = []
@@ -250,12 +248,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
 
             print('Current pair of classes: {:}/{:}, task {:}, objects {:}, nFeatures {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, nFeatures, step * numberOfSteps, step))
             names.append('{:} vs {:}'.format(iClass, jClass))
-            meanSlopesInd = []
-            medianSlopesInd = []
-            lowSlopesInd = []
 
             for iStep in range(numberOfSteps - 1, numberOfSteps):
-            #for iStep in range(0, numberOfSteps):
                 currentObjects = max(2, (iStep + 1) * step)
 
                 if iObjectsCount + jObjectsCount < currentObjects:
@@ -266,62 +260,24 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
                 data['step'] = iStep
 
-                #ijpValue = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                #stochasticResults[iStep, curIdx] = ijpValue
+                pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta)
+                pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, beta, True, False)
+                pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, beta, False, True)
 
-                #ijpValue, tValue, pValues, modelPrediction = calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts)
-                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                #ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta)
-                if nFeatures <= 1000:
-                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation, calculateModel)
-                else:
-                    ijpValue, ijpValueUp, tValue, pValues, modelPrediction = calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta, randomPermutation, calculateModel)
+                commonPairs.append(pValues1)
+                commonPermutationPairs.append(pValues2)
+                commonNNPairs.append(pValues3)
 
-                fastResults[iStep, curIdx] = ijpValue
-                fastResultsUp[iStep, curIdx] = ijpValueUp
-                targetResults[iStep, curIdx] = tValue
-                pValuesResults[iStep, curIdx, :] = pValues
-                modelPredictions[iStep, curIdx, :] = modelPrediction
-                meanPValues[iStep, curIdx] = np.mean(pValues)
-                medianPValues[iStep, curIdx] = np.median(pValues)
-
-                commonPairs.append(pValues)
                 labels.append(curPair)
-
-                if iStep > 1:
-                    currentRange = range(iStep + 1)
-                    meanSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], meanPValues[currentRange, curIdx])
-                    medianSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], medianPValues[currentRange, curIdx])
-                    lowSlope = calculateSlopeGradient(xSteps[currentRange, curIdx], fastResults[currentRange, curIdx])
-
-                    meanSlopesInd.append(meanSlope)
-                    medianSlopesInd.append(medianSlope)
-                    lowSlopesInd.append(lowSlope)
-
-                    nPoints[curIdx, 0] = getBestSlopeMedian(meanSlopesInd)
-                    nPoints[curIdx, 1] = getBestSlopeMedian(medianSlopesInd)
-                    nPoints[curIdx, 2] = getBestSlopeMedian(lowSlopesInd)
-
-                    mfr = min(fastResults[currentRange, curIdx])
-                    nPoints[curIdx, 3] = fastResults[currentRange, curIdx].tolist().index(mfr)
-
-                data['pValuesResults'] = pValuesResults
-                data['meanPValue'] = meanPValues
-                data['medianPValue'] = medianPValues
-                data['targetResults'] = targetResults
-                data['pairIndex'] = curIdx
-                data['classes'] = '{:} vs {:}'.format(iClass, jClass)
-                data['fast'] = fastResults
-                data['fastUp'] = fastResultsUp
-                data['names'] = names
-                data['model'] = modelPredictions
-                data['nPoints'] = nPoints
 
                 e1 = time.time()
                 print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
 
                 if commonVisualzation:
-                    visualizeAndSaveKSForEachPair(commonPairs, labels, taskName, curPair)
+                    visualizeAndSaveKSForEachPair(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts, curPair)
+                    visualizeAndSaveKSForEachPair(commonPermutationPairs, labels,
+                                                  '{:}_KS_permutation'.format(taskName), permutationAttempts, curPair)
+                    visualizeAndSaveKSForEachPair(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts, curPair)
                 else:
                     visualizePValues(data)
                     saveDataForVisualization(data)
@@ -330,7 +286,26 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
             eachTaskResult.append(curResult)
 
             if commonVisualzation:
-                visualizeAndSaveKSForEachPair(commonPairs, labels, taskName, curPair)
+                visualizeAndSaveKSForEachPair(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts, curPair)
+                visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName),
+                                              permutationAttempts, curPair)
+                visualizeAndSaveKSForEachPair(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
+                                              curPair)
+
+                serialize_labeled_list_of_arrays(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts,
+                                                 'PValuesFigures\\PValuesLogs\\KS_{0}_{1}_{2}.txt'.format(taskName,
+                                                                                                          nAttempts,
+                                                                                                          curPair))
+
+                serialize_labeled_list_of_arrays(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName), permutationAttempts,
+                                                 'PValuesFigures\\PValuesLogs\\KS_permutation_{0}_{1}_{2}.txt'.format(taskName,
+                                                                                                          permutationAttempts,
+                                                                                                          curPair))
+
+                serialize_labeled_list_of_arrays(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
+                                                 'PValuesFigures\\PValuesLogs\\NN_{0}_{1}_{2}.txt'.format(taskName,
+                                                                                                          NNAttempts,
+                                                                                                          curPair))
             else:
                 saveDataForTable(eachTaskResult, taskName, names[curIdx])
                 visualizePValues(data)
