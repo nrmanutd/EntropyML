@@ -36,8 +36,10 @@ def getDataSetIndexesOfTwoClasses(currentObjects, target, iClass, jClass):
     return iClassObjects, jClassObjects
 
 def getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass):
-
     iClassObjects, jClassObjects = getDataSetIndexesOfTwoClasses(currentObjects, target, iClass, jClass)
+    return getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects)
+
+def getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects):
 
     iObjectsCount = len(iClassObjects)
     jObjectsCount = len(jClassObjects)

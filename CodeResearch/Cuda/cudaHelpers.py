@@ -4,7 +4,6 @@ from numba import jit, cuda, prange, njit
 
 from CodeResearch.DiviserCalculation.diviserHelpers import iv2s
 
-
 # Устройственная функция для преобразования float32 в uint32
 @cuda.jit(device=True)
 def float_to_int(f):
