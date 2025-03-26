@@ -188,8 +188,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     nModelAttempts = 1
     nAttempts = 100
     commonVisualzation = True
-    randomPermutation = False
-    calculateModel = True
+    randomPermutation = True
+    calculateModel = False
 
     nClasses = len(np.unique(target))
 

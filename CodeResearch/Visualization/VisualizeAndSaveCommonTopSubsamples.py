@@ -90,12 +90,12 @@ def visualizeAndSaveKSForEachPairAndTwoDistributions(data1, data2, labels, taskN
 
         # Подпись дельты над самым верхним значением для первого распределения
         # Подпись дельты над самой верхней точкой
-        #max_y = np.max(d1)  # Самая верхняя точка для текущей пары классов
-        #if max_y < 0.95:
-        #    plt.text(x_center1, max_y + 0.005, f"{delta1:.2f}", ha='center', va='bottom', fontsize=8, color='black')
-        #else:
-        #    min_y = np.min(d1)
-        #    plt.text(x_center1, min_y - 0.015, f"{delta1:.2f}", ha='center', va='bottom', fontsize=8, color='black')
+        max_y = np.max(d1)  # Самая верхняя точка для текущей пары классов
+        if max_y < 0.95:
+            plt.text(x_center1, max_y + 0.005, f"{delta1:.2f}", ha='center', va='bottom', fontsize=8, color='black')
+        else:
+            min_y = np.min(d1)
+            plt.text(x_center1, min_y - 0.015, f"{delta1:.2f}", ha='center', va='bottom', fontsize=8, color='black')
 
     # Устанавливаем подписи по оси X с уменьшенным шрифтом
     plt.xticks(range(1, len(sorted_data1) + 1), sorted_labels, rotation=90, fontsize=8)

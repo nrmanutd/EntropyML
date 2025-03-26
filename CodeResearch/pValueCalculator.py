@@ -177,11 +177,11 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
             values[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
             continue
 
+        tClasses = t[idx]
         if randomPermutation:
             tClasses = np.random.permutation(tClasses)
 
         dsClasses = ds[idx, :]
-        tClasses = t[idx]
 
         nClasses, counts = np.unique(tClasses, return_counts=True)
         vt1 = GetValuedTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
@@ -208,9 +208,11 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
 
     values = np.zeros(nAttempts)
     currentTime = time.time()
+    enc = LabelEncoder()
 
     objectsIdx = np.array(objectsIdx)
 
+    twoClassObjects = np.arange(len(objectsIdx))
     ds = dataSet[objectsIdx, :]
     ds = prepareDataSet(ds)
     t = target[objectsIdx]
@@ -239,8 +241,24 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
         #values[iAttempt] = getMaximumDiviserFastCuda(newSet, newTarget)[0]
         #continue
 
+        t1 = time.time()
+
         iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
         idx = np.concatenate((iClassIdx, jClassIdx))
+
+        if calculateModel:
+            tt= enc.fit_transform(np.ravel(t))
+
+            dsClasses = ds[idx, :]
+            tClasses = tt[idx]
+
+            testIdx = np.setdiff1d(twoClassObjects, idx)
+            testDs = ds[testIdx, :]
+            testTClasses = tt[testIdx]
+
+            preparationTime += (time.time() - t1)
+            values[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            continue
 
         dsClasses = ds[idx, :]
         tClasses = t[idx]
