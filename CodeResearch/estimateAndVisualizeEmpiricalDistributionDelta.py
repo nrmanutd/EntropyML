@@ -186,7 +186,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     alpha = 0.001
     beta = 0.01
 
-    nAttempts = 1000
+    nAttempts = 100
     permutationAttempts = 100
     NNAttempts = 100
 
@@ -224,6 +224,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     #    for jClass in range(iClass - 1, -1, -1):
     for iClass in range(nClasses):
         for jClass in range(iClass):
+
         #for nPair in range(len(pairsToCompare)):
         #    cp = pairsToCompare[nPair]
         #    if iClass != cp[0]:
@@ -260,13 +261,17 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
                 data['step'] = iStep
 
-                pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta)
-                pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, beta, True, False)
-                pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, beta, False, True)
+                #pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, False)
+                #pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, True, True, False)
+                #pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, False, False, True)
 
-                commonPairs.append(pValues1)
-                commonPermutationPairs.append(pValues2)
-                commonNNPairs.append(pValues3)
+                # commonPairs.append(pValues1)
+                # commonPermutationPairs.append(pValues2)
+                # commonNNPairs.append(pValues3)
+
+                ksValues, NNValues = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, True)
+                commonPairs.append(ksValues)
+                commonNNPairs.append(NNValues)
 
                 labels.append(curPair)
 
@@ -292,17 +297,18 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 visualizeAndSaveKSForEachPair(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
                                               curPair)
 
-                serialize_labeled_list_of_arrays(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts,
+                if len(commonPairs) > 0:
+                    serialize_labeled_list_of_arrays(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts,
                                                  'PValuesFigures\\PValuesLogs\\KS_{0}_{1}_{2}.txt'.format(taskName,
                                                                                                           nAttempts,
                                                                                                           curPair))
-
-                serialize_labeled_list_of_arrays(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName), permutationAttempts,
+                if len(commonPermutationPairs) > 0:
+                    serialize_labeled_list_of_arrays(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName), permutationAttempts,
                                                  'PValuesFigures\\PValuesLogs\\KS_permutation_{0}_{1}_{2}.txt'.format(taskName,
                                                                                                           permutationAttempts,
                                                                                                           curPair))
-
-                serialize_labeled_list_of_arrays(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
+                if len(commonNNPairs) > 0:
+                    serialize_labeled_list_of_arrays(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
                                                  'PValuesFigures\\PValuesLogs\\NN_{0}_{1}_{2}.txt'.format(taskName,
                                                                                                           NNAttempts,
                                                                                                           curPair))

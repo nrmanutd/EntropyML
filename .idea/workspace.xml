@@ -7,6 +7,8 @@
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for cuda, fixed threadsafe bugs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,14 +239,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00047" summary="improved visualization">
-      <option name="closed" value="true" />
-      <created>1737409516642</created>
-      <option name="number" value="00047" />
-      <option name="presentableId" value="LOCAL-00047" />
-      <option name="project" value="LOCAL" />
-      <updated>1737409516642</updated>
     </task>
     <task id="LOCAL-00048" summary="improved visualization">
       <option name="closed" value="true" />
@@ -630,7 +624,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743003798948</updated>
     </task>
-    <option name="localTasksCounter" value="96" />
+    <task id="LOCAL-00096" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1743082624954</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1743082624954</updated>
+    </task>
+    <option name="localTasksCounter" value="97" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -692,12 +694,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
-          <line>25</line>
+          <line>75</line>
           <option name="timeStamp" value="120" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
-          <line>22</line>
+          <line>73</line>
           <option name="timeStamp" value="122" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -789,11 +791,6 @@
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py</url>
           <line>223</line>
           <option name="timeStamp" value="234" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DNResearch.py</url>
-          <line>189</line>
-          <option name="timeStamp" value="237" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFast.py</url>
