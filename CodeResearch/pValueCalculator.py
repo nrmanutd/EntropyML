@@ -219,12 +219,14 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
 
     return values, NNvalues
 
-def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, randomPermutation = False, calculateModel = False):
+def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, calculateKS = True, randomPermutation = False, calculateModel = False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
 
     values = np.zeros(nAttempts)
+    NNvalues = np.zeros(nAttempts)
+
     currentTime = time.time()
     enc = LabelEncoder()
 
@@ -245,14 +247,17 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
     sds2 = getSortedSet(ds, valuedTarget2)
     sds2_device = cuda.to_device(sds2)
 
-    updateTimeNumba = 0
     preparationTime = 0
+    nnTime = 0
+    ksTime = 0
 
     for iAttempt in range(nAttempts):
         if iAttempt % 10 == 0:
-            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Update time numba: ' + str(updateTimeNumba) + ' Cuda calculation: ' + str(preparationTime))
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime) + ' KS cuda calculation: ' + str(ksTime) + ' NN time calculation: ' + str(nnTime))
             currentTime = time.time()
-            updateTimeNumba = 0
+
+            nnTime = 0
+            ksTime = 0
             preparationTime = 0
 
         #newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
@@ -264,63 +269,54 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
         iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
         idx = np.concatenate((iClassIdx, jClassIdx))
 
+        dsClasses = ds[idx, :]
+
+        preparationTime += (time.time() - t1)
+
         if calculateModel:
+            t2 = time.time()
             tt= enc.fit_transform(np.ravel(t))
 
-            dsClasses = ds[idx, :]
             tClasses = tt[idx]
+
+            if randomPermutation:
+                tClasses = np.random.permutation(tClasses)
 
             testIdx = np.setdiff1d(twoClassObjects, idx)
             testDs = ds[testIdx, :]
             testTClasses = tt[testIdx]
 
-            preparationTime += (time.time() - t1)
-            values[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
-            continue
+            preparationTime += (time.time() - t2)
 
-        dsClasses = ds[idx, :]
-        tClasses = t[idx]
+            t2 = time.time()
+            NNvalues[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            nnTime += (time.time() - t2)
 
-        if randomPermutation:
-            tClasses = np.random.permutation(tClasses)
+        if calculateKS:
+            t2 = time.time()
+            tClasses = t[idx]
 
-        nClasses, counts = np.unique(tClasses, return_counts=True)
-        vt1, bvt1 = GetValuedAndBoolTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
-        vt2, bvt2 = GetValuedAndBoolTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
+            if randomPermutation:
+                tClasses = np.random.permutation(tClasses)
 
-        t1 = time.time()
-        ss1 = filterSortedSetByIndex(sds1_device, sds1.shape[0], sds1.shape[1], idx)
-        #print(ss1)
-        #ss1 = updateSortedSetCupy(psds1[idx])
-        #ss1 = updateSortedSetNumba(sds1, idx)
-        #ss1 = getSortedSet(dsClasses, vt1)
+            nClasses, counts = np.unique(tClasses, return_counts=True)
+            vt1, bvt1 = GetValuedAndBoolTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
+            vt2, bvt2 = GetValuedAndBoolTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
 
-        #ss1 = updateSortedSetByBucketNumba(sds1, idx)
-        #ss2 = updateSortedSetCupy(psds2[idx])
-        ss2 = filterSortedSetByIndex(sds2_device, sds2.shape[0], sds2.shape[1], idx)
+            ss1 = filterSortedSetByIndex(sds1_device, sds1.shape[0], sds1.shape[1], idx)
+            ss2 = filterSortedSetByIndex(sds2_device, sds2.shape[0], sds2.shape[1], idx)
 
-        #ss2 = getSortedSet(dsClasses, vt2)
-        #ss2 = updateSortedSetNumba(sds2, idx)
-        #ss2 = updateSortedSetByBucketNumba(sds2, idx)
-        updateTimeNumba += time.time() - t1
+            ss1_device = cuda.to_device(ss1)
+            ss2_device = cuda.to_device(ss2)
 
-        ss1_device = cuda.to_device(ss1)
-        ss2_device = cuda.to_device(ss2)
+            dsClasses_device = cuda.to_device(dsClasses)
+            preparationTime += time.time() - t2
 
-        dsClasses_device = cuda.to_device(dsClasses)
+            t2 = time.time()
+            values[iAttempt] = getMaximumDiviserFastCudaCore(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2)[0]
+            ksTime += time.time() - t2
 
-
-        #values[iAttempt] = getMaximumDiviserFastCudaPreloadedToDevice(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, ss2, ss2_device)[0]
-        t1 = time.time()
-        values[iAttempt] = getMaximumDiviserFastCudaCore(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2)[0]
-        preparationTime += time.time() - t1
-
-    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
-    #pValue = len(np.where(values < targetValue)[0]) / len(values)
-    quantile = np.quantile(values, beta)
-    quantileUp = np.quantile(values, 1 - beta)
-
-    return values
+    return values, NNvalues
 
 def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
     iObjects = list(np.where(target == iClass)[0])
