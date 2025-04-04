@@ -193,27 +193,27 @@ def checkTask(task, *args, **kwargs):
 
 lObj = 1000
 
-#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
-#checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
+checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
 
-#checkTask('circles', l=lObj, c=2, m='delta')
-#checkTask('circles', l=lObj, c=4, m='delta')
-#checkTask('random', l=lObj, f=2, m='delta')
-#checkTask('random', l=lObj, f=4, m='delta')
-#checkTask('hyperPlane', l=lObj, m='delta')
+checkTask('circles', l=lObj, c=2, m='delta')
+checkTask('circles', l=lObj, c=4, m='delta')
+checkTask('random', l=lObj, f=2, m='delta')
+checkTask('random', l=lObj, f=4, m='delta')
+checkTask('hyperPlane', l=lObj, m='delta')
 
-#checkTask(53, m='delta') #iris
-#checkTask(17, m='delta') #wisconsin
-#checkTask(186, m='delta') #wine
-#checkTask(602, m='delta') #dry bean
+checkTask(53, m='delta') #iris
+checkTask(17, m='delta') #wisconsin
+checkTask(186, m='delta') #wine
+checkTask(602, m='delta') #dry bean
 
 #checkTask('mnist', t=10, m='delta')
 #checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
-checkTask('cifar', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

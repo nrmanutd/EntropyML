@@ -4,11 +4,12 @@ from scipy.stats import kendalltau, spearmanr, mannwhitneyu, linregress
 from CodeResearch.StatisticsAnalyzer.dataLoader import loadKSData, loadNNData, loadPermutationData, loadKSsyncData, \
     loadNNsyncData
 
-taskName = 'mnist'
-#taskName = 'cifar'
+#taskName = 'mnist'
+taskName = 'cifar'
 
 ksData = loadKSData(taskName)
 nnData = loadNNData(taskName)
+pData = loadPermutationData(taskName)
 #permutationData = loadPermutationData(taskName)
 
 labels = ksData[1]
@@ -16,8 +17,12 @@ labels = ksData[1]
 upper = 0.9
 lower = 1-upper
 
-ksMedians = np.array([np.mean(k) for k in ksData[0]])
-nnMedians = np.array([np.mean(k) for k in nnData[0]])
+ksMedians = np.array([np.average(k) for k in ksData[0]])
+permutationMedians = np.array([np.average(k) for k in pData[0]])
+
+ksMedians = ksMedians - permutationMedians
+
+nnMedians = np.array([np.average(k) for k in nnData[0]])
 #ksMedians = np.array([np.quantile(k, upper) - np.quantile(k, lower) for k in ksData[0]])
 #nnMedians = np.array([np.quantile(k, upper) - np.quantile(k, lower) for k in nnData[0]])
 
