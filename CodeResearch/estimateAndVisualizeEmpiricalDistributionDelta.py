@@ -224,7 +224,6 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     #    for jClass in range(iClass - 1, -1, -1):
     for iClass in range(nClasses):
         for jClass in range(iClass):
-
         #for nPair in range(len(pairsToCompare)):
         #    cp = pairsToCompare[nPair]
         #    if iClass != cp[0]:

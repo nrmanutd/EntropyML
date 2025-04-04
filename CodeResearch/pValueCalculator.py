@@ -219,7 +219,7 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
 
     return values, NNvalues
 
-def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, beta, calculateKS = True, randomPermutation = False, calculateModel = False):
+def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation = False, calculateModel = False):
     iObjects = list(np.where(target == iClass)[0])
     jObjects = list(np.where(target == jClass)[0])
     objectsIdx = iObjects + jObjects
