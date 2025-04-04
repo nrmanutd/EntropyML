@@ -212,8 +212,8 @@ lObj = 1000
 
 #checkTask('mnist', t=10, m='delta')
 #checkTask('fashionmnist', t=10, m='delta')
-#checkTask(54, m='delta') #isolet
-checkTask('cifar', t=10, m='delta')
+checkTask(54, m='delta') #isolet
+#checkTask('cifar', t=10, m='delta')
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

@@ -14,7 +14,7 @@ from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviser
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
     getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
-from CodeResearch.calcModelEstimations import calcModel, calcNN
+from CodeResearch.calcModelEstimations import calcModel, calcNN, calcXGBoost
 from CodeResearch.permutationHelpers import GetObjectsPerClass
 
 
@@ -197,7 +197,8 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
 
             preparationTime += (time.time() - t2)
             t2 = time.time()
-            NNvalues[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            #NNvalues[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            NNvalues[iAttempt] = calcXGBoost(dsClasses, tClasses, testDs, testTClasses)
             NNTime += (time.time() - t2)
 
         if calculateKS:

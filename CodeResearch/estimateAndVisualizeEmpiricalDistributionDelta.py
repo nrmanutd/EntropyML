@@ -186,7 +186,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
     alpha = 0.001
     beta = 0.01
 
-    nAttempts = 100
+    nAttempts = 1000
     permutationAttempts = 100
     NNAttempts = 100
 
@@ -260,17 +260,17 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwar
                 print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
                 data['step'] = iStep
 
-                #pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, False)
-                #pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, True, True, False)
-                #pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, False, False, True)
+                pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, False)
+                pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, True, True, False)
+                pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, False, False, True)
 
-                # commonPairs.append(pValues1)
-                # commonPermutationPairs.append(pValues2)
-                # commonNNPairs.append(pValues3)
+                commonPairs.append(pValues1[0])
+                commonPermutationPairs.append(pValues2[0])
+                commonNNPairs.append(pValues3[1])
 
-                ksValues, NNValues = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, True)
-                commonPairs.append(ksValues)
-                commonNNPairs.append(NNValues)
+                #ksValues, NNValues = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, True)
+                #commonPairs.append(ksValues)
+                #commonNNPairs.append(NNValues)
 
                 labels.append(curPair)
 
