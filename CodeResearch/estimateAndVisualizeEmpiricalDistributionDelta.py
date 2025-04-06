@@ -1,15 +1,14 @@
 import math
 import time
+import os
 
 import numpy as np
+
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
-from CodeResearch.Visualization.saveDataForLatex import saveDataForTable
-from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisualization, \
-    serialize_labeled_list_of_arrays
-from CodeResearch.Visualization.visualizePValues import visualizePValues
+from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
 from CodeResearch.pValueCalculator import calcPValueFastPro
 
@@ -173,144 +172,74 @@ def doubleDataSet(dataSet):
 
     return newDataSet
 
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwargs):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 1000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures'):
+
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
 
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    logsFolder = f'{folder}\\PValueLogs'
+    if not os.path.exists(logsFolder):
+        os.makedirs(logsFolder)
+
     nObjects = len(target)
     nFeatures = dataSet.shape[1]
-    alpha = 0.001
-    beta = 0.01
-
-    nAttempts = 1000
-    permutationAttempts = 100
-    NNAttempts = 100
-
-    commonVisualzation = True
 
     nClasses = len(np.unique(target))
-
-    pairs = math.floor(nClasses * (nClasses - 1) / 2)
-
-    numberOfSteps = kwargs.get('t', None)
-    numberOfSteps = 10 if numberOfSteps is None else numberOfSteps
 
     commonPairs = []
     commonPermutationPairs = []
     commonNNPairs = []
     labels = []
 
-    fastResultsUp = np.zeros((numberOfSteps, pairs))
-    meanPValues = np.zeros((numberOfSteps, pairs))
-    nPoints = np.zeros((pairs, 4), dtype=int)
-    xSteps = np.zeros((numberOfSteps, pairs), dtype=int)
-    eachTaskResult = []
-
-    epsilon = math.sqrt(math.log(2 * nFeatures/alpha))
-    data =   {'taskName': taskName, 'step': 0, 'nAttempts': nAttempts, 'epsilon': epsilon, 'alpha': alpha, 'beta': beta}
-    names = []
     curIdx = 0
-
-    #setToCompare = set([5, 8])
-    setToCompare = set(np.unique(target))
-
-    #pairsToCompare = [[3, 8], [3, 2], [3, 1], [8, 5], [5, 1], [9, 8], [9, 7]]
-
-    #for iClass in range(nClasses - 1, -1, -1):
-    #    for jClass in range(iClass - 1, -1, -1):
     for iClass in range(nClasses):
         for jClass in range(iClass):
-        #for nPair in range(len(pairsToCompare)):
-        #    cp = pairsToCompare[nPair]
-        #    if iClass != cp[0]:
-        #        continue
-
-        #    jClass = cp[1]
-
-            if iClass not in setToCompare or jClass not in setToCompare:
-                continue
 
             iObjectsCount = len(np.where(target == iClass)[0])
             jObjectsCount = len(np.where(target == jClass)[0])
 
             totalObjects = (iObjectsCount + jObjectsCount)
-            step = math.floor(min(totalObjects / 2, 10000) / numberOfSteps)
-            #step = 100
+            currentObjects = math.floor(totalObjects / 2)
 
-            xSteps[:, curIdx] = (range(numberOfSteps) + np.ones(numberOfSteps, dtype=int)) * step
-            data['steps'] = xSteps
+            curPair = f'{iClass}_{jClass}'
 
-            curPair = '{:}_{:}'.format(iClass, jClass)
+            print(f'Current pair of classes: {iClass}/{jClass}, task {taskName}, objects {nObjects}, nFeatures {nFeatures}, nClasses {nClasses}, currentObjects {currentObjects}')
 
-            print('Current pair of classes: {:}/{:}, task {:}, objects {:}, nFeatures {:}, maxObjects {:}, step {:}'.format(iClass, jClass, taskName, nObjects, nFeatures, step * numberOfSteps, step))
-            names.append('{:} vs {:}'.format(iClass, jClass))
+            if iObjectsCount + jObjectsCount < currentObjects:
+                print(f'Objects of class {iClass}: {iObjectsCount}, of class {jClass}: {jObjectsCount}')
+                break
 
-            for iStep in range(numberOfSteps - 1, numberOfSteps):
-                currentObjects = max(2, (iStep + 1) * step)
+            c1 = time.time()
 
-                if iObjectsCount + jObjectsCount < currentObjects:
-                    print('Objects of class {:}: {:}, of class {:}: {:}'.format(iClass, iObjectsCount, jClass, jObjectsCount))
-                    break
+            pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, ksAttempts, True, False, False)
+            pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, pAttempts, True, True, False)
+            pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, mlAttempts, False, False, True)
 
-                c1 = time.time()
-                print('Step#: {:}, objects: {:}'.format(iStep, currentObjects))
-                data['step'] = iStep
+            commonPairs.append(pValues1[0])
+            commonPermutationPairs.append(pValues2[0])
+            commonNNPairs.append(pValues3[1])
 
-                pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, False)
-                pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, permutationAttempts, True, True, False)
-                pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, NNAttempts, False, False, True)
+            labels.append(curPair)
 
-                commonPairs.append(pValues1[0])
-                commonPermutationPairs.append(pValues2[0])
-                commonNNPairs.append(pValues3[1])
+            e1 = time.time()
+            print('Time elapsed: {:.2f}'.format(e1 - c1))
 
-                #ksValues, NNValues = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, True, False, True)
-                #commonPairs.append(ksValues)
-                #commonNNPairs.append(NNValues)
+            visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
+            visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts, curPair, folder)
+            visualizeAndSaveKSForEachPair(commonNNPairs, labels, f'{taskName}_ML', mlAttempts, curPair, folder)
 
-                labels.append(curPair)
-
-                e1 = time.time()
-                print('Time elapsed for step #{:}: {:.2f}'.format(iStep, e1 - c1))
-
-                if commonVisualzation:
-                    visualizeAndSaveKSForEachPair(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts, curPair)
-                    visualizeAndSaveKSForEachPair(commonPermutationPairs, labels,
-                                                  '{:}_KS_permutation'.format(taskName), permutationAttempts, curPair)
-                    visualizeAndSaveKSForEachPair(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts, curPair)
-                else:
-                    visualizePValues(data)
-                    saveDataForVisualization(data)
-
-            curResult = {'Classes': names[curIdx], 'total': totalObjects, 'iClass':  iObjectsCount, 'jClass': jObjectsCount, 'nPoints':  (1 + nPoints[curIdx, :]) * step, 'KSl': meanPValues[-1, curIdx], 'KSu': fastResultsUp[-1, curIdx]}
-            eachTaskResult.append(curResult)
-
-            if commonVisualzation:
-                visualizeAndSaveKSForEachPair(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts, curPair)
-                visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName),
-                                              permutationAttempts, curPair)
-                visualizeAndSaveKSForEachPair(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
-                                              curPair)
-
-                if len(commonPairs) > 0:
-                    serialize_labeled_list_of_arrays(commonPairs, labels, '{:}_KS'.format(taskName), nAttempts,
-                                                 'PValuesFigures\\PValuesLogs\\KS_{0}_{1}_{2}.txt'.format(taskName,
-                                                                                                          nAttempts,
-                                                                                                          curPair))
-                if len(commonPermutationPairs) > 0:
-                    serialize_labeled_list_of_arrays(commonPermutationPairs, labels, '{:}_KS_permutation'.format(taskName), permutationAttempts,
-                                                 'PValuesFigures\\PValuesLogs\\KS_permutation_{0}_{1}_{2}.txt'.format(taskName,
-                                                                                                          permutationAttempts,
-                                                                                                          curPair))
-                if len(commonNNPairs) > 0:
-                    serialize_labeled_list_of_arrays(commonNNPairs, labels, '{:}_NN'.format(taskName), NNAttempts,
-                                                 'PValuesFigures\\PValuesLogs\\NN_{0}_{1}_{2}.txt'.format(taskName,
-                                                                                                          NNAttempts,
-                                                                                                          curPair))
-            else:
-                saveDataForTable(eachTaskResult, taskName, names[curIdx])
-                visualizePValues(data)
-                saveDataForVisualization(data)
+            if len(commonPairs) > 0:
+                serialize_labeled_list_of_arrays(commonPairs, labels, f'{taskName}_KS', ksAttempts,
+                                                 f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}.txt')
+            if len(commonPermutationPairs) > 0:
+                serialize_labeled_list_of_arrays(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
+                                                 f'{logsFolder}\\KS_permutation_{taskName}_{pAttempts}_{curPair}.txt')
+            if len(commonNNPairs) > 0:
+                serialize_labeled_list_of_arrays(commonNNPairs, labels, f'{taskName}_ML', mlAttempts,
+                                                 f'{logsFolder}\\ML_{taskName}_{mlAttempts}_{curPair}.txt')
 
             curIdx += 1
 

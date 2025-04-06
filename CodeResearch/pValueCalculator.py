@@ -1,5 +1,6 @@
 import math
 import time
+import torch
 
 import numpy as np
 from joblib import Parallel, delayed
@@ -126,10 +127,89 @@ def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, n
 def calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS=True, randomPermutation=False, calculateModel=False):
     nFeatures = dataSet.shape[1]
 
+    if not torch.cuda.is_available():
+        return calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS, randomPermutation, calculateModel)
+
     if nFeatures < 1000:
         return calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS, randomPermutation, calculateModel)
     else:
         return calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS, randomPermutation, calculateModel)
+
+def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation=False, calculateModel=False):
+    iObjects = list(np.where(target == iClass)[0])
+    jObjects = list(np.where(target == jClass)[0])
+    objectsIdx = iObjects + jObjects
+
+    values = np.zeros(nAttempts)
+    NNvalues = np.zeros(nAttempts)
+
+    currentTime = time.time()
+
+    twoClassObjects = np.arange(len(objectsIdx))
+    ds = dataSet[objectsIdx, :]
+    ds = prepareDataSet(ds)
+    t = target[objectsIdx]
+
+    enc = LabelEncoder()
+
+    preparationTime = 0
+    ksTime = 0
+    NNTime = 0
+
+    for iAttempt in range(nAttempts):
+        if iAttempt % 10 == 0:
+            print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
+            preparationTime = 0
+            ksTime = 0
+            NNTime = 0
+            currentTime = time.time()
+
+        t1 = time.time()
+
+        iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
+        idx = np.concatenate((iClassIdx, jClassIdx))
+
+        tClasses = t[idx]
+        dsClasses = ds[idx, :]
+        preparationTime += (time.time() - t1)
+
+        if calculateModel:
+            t2 = time.time()
+            tt= enc.fit_transform(np.ravel(t))
+            tClasses = tt[idx]
+
+            if randomPermutation:
+                tClasses = np.random.permutation(tClasses)
+
+            testIdx = np.setdiff1d(twoClassObjects, idx)
+            testDs = ds[testIdx, :]
+            testTClasses = tt[testIdx]
+
+            preparationTime += (time.time() - t2)
+            t2 = time.time()
+            #NNvalues[iAttempt] = calcNN(dsClasses, tClasses, testDs, testTClasses)
+            NNvalues[iAttempt] = calcXGBoost(dsClasses, tClasses, testDs, testTClasses)
+            NNTime += (time.time() - t2)
+
+        if calculateKS:
+            t2 = time.time()
+
+            if randomPermutation:
+                tClasses = np.random.permutation(tClasses)
+
+            nClasses, counts = np.unique(tClasses, return_counts=True)
+            vt1 = GetValuedTarget(tClasses, nClasses[0], 1 / counts[0], -1 / counts[1])
+            vt2 = GetValuedTarget(tClasses, nClasses[1], 1 / counts[1], -1 / counts[0])
+
+            sds1 = getSortedSet(dsClasses, vt1)
+            sds2 = getSortedSet(dsClasses, vt2)
+
+            preparationTime += (time.time() - t2)
+            t2 = time.time()
+            values[iAttempt] = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, sds1, vt2, sds2)[0]
+            ksTime += (time.time() - t2)
+
+    return values, NNvalues
 
 def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation=False, calculateModel=False):
     iObjects = list(np.where(target == iClass)[0])

@@ -1,14 +1,12 @@
 import time
 
+import cupy as cp
 import numba as nb
 import numpy as np
-import cupy as cp
-from numba import jit, prange, cuda, njit
+from numba import jit, prange, cuda
 
-from CodeResearch.Cuda.cudaHelpers import getSortedSetCuda
 from CodeResearch.DiviserCalculation.diviserHelpers import prepareDataSet, getSortedSet, \
-    GetValuedAndBoolTarget, fv2s, iv2s
-from CodeResearch.rademacherHelpers import GetSortedData
+    GetValuedAndBoolTarget
 
 
 @jit(nopython=True)
