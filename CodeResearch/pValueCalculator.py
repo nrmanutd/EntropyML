@@ -6,11 +6,11 @@ from joblib import Parallel, delayed
 from numba import cuda
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.Cuda.cudaHelpers import convertSortedSetToBackMap, updateSortedSetCupy, filterSortedSetByIndex
+from CodeResearch.Cuda.cudaHelpers import filterSortedSetByIndex
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget, prepareDataSet, \
     GetValuedTarget
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
-from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore, getMaximumDiviserFastCuda
+from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
     getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic

@@ -1,10 +1,10 @@
 import math
 
-import numba as nb
 import numpy as np
 from numba import jit, prange
 from rtree import index
 from sortedcontainers import SortedDict
+
 
 @jit(nopython=True)
 def GetValuedTarget(target, c1, c1p, c2p):

@@ -11,9 +11,7 @@ from CodeResearch.Visualization.saveDataForVisualization import saveDataForVisua
     serialize_labeled_list_of_arrays
 from CodeResearch.Visualization.visualizePValues import visualizePValues
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
-from CodeResearch.pValueCalculator import calcPValueStochastic, calcPValueFast, calcPValueFastParallel, \
-    calcPValueFastNumba, calcPValueFastCuda, calcPValueFastPro
-from CodeResearch.slopeCalculator import calculateSlope, getBestSlopeMedian, getBestSlopeMax, calculateSlopeGradient
+from CodeResearch.pValueCalculator import calcPValueFastPro
 
 
 def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
@@ -178,8 +176,6 @@ def doubleDataSet(dataSet):
 def estimatePValuesForClassesSeparation(dataSet, target, taskName, *args, **kwargs):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
-
-    #dataSet = doubleDataSet(dataSet)
 
     nObjects = len(target)
     nFeatures = dataSet.shape[1]

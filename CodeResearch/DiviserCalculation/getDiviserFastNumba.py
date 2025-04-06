@@ -1,12 +1,8 @@
-import time
-
 import numba as nb
 import numpy as np
-from numba import jit, prange, objmode
+from numba import jit, prange
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, f2s, fv2s, \
-    iv2s, bv2s
-
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet
 
 @jit(nopython=True)
 def updateStateOnOtherFeatures(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateState):
