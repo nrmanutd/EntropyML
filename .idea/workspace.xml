@@ -5,10 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/XtendedCorrel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showStandardSets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/dataSets.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,60 +54,63 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor&quot;: &quot;Debug&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.executor&quot;: &quot;Run&quot;,
-    &quot;Python.DNResearch.executor&quot;: &quot;Run&quot;,
-    &quot;Python.VisualizeAndSaveCommonTopSubsamples.executor&quot;: &quot;Run&quot;,
-    &quot;Python.calcEntropy.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.calculateDistributionDelta.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.car.executor&quot;: &quot;Run&quot;,
-    &quot;Python.cudaTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.estimateAndVisualizeEmpiricalDistributionDelta.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.gpuTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.hist_optimal_bin_width.executor&quot;: &quot;Run&quot;,
-    &quot;Python.imagesTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rTreeIndex.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rTreeTricks.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.serialization.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showKS.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualizeTest.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/PycharmProjects/EntropyML/CodeResearch/Tests&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python tests.Python tests for test_cudaHelpers.Test.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor": "Run",
+    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor": "Debug",
+    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
+    "Python tests.Unittests for test_getDiviserFastNumba.executor": "Run",
+    "Python.DNResearch.executor": "Run",
+    "Python.VisualizeAndSaveCommonTopSubsamples.executor": "Run",
+    "Python.calcEntropy.executor": "Debug",
+    "Python.calculateDistributionDelta.executor": "Debug",
+    "Python.car.executor": "Run",
+    "Python.cudaTricks.executor": "Run",
+    "Python.dataSets.executor": "Run",
+    "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
+    "Python.gpuTricks.executor": "Run",
+    "Python.hist_optimal_bin_width.executor": "Run",
+    "Python.imagesTricks.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.rTreeIndex.executor": "Run",
+    "Python.rTreeTricks.executor": "Debug",
+    "Python.serialization.executor": "Run",
+    "Python.showKS.executor": "Run",
+    "Python.showStandardSets.executor": "Run",
+    "Python.statisticsCalculator.executor": "Run",
+    "Python.tricks.executor": "Run",
+    "Python.visualizeTest.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/user/PycharmProjects/EntropyML/CodeResearch/Tests",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
@@ -116,7 +123,7 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
+  <component name="RunManager">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -227,7 +234,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-fc1d50d2d915-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.24978.54" />
+        <option value="bundled-python-sdk-48aec45f0201-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.17011.127" />
       </set>
     </attachedChunks>
   </component>
@@ -694,12 +701,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
-          <line>75</line>
+          <line>77</line>
           <option name="timeStamp" value="120" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/dataSets.py</url>
-          <line>73</line>
+          <line>75</line>
           <option name="timeStamp" value="122" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">

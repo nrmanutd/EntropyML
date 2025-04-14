@@ -1,6 +1,8 @@
+import math
 import os
 
 import pandas as pd
+import numpy as np
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import mnist
 
@@ -85,3 +87,51 @@ def loadFashionMnist():
     testX = test_images.reshape(num_test, height * width)  # Flatten data to 1D
 
     return trainX, train_labels
+
+# Генерация XOR
+def make_xor(n_samples=1000):
+    np.random.seed(42)
+    X_xor = np.array([np.random.rand(2) for k in range(n_samples)])
+    y_xor = np.logical_xor(X_xor[:, 0] > 0.5, X_xor[:, 1] > 0.5).astype(int)
+
+    return X_xor, y_xor
+
+# Генерация spirals
+def make_spirals(n_samples=1000, noise=0.005, random_state=42):
+    np.random.seed(random_state)
+    # Генерация углов для спиралей
+    theta = np.linspace(0, 5 * np.pi, n_samples // 2)
+    # Экспоненциальный рост радиуса
+    r = np.exp(0.1 * theta) - 1
+
+    # Первая спираль (класс 0)
+    x0 = r * np.cos(theta)
+    y0 = r * np.sin(theta)
+    spiral0 = np.column_stack((x0, y0))
+    class0 = np.zeros(len(spiral0))
+
+    # Вторая спираль (класс 1), сдвинутая на 0.5π и с чуть другим ростом
+    theta_shifted = theta + np.pi
+    #r_shifted = np.exp(0.12 * theta_shifted)
+    x1 = r * np.cos(theta_shifted)
+    y1 = r * np.sin(theta_shifted)
+    spiral1 = np.column_stack((x1, y1))
+    class1 = np.ones(len(spiral1))
+
+    # Объединяем данные
+    X = np.vstack((spiral0, spiral1))
+    y = np.hstack((class0, class1))
+
+    # Добавляем шум
+    X += noise * np.random.randn(*X.shape)
+    return X, y
+
+def make_random(n_samples=1000):
+    # Генерация random
+    np.random.seed(42)
+    random_x = np.array([np.random.rand(2) for k in range(n_samples)])
+    random_y = np.zeros(n_samples)
+    for i in range(math.floor(n_samples/2)):
+        random_y[i] = 1
+
+    return random_x, random_y

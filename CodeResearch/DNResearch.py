@@ -1,16 +1,19 @@
 import math
 import os
 
+from sklearn import datasets
 import numpy as np
 import pandas as pd
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.utils import to_categorical
+
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist
-from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta
+from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist, make_xor, make_spirals, make_random
+from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
+    estimatePValuesForClassesSeparation
 
 
 def empiricalDistributionById(id, t, m):
@@ -173,6 +176,32 @@ def checkCifar(t, m):
         calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'cifar', t=t)
     pass
 
+def checkBasicTasks(nSamples=2000):
+    # Генерация blobs
+    X_blobs, y_blobs = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
+    estimatePValuesForClassesSeparation(X_blobs, y_blobs, ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='blobs')
+
+    # Генерация moons
+    X_moons, y_moons = datasets.make_moons(n_samples=nSamples, noise=0.1, random_state=42)
+    estimatePValuesForClassesSeparation(X_moons, y_moons,ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='moons')
+
+    # Генерация circles
+    X_circles, y_circles = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
+    estimatePValuesForClassesSeparation(X_circles, y_circles,ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='circles_sklearn')
+
+    x_xor, y_xor = make_xor(nSamples)
+    estimatePValuesForClassesSeparation(x_xor, y_xor, ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='xor')
+
+    x_spirals, y_spirals = make_spirals(nSamples)
+    estimatePValuesForClassesSeparation(x_spirals, y_spirals, ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='spirals')
+
+    x_random, y_random = make_random(nSamples)
+    estimatePValuesForClassesSeparation(x_random, y_random, ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName='random_sklearn')
+
+    for sd in range(1, 10):
+        X_blobs, y_blobs = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, cluster_std=sd, random_state=42)
+        estimatePValuesForClassesSeparation(X_blobs, y_blobs, ksAttempts=10000, pAttempts=10000, mlAttempts=100, taskName=f'blobs_{sd}')
+
 def checkTask(task, *args, **kwargs):
     if task == 'circles':
         checkCircles(kwargs.get('l', None), kwargs.get('c', None), m=kwargs.get('m', None))
@@ -193,8 +222,8 @@ def checkTask(task, *args, **kwargs):
 
 lObj = 1000
 
-checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
-checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=0, m='delta')
+#checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=1, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=2, m='delta')
 #checkTask('hyperPlaneI', l=lObj, alpha=5, m='delta')
@@ -205,7 +234,7 @@ checkTask('hyperPlaneI', l=lObj, alpha=0.5, m='delta')
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
 
-checkTask(53, m='delta') #iris
+#checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
@@ -214,6 +243,8 @@ checkTask(53, m='delta') #iris
 #checkTask('fashionmnist', t=10, m='delta')
 #checkTask(54, m='delta') #isolet
 #checkTask('cifar', t=10, m='delta')
+
+checkBasicTasks()#blobs, moons, circles, xor, spirals, random
 
 #todo
 #1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился

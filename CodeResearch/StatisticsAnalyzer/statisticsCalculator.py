@@ -1,8 +1,51 @@
-import numpy as np
-from scipy.stats import kendalltau, spearmanr, mannwhitneyu, linregress
+import math
 
-from CodeResearch.StatisticsAnalyzer.dataLoader import loadKSData, loadNNData, loadPermutationData, loadKSsyncData, \
-    loadNNsyncData
+import numpy as np
+from dcor import distance_correlation
+from scipy.stats import kendalltau, spearmanr, mannwhitneyu, linregress
+from XtendedCorrel import hoeffding
+
+from CodeResearch.StatisticsAnalyzer.dataLoader import loadKSData, loadNNData, loadPermutationData
+
+
+def permutation_test(array1, array2, metric_func, n_permutations=10000):
+    """
+    Выполняет перестановочный тест для оценки p-value заданной метрики.
+
+    Параметры:
+    - array1: первый массив данных (будет перемешиваться)
+    - array2: второй массив данных (остается неизменным)
+    - metric_func: лямбда-выражение или функция, вычисляющая метрику
+    - n_permutations: количество перестановок (по умолчанию 10000)
+
+    Возвращает:
+    - observed_stat: истинное значение статистики
+    - p_value: p-value по результатам перестановочного теста
+    """
+    # Вычисляем истинное значение статистики на исходных данных
+    observed_stat = metric_func(array1, array2)
+
+    # Счетчик экстремальных значений
+    count_extreme = 0
+
+    # Выполняем перестановки
+    for _ in range(n_permutations):
+        # Случайно перемешиваем первый массив
+        permuted_array1 = np.random.permutation(array1)
+        # Вычисляем статистику для перестановки
+        perm_stat = metric_func(permuted_array1, array2)
+        # Считаем, если перестановочная статистика >= наблюдаемой
+        if perm_stat >= observed_stat:
+            count_extreme += 1
+
+    # Вычисляем p-value как долю экстремальных значений
+    p_value = count_extreme / n_permutations
+
+    return observed_stat, p_value
+
+def showStatisticsOverview(testName, value, pvalue):
+    valueable = 'значима' if pvalue < 0.05 else 'не значима'
+    print(f"Корреляция {testName}: {value:.4f}, p-value: {pvalue:.4f}, связь {valueable}")
 
 #taskName = 'mnist'
 taskName = 'cifar'
@@ -14,9 +57,6 @@ pData = loadPermutationData(taskName)
 
 labels = ksData[1]
 
-upper = 0.9
-lower = 1-upper
-
 ksMedians = np.array([np.average(k) for k in ksData[0]])
 permutationMedians = np.array([np.average(k) for k in pData[0]])
 
@@ -27,23 +67,11 @@ nnMedians = np.array([np.average(k) for k in nnData[0]])
 #nnMedians = np.array([np.quantile(k, upper) - np.quantile(k, lower) for k in nnData[0]])
 
 tau, p_value_kendall = kendalltau(ksMedians, nnMedians)
-print(f"Корреляция Кендалла:")
-print(f"Коэффициент Tau: {tau:.4f}")
-print(f"p-value: {p_value_kendall:.4f}")
-if p_value_kendall < 0.05:
-    print("Связь значима (p < 0.05)")
-else:
-    print("Связь не значима (p >= 0.05)")
+showStatisticsOverview('Кендалла', tau, p_value_kendall)
 
 # Для сравнения: Корреляция Спирмена
 corr, p_value_spearman = spearmanr(ksMedians, nnMedians)
-print(f"\nКорреляция Спирмена:")
-print(f"Коэффициент корреляции: {corr:.4f}")
-print(f"p-value: {p_value_spearman:.4f}")
-if p_value_spearman < 0.05:
-    print("Связь значима (p < 0.05)")
-else:
-    print("Связь не значима (p >= 0.05)")
+showStatisticsOverview('Спирмена', corr, p_value_spearman)
 
 threshold = np.median(ksMedians)
 low_sep_group = nnMedians[ksMedians <= threshold]
@@ -51,14 +79,13 @@ high_sep_group = nnMedians[ksMedians > threshold]
 
 # Выполняем тест Манна-Уитни
 stat, p_value = mannwhitneyu(low_sep_group, high_sep_group, alternative='two-sided')
+showStatisticsOverview('Манна-Уитни', stat, p_value)
 
-print(f"Тест Манна-Уитни:")
-print(f"Статистика: {stat:.4f}")
-print(f"p-value: {p_value:.4f}")
-if p_value < 0.05:
-    print("Различия между группами статистически значимы (p < 0.05)")
-else:
-    print("Различия между группами не значимы (p >= 0.05)")
+dc_stat, dc_pvalue = permutation_test(ksMedians, nnMedians, lambda a, b: distance_correlation(a, b))
+showStatisticsOverview('Расстояний', dc_stat, dc_pvalue)
+
+h_stat, h_pvalue = permutation_test(ksMedians, nnMedians, lambda a, b: hoeffding(a, b))
+showStatisticsOverview('Хофдинга', h_stat, h_pvalue)
 
 # Простая линейная регрессия
 slope, intercept, r_value, p_value, std_err = linregress(ksMedians, nnMedians)
@@ -66,16 +93,7 @@ slope, intercept, r_value, p_value, std_err = linregress(ksMedians, nnMedians)
 # Вычисляем R^2
 r_squared = r_value**2
 
-print(f"Линейная регрессия:")
-print(f"Наклон (slope): {slope:.4f}")
-print(f"Пересечение (intercept): {intercept:.4f}")
-print(f"Коэффициент корреляции Пирсона (r): {r_value:.4f}")
-print(f"R^2: {r_squared:.4f}")
-print(f"p-value: {p_value:.4f}")
-if p_value < 0.05:
-    print("Связь статистически значима (p < 0.05)")
-else:
-    print("Связь не значима (p >= 0.05)")
+showStatisticsOverview('Линейная регрессия', r_squared, p_value)
 
 # Визуализация
 import matplotlib.pyplot as plt
