@@ -1,4 +1,60 @@
+import os
+import re
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
+
+
+def getFileType(file):
+
+    if "KS_permutation" in file:
+        return 'permutation'
+
+    if "KS" in file:
+        return 'KS'
+
+    if "NN" in file or "ML" in file:
+        return 'ML'
+
+    raise ValueError(f'Error: unrecognized file: {file}')
+
+
+def trimSuffix(taskName):
+
+    if taskName.endswith('_KS') or taskName.endswith('_ML'):
+        return taskName[:-3]
+
+    if taskName.endswith('_KS_permutation'):
+        return taskName[:-len('_KS_permutation')]
+
+    raise ValueError(f'Unknown suffix: {taskName}')
+
+def loadData(directory):
+    files = [f for f in os.listdir(directory) if f.endswith('.txt') and os.path.isfile(os.path.join(directory, f))]
+
+    result = dict()
+
+    for file in files:
+        file = os.path.join(directory, file)
+        data = deserialize_labeles_list_of_arrays(file)
+        type = getFileType(file)
+
+        taskName = data[2]
+        taskName = trimSuffix(taskName)
+
+        if taskName not in result:
+            result[taskName] = {'ksData': [], 'pData': [], 'mlData': [], 'taskName': taskName}
+
+        curData = result[taskName]
+
+        if type == 'KS':
+            curData['ksData'] = data[0]
+
+        if type == 'permutation':
+            curData['pData'] = data[0]
+
+        if type == 'ML':
+            curData['mlData'] = data[0]
+
+    return result
 
 def getFileName(taskName, type):
 

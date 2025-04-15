@@ -4,15 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="tests are passing correctly for cuda, fixed threadsafe bugs">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/XtendedCorrel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showStandardSets.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/dataSets.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,6 +88,7 @@
     "Python.calculateDistributionDelta.executor": "Debug",
     "Python.car.executor": "Run",
     "Python.cudaTricks.executor": "Run",
+    "Python.dataLoader.executor": "Run",
     "Python.dataSets.executor": "Run",
     "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
     "Python.gpuTricks.executor": "Run",
@@ -98,6 +98,8 @@
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
     "Python.serialization.executor": "Run",
+    "Python.showBlobSerieGraph.executor": "Run",
+    "Python.showDataSetsAndDistributions.executor": "Run",
     "Python.showKS.executor": "Run",
     "Python.showStandardSets.executor": "Run",
     "Python.statisticsCalculator.executor": "Run",
@@ -246,14 +248,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00052" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737615393049</created>
-      <option name="number" value="00052" />
-      <option name="presentableId" value="LOCAL-00052" />
-      <option name="project" value="LOCAL" />
-      <updated>1737615393049</updated>
     </task>
     <task id="LOCAL-00053" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -639,7 +633,15 @@
       <option name="project" value="LOCAL" />
       <updated>1743746638980</updated>
     </task>
-    <option name="localTasksCounter" value="101" />
+    <task id="LOCAL-00101" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1744664281549</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1744664281551</updated>
+    </task>
+    <option name="localTasksCounter" value="102" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -808,6 +810,16 @@
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/visualizePValues.py</url>
           <line>32</line>
           <option name="timeStamp" value="243" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py</url>
+          <line>13</line>
+          <option name="timeStamp" value="251" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py</url>
+          <line>51</line>
+          <option name="timeStamp" value="252" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

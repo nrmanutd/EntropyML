@@ -52,6 +52,7 @@ def deserialize_labeles_list_of_arrays(filename):
     - task_name: название задачи
     - n_attempts: количество попыток
     """
+
     with open(filename, 'r') as f:
         data = json.load(f)
 
