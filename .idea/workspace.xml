@@ -5,19 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/joinPictures.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showCommonKS.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showCommonKS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,8 +103,12 @@
     "Python.joinPictures.executor": "Run",
     "Python.main.executor": "Run",
     "Python.metricCalcultation.executor": "Run",
+    "Python.permutationHelpers.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
+    "Python.runtimeCheck.executor": "Run",
+    "Python.runtimeTest.executor": "Debug",
+    "Python.runtimeTestSamples.executor": "Run",
     "Python.serialization.executor": "Run",
     "Python.showBlobSerieGraph.executor": "Run",
     "Python.showCommonKS.executor": "Run",
@@ -260,14 +261,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00054" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737664828214</created>
-      <option name="number" value="00054" />
-      <option name="presentableId" value="LOCAL-00054" />
-      <option name="project" value="LOCAL" />
-      <updated>1737664828214</updated>
     </task>
     <task id="LOCAL-00055" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -653,7 +646,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744676022740</updated>
     </task>
-    <option name="localTasksCounter" value="103" />
+    <task id="LOCAL-00103" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1746526985567</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1746526985567</updated>
+    </task>
+    <option name="localTasksCounter" value="104" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

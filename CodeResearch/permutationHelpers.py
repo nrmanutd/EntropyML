@@ -1,6 +1,12 @@
-import numba
+import math
+
 import numpy as np
 
+def extractDataSet(x, y, nObjects, nFeatures):
+    x, y = GetSubSet(x, y, math.floor(nObjects / 2))
+    x = GetSubSetOnFeatures(x, nFeatures)
+
+    return x.copy(), y.copy()
 
 def permuteDataSet(newSet, newTarget):
     idx = range(0, len(newTarget))
@@ -31,6 +37,14 @@ def GetSubSet(dataSet, target, nObjects):
 
     for iClass in np.arange(len(vClasses)):
         idx = GetObjectsPerClass(target, vClasses[iClass], objectsPerClass[iClass])
-        subSetIdx = subSetIdx + idx
+        subSetIdx = subSetIdx + idx.tolist()
 
     return dataSet[subSetIdx], target[subSetIdx]
+
+
+def GetSubSetOnFeatures(x, nFeatures):
+    totalFeatures = x.shape[1]
+    selectedFeatures = np.random.choice(np.arange(totalFeatures), size=nFeatures, replace=False)
+    x = x[:, selectedFeatures]
+
+    return x
