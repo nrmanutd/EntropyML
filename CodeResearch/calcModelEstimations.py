@@ -9,6 +9,9 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.utils import to_categorical
 from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report
 
 
 def calcXGBoost(X_train, Y_train, X_test, Y_test):
@@ -18,6 +21,66 @@ def calcXGBoost(X_train, Y_train, X_test, Y_test):
     accuracy = accuracy_score(Y_test, predict)
 
     return accuracy
+
+
+def calcLinRegression(X_train, Y_train, X_test, Y_test):
+    """
+    Train a linear (logistic) regression classifier and evaluate on test data.
+
+    Parameters:
+        X_train (array-like): Training features.
+        Y_train (array-like): Training labels.
+        X_test  (array-like): Test features.
+        Y_test  (array-like): Test labels.
+
+    Returns:
+        dict: {
+            'model': trained LogisticRegression model,
+            'predictions': array of predicted labels on X_test,
+            'accuracy': accuracy score on test set,
+            'report': classification report as dict
+        }
+    """
+    # Initialize and train logistic regression (linear classifier)
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X_train, Y_train)
+
+    # Predict and evaluate
+    preds = model.predict(X_test)
+    acc = accuracy_score(Y_test, preds)
+    report = classification_report(Y_test, preds, output_dict=True)
+
+    return acc
+
+
+def calcSVM(X_train, Y_train, X_test, Y_test):
+    """
+    Train a linear SVM classifier and evaluate on test data.
+
+    Parameters:
+        X_train (array-like): Training features.
+        Y_train (array-like): Training labels.
+        X_test  (array-like): Test features.
+        Y_test  (array-like): Test labels.
+
+    Returns:
+        dict: {
+            'model': trained SVC model,
+            'predictions': array of predicted labels on X_test,
+            'accuracy': accuracy score on test set,
+            'report': classification report as dict
+        }
+    """
+    # Initialize and train linear SVM
+    model = SVC(kernel='linear', probability=False)
+    model.fit(X_train, Y_train)
+
+    # Predict and evaluate
+    preds = model.predict(X_test)
+    acc = accuracy_score(Y_test, preds)
+    report = classification_report(Y_test, preds, output_dict=True)
+
+    return acc
 
 def calcNN(X_train, Y_train, X_test, Y_test):
 

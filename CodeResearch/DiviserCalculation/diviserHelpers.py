@@ -289,6 +289,26 @@ def getBestStartDiviser(sortedNegValues, positiveScore, positiveCount, positiveI
 
     return bestDiviser, bestScore
 
+def get_one_bit_indices(number):
+    # Проверяем, что число неотрицательное
+    if number < 0:
+        raise ValueError("Число должно быть неотрицательным")
+
+    # Массив для хранения индексов битов, равных 1
+    indices = []
+
+    # Перебираем биты числа
+    bit_position = 0
+    while number > 0:
+        # Если младший бит равен 1, добавляем его позицию в массив
+        if number & 1:
+            indices.append(bit_position)
+        # Сдвигаем число вправо, чтобы проверить следующий бит
+        number >>= 1
+        bit_position += 1
+
+    return indices
+
 @jit(nopython=True)
 def prepareDataSet(dataSet):
     nFeatures = dataSet.shape[1]

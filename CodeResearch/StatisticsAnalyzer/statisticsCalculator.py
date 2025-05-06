@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 from dcor import distance_correlation
@@ -45,7 +47,7 @@ def permutation_test(array1, array2, metric_func, n_permutations=10000):
 
 def showStatisticsOverview(testName, value, pvalue):
     valueable = 'значима' if pvalue < 0.05 else 'не значима'
-    print(f"Корреляция {testName}: {value:.4f}, p-value: {pvalue:.4f}, связь {valueable}")
+    print(f"Корреляция {testName}: {value:.6f}, p-value: {pvalue:.6f}, связь {valueable}")
 
 def processTaskStatistics(task, directory):
     ksData = task['ksData']
@@ -55,8 +57,14 @@ def processTaskStatistics(task, directory):
     taskName = task['taskName']
     print(f'################ Task: {taskName} ################')
 
-    ksMedians = calculateMetric(ksData, pData)
-    print(ksMedians)
+    if taskName == 'ISOLET':
+        a = 10
+
+    #ksMedians = calculateMetric(ksData, pData)
+    ksMedians = np.array([np.average(ll) for ll in ksData])
+    #ppMedians = np.array([np.average(k) for k in pData])
+    #ksMedians = ksMedians - ppMedians
+    #print(ksMedians)
 
     if len(ksData) < 2:
         print (f'Мало точек для задачи {taskName}')
@@ -74,11 +82,21 @@ def processTaskStatistics(task, directory):
     showStatisticsOverview('Спирмена', corr, p_value_spearman)
 
     threshold = np.median(ksMedians)
-    low_sep_group = nnMedians[ksMedians <= threshold]
-    high_sep_group = nnMedians[ksMedians > threshold]
+
+    sortIndex = np.argsort(ksMedians)
+    middleIndex = math.floor(len(sortIndex) / 2)
+
+    firstItemsIdx = sortIndex[np.arange(middleIndex)]
+    lastItemsIdx = sortIndex[np.arange(middleIndex, len(nnMedians))]
+
+    low_sep_group = nnMedians[firstItemsIdx]
+    high_sep_group = nnMedians[lastItemsIdx]
+
+    if any(np.isnan(nnMedians)):
+        print('Has nans')
 
     # Выполняем тест Манна-Уитни
-    stat, p_value = mannwhitneyu(low_sep_group, high_sep_group, alternative='two-sided')
+    stat, p_value = mannwhitneyu(low_sep_group, high_sep_group, alternative='two-sided', method='exact')
     showStatisticsOverview('Манна-Уитни', stat, p_value)
 
     dc_stat, dc_pvalue = permutation_test(ksMedians, nnMedians, lambda a, b: distance_correlation(a, b))
@@ -96,17 +114,27 @@ def processTaskStatistics(task, directory):
 
     # Визуализация
 
-    plt.scatter(ksMedians, nnMedians, color='blue', alpha=0.6)
-    plt.plot(ksMedians, intercept + slope * ksMedians, color='red', label='Linear regression')
-    plt.xlabel('KS metric')
-    plt.ylabel('ML Accuracy')
-    plt.title(f'KS metric and ML accuracy ({len(ksMedians)} classes pairs)')
+    ksRank = np.argsort(ksMedians)
+
+    ksMedians = ksMedians[ksRank]
+    nnMedians = nnMedians[ksRank]
+
+    ksRank_1 = np.array(range(len(ksRank)))
+    nnRank_1 = np.argsort(nnMedians)
+
+    plt.scatter(ksRank_1, nnRank_1, color='blue', alpha=0.6)
+    slope, intercept, r_value, p_value, std_err = linregress(ksRank_1, nnRank_1)
+
+    plt.plot(ksRank_1, intercept + slope * ksRank_1, color='red', label=f'Linear regression {slope}')
+    plt.xlabel('G-SOMKS-SM value rank')
+    plt.ylabel('ML accuracy rank')
+    #plt.title(f'G-SOMKS-SM value rank and ML accuracy rank ({len(ksMedians)} classes pairs)')
     plt.grid(True)
     plt.savefig(f'{directory}\\{taskName}_KS_ML_dependency.png', dpi=300, bbox_inches='tight')
     plt.clf()
 
-#directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TargetTasks"
-directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\UCI tasks"
+directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TargetTasks"
+#directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\UCI tasks"
 data = loadData(directory)
 
 for k, d in data.items():

@@ -5,13 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/joinPictures.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showCommonKS.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showCommonKS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/metricCalcultation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calcModelEstimations.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,6 +33,7 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="FILTER_BY_ACTION_IN_POPUP" value="false" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
@@ -83,6 +90,7 @@
     "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
     "Python tests.Unittests for test_getDiviserFastNumba.executor": "Run",
     "Python.DNResearch.executor": "Run",
+    "Python.LowerBoundCheck.executor": "Run",
     "Python.VisualizeAndSaveCommonTopSubsamples.executor": "Run",
     "Python.calcEntropy.executor": "Debug",
     "Python.calculateDistributionDelta.executor": "Debug",
@@ -91,14 +99,18 @@
     "Python.dataLoader.executor": "Run",
     "Python.dataSets.executor": "Run",
     "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
+    "Python.getDiviserTrueKS.executor": "Run",
     "Python.gpuTricks.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
     "Python.imagesTricks.executor": "Run",
+    "Python.joinPictures.executor": "Run",
     "Python.main.executor": "Run",
+    "Python.metricCalcultation.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
     "Python.serialization.executor": "Run",
     "Python.showBlobSerieGraph.executor": "Run",
+    "Python.showCommonKS.executor": "Run",
     "Python.showDataSetsAndDistributions.executor": "Run",
     "Python.showKS.executor": "Run",
     "Python.showStandardSets.executor": "Run",
@@ -110,7 +122,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/user/PycharmProjects/EntropyML/CodeResearch/Tests",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -118,10 +130,10 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
       <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests\Tricks" />
       <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests" />
       <recent name="C:\Current\Work\Science\CodeResearch\Tests" />
-      <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
@@ -248,14 +260,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00053" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737649514325</created>
-      <option name="number" value="00053" />
-      <option name="presentableId" value="LOCAL-00053" />
-      <option name="project" value="LOCAL" />
-      <updated>1737649514325</updated>
     </task>
     <task id="LOCAL-00054" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -641,7 +645,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744664281551</updated>
     </task>
-    <option name="localTasksCounter" value="102" />
+    <task id="LOCAL-00102" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1744676022740</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1744676022740</updated>
+    </task>
+    <option name="localTasksCounter" value="103" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -813,13 +825,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py</url>
-          <line>13</line>
+          <line>27</line>
           <option name="timeStamp" value="251" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/dataLoader.py</url>
-          <line>51</line>
-          <option name="timeStamp" value="252" />
+          <url>file://$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py</url>
+          <line>60</line>
+          <option name="timeStamp" value="253" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py</url>
+          <line>55</line>
+          <option name="timeStamp" value="254" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

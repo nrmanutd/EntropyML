@@ -19,7 +19,7 @@ def getFileType(file):
 
 def trimSuffix(taskName):
 
-    if taskName.endswith('_KS') or taskName.endswith('_ML'):
+    if taskName.endswith('_KS') or taskName.endswith('_ML') or taskName.endswith('_NN'):
         return taskName[:-3]
 
     if taskName.endswith('_KS_permutation'):

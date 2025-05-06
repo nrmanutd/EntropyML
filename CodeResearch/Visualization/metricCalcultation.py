@@ -9,6 +9,6 @@ def calculateMetric(ksData, pData):
 
     ksMedians = ksMedians / maxDeltas
 
-    print(1 - ksMedians)
+    #print(1 - ksMedians)
 
     return 1 - ksMedians
