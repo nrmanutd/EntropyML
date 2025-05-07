@@ -286,11 +286,13 @@ def checkStoppingCriteriaCupy(minPositives_device, currentState):
     return cp.any(comparison_result)
 
 def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sortedSet_device, valuedTarget, boolValuedTarget, classValues):
-    tt1 = time.time()
     minPositives = getMinPositives(sortedSet, valuedTarget)
 
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
+
+    if nFeatures == 0:
+        return 0, minPositives
 
     curBalance = 0
     maxBalance = 0

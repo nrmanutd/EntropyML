@@ -20,8 +20,8 @@ def plot_scatter(ax, X, y, title):
 
 # Функция для построения распределений
 def plot_distributions(ax, dist1, dist2, title):
-    sns.kdeplot(dist1, ax=ax, color='#0000FF', label='KS', fill=True, alpha=0.3)
-    sns.kdeplot(dist2, ax=ax, color='#FFA500', label='Random', fill=True, alpha=0.3)
+    sns.kdeplot(dist1, ax=ax, color='#0000FF', label='G-SOMKS-SI', fill=True, alpha=0.3)
+    sns.kdeplot(dist2, ax=ax, color='#FFA500', label='Random (Left)', fill=True, alpha=0.3)
     ax.set_xlabel('Value')
     ax.set_ylabel('Density')
     ax.set_title(f'{title} - Distributions')

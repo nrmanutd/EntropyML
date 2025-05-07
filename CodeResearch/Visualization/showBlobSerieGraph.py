@@ -44,7 +44,7 @@ y_values = metrics
 # Создание графика
 
 fig, ax = plt.subplots(figsize=(16, 12))
-ax.plot(x_values, y_values, color='maroon', linewidth=3, markeredgewidth=3, linestyle='-', label='MKS (proposed)', marker='s', markerfacecolor='white', markeredgecolor='maroon', markersize=10)  # Жирная фиолетовая линия
+ax.plot(x_values, y_values, color='maroon', linewidth=3, markeredgewidth=3, linestyle='-', label='G-SOMKS-SI (proposed)', marker='s', markerfacecolor='white', markeredgecolor='maroon', markersize=10)  # Жирная фиолетовая линия
 
 plotValues(ax, x_values, n2, 'darkblue', 'N2')
 #plotValues(ax, x_values, n4, '#B8860B', 'N4')

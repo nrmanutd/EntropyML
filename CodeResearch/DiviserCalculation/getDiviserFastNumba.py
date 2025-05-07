@@ -112,6 +112,9 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, sortedDataSet):
     nObjects = dataSet.shape[0]
     nFeatures = dataSet.shape[1]
 
+    if nFeatures == 0:
+        return 0, np.zeros(0)
+
     curBalance = 0
     maxBalance = 0
     maxState = np.zeros(nFeatures)

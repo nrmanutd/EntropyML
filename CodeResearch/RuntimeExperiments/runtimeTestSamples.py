@@ -18,10 +18,10 @@ def runtimeTestSamples(x, y, points, attempts, taskName):
     results = []
     for i in range(len(possibleLength)):
         l = possibleLength[i]
-        curLengthTimes = runtimeTest(x, y, l, nFeatures, attempts)
+        curLengthTimes = runtimeTest(x, y, l, nFeatures, attempts, i == 0)
         results.append(curLengthTimes)
 
-        fileName = f'runtime_samples_{i}_{taskName}.json'
+        fileName = f'RuntimeLogs\\runtime_samples_{i}_{taskName}.json'
         serialize_labeled_list_of_arrays(results, [str(ll) for ll in possibleLength[range(i + 1)]], taskName, attempts, fileName)
 
         plotAndSaveRuntimeSamplesResults(fileName)

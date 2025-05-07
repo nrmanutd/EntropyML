@@ -229,8 +229,8 @@ def calculateTrueVsFastKS(x, y, taskName):
 
 nSamples = 200
 
-x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
-calculateTrueVsFastKS(x, y, 'blobs_1')
+#x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
+#calculateTrueVsFastKS(x, y, 'blobs_1')
 
 x, y = make_xor(nSamples)
 calculateTrueVsFastKS(x, y, 'xor')

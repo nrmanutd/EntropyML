@@ -57,9 +57,6 @@ def processTaskStatistics(task, directory):
     taskName = task['taskName']
     print(f'################ Task: {taskName} ################')
 
-    if taskName == 'ISOLET':
-        a = 10
-
     #ksMedians = calculateMetric(ksData, pData)
     ksMedians = np.array([np.average(ll) for ll in ksData])
     #ppMedians = np.array([np.average(k) for k in pData])
@@ -114,7 +111,7 @@ def processTaskStatistics(task, directory):
 
     # Визуализация
 
-    ksRank = np.argsort(ksMedians)
+    ksRank = np.argsort(1 - ksMedians)
 
     ksMedians = ksMedians[ksRank]
     nnMedians = nnMedians[ksRank]
@@ -126,7 +123,7 @@ def processTaskStatistics(task, directory):
     slope, intercept, r_value, p_value, std_err = linregress(ksRank_1, nnRank_1)
 
     plt.plot(ksRank_1, intercept + slope * ksRank_1, color='red', label=f'Linear regression {slope}')
-    plt.xlabel('G-SOMKS-SM value rank')
+    plt.xlabel('G-SOMKS-SI value rank')
     plt.ylabel('ML accuracy rank')
     #plt.title(f'G-SOMKS-SM value rank and ML accuracy rank ({len(ksMedians)} classes pairs)')
     plt.grid(True)

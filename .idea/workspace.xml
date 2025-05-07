@@ -5,15 +5,108 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_cifar_1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_cifar_1.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_8_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_9_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_10_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_11_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_12_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_13_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_random.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_8_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_8_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_9_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_9_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_cores_4_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_4_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -104,6 +197,7 @@
     "Python.main.executor": "Run",
     "Python.metricCalcultation.executor": "Run",
     "Python.permutationHelpers.executor": "Run",
+    "Python.plotAndSaveRuntimeSamplesResults.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
     "Python.runtimeCheck.executor": "Run",
@@ -114,6 +208,7 @@
     "Python.showCommonKS.executor": "Run",
     "Python.showDataSetsAndDistributions.executor": "Run",
     "Python.showKS.executor": "Run",
+    "Python.showResultsForPaper.executor": "Run",
     "Python.showStandardSets.executor": "Run",
     "Python.statisticsCalculator.executor": "Run",
     "Python.tricks.executor": "Run",
@@ -261,14 +356,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00055" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737668477461</created>
-      <option name="number" value="00055" />
-      <option name="presentableId" value="LOCAL-00055" />
-      <option name="project" value="LOCAL" />
-      <updated>1737668477461</updated>
     </task>
     <task id="LOCAL-00056" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -654,7 +741,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746526985567</updated>
     </task>
-    <option name="localTasksCounter" value="104" />
+    <task id="LOCAL-00104" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
+      <option name="closed" value="true" />
+      <created>1746531674753</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1746531674753</updated>
+    </task>
+    <option name="localTasksCounter" value="105" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -830,14 +925,14 @@
           <option name="timeStamp" value="251" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py</url>
-          <line>60</line>
-          <option name="timeStamp" value="253" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py</url>
           <line>55</line>
           <option name="timeStamp" value="254" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/permutationHelpers.py</url>
+          <line>47</line>
+          <option name="timeStamp" value="258" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
