@@ -95,37 +95,10 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_histogramms.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ISOLET_7797_617_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ISOLET_7797_617_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Iris_150_4_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Iris_150_4_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Iris_150_4_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1500_2_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1500_2_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1500_2_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1504_2_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1504_2_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_1504_2_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_150_2_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_150_2_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_150_2_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_154_2_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_154_2_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/circles_154_2_histogramms.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/random_150_2_comparisons.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/random_150_2_entropies.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/random_150_2_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -374,14 +347,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00057" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737968528660</created>
-      <option name="number" value="00057" />
-      <option name="presentableId" value="LOCAL-00057" />
-      <option name="project" value="LOCAL" />
-      <updated>1737968528660</updated>
     </task>
     <task id="LOCAL-00058" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -767,7 +732,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746653743175</updated>
     </task>
-    <option name="localTasksCounter" value="106" />
+    <task id="LOCAL-00106" summary="experiments for neur IPS paper">
+      <option name="closed" value="true" />
+      <created>1746708978734</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1746708978734</updated>
+    </task>
+    <option name="localTasksCounter" value="107" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

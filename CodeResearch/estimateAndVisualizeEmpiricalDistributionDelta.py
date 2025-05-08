@@ -172,7 +172,7 @@ def doubleDataSet(dataSet):
 
     return newDataSet
 
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 1000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures'):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures'):
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))

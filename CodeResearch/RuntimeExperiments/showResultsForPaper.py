@@ -5,8 +5,8 @@ import numpy as np
 from CodeResearch.RuntimeExperiments.plotAndSaveRuntimeSamplesResults import plot_log_dependency, plot_dependency
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
 
-cifarFeatures = 'SelectedLogs\\runtime_features_6_cifar.json'
-cifarSamples = 'SelectedLogs\\runtime_samples_6_cifar.json'
+cifarFeatures = 'SelectedLogs\\runtime_features_7_cifar.json'
+cifarSamples = 'SelectedLogs\\runtime_samples_7_cifar.json'
 mnistFeatures = 'SelectedLogs\\runtime_features_7_mnist.json'
 mnistSamples = 'SelectedLogs\\runtime_samples_7_mnist.json'
 coresFileName = 'SelectedLogs\\runtime_cores_4_mnist.json'

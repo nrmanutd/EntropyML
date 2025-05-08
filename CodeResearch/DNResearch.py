@@ -232,12 +232,15 @@ lObj = 1000
 #checkTask(17, m='delta') #wisconsin
 #checkTask('fashionmnist', t=10, m='delta')
 
-#checkTask(53, m='delta') #iris
-#checkTask(54, m='delta') #isolet
-#checkTask(186, m='delta') #wine
-#checkTask(602, m='delta') #dry bean
-
-#checkTask('mnist', t=10, m='delta')
-#checkTask('cifar', t=10, m='delta')
-
+#synthetic datasets
 checkBasicTasks()#blobs, moons, circles, xor, spirals, random
+
+#UCI datasets
+checkTask(53, m='delta') #iris
+checkTask(54, m='delta') #isolet
+checkTask(186, m='delta') #wine
+checkTask(602, m='delta') #dry bean
+
+#MNIST and CIFAR
+checkTask('mnist', t=10, m='delta')
+checkTask('cifar', t=10, m='delta')
