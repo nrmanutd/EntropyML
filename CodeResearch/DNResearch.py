@@ -15,7 +15,6 @@ from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist, make_x
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
     estimatePValuesForClassesSeparation
 
-
 def empiricalDistributionById(id, t, m):
     set = fetch_ucirepo(id=id)
 
@@ -28,9 +27,6 @@ def empiricalDistributionById(id, t, m):
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, set.metadata.name, t=t)
 
     return
-
-#empiricalDistributionById(53) #iris
-#empiricalDistributionById(186) #wine
 
 def checkCircles(l, c, m):
 
@@ -66,7 +62,6 @@ def checkCircles(l, c, m):
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'circles')
         #calculateAndVisualizeEmpiricalDistribution(transformedDataSet, target, 'radian_circles')
-
 
 def checkRandom(l, f, m):
     elements = l
@@ -234,29 +229,15 @@ lObj = 1000
 #checkTask('random', l=lObj, f=4, m='delta')
 #checkTask('hyperPlane', l=lObj, m='delta')
 
-#checkTask(53, m='delta') #iris
 #checkTask(17, m='delta') #wisconsin
+#checkTask('fashionmnist', t=10, m='delta')
+
+#checkTask(53, m='delta') #iris
+#checkTask(54, m='delta') #isolet
 #checkTask(186, m='delta') #wine
 #checkTask(602, m='delta') #dry bean
 
 #checkTask('mnist', t=10, m='delta')
-#checkTask('fashionmnist', t=10, m='delta')
-#checkTask(54, m='delta') #isolet
 #checkTask('cifar', t=10, m='delta')
 
 checkBasicTasks()#blobs, moons, circles, xor, spirals, random
-
-#todo
-#1. Разобраться с проблемой с Hyperplane - почему там низкий KS получился
-#2. Профилирование fast алгоритма
-#3. Сделать вывод одновременно всех пар классов на одном графике.
-#4. Убрать вывод логарифмов (или сделать его в отдельную папку)
-#5. Запрограммировать permutations и расчет p-value
-#6. Убрать логику с удвоенным объектами (необходимую для радемахера) и считать просто для каждого количества объектов. ВОзможно другую функцию использовать
-#7. Держать в памяти все расчеты и перезаписывать график на каждую итерацию, чтобы не ждать всю ночь
-#8. На график выводить подписи для каждой пары классов (возможно, по месту)
-
-#гипотеза:
-# 1. лосс прогнозируется как следствие флуктуаций функции распределения
-# 2. accuracy прогнозируется флуктуацией функцией распределения
-# 3. чтобы оценить обобщающую способность, не нужно прогонять тысячи итераций обучения, нужно посмотреть насколько переменна эмпирическая функция распределения

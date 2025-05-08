@@ -43,6 +43,7 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_cifar_1.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_blobs.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_blobs.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_mnist.json" afterDir="false" />
@@ -89,25 +90,42 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_9_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_cores_4_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_4_cifar.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/plotAndSaveRuntimeSamplesResults.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeCheck.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestCores.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestFeatures.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTestSamples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Breast Cancer Wisconsin (Diagnostic)_569_30_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/showDataSetsAndDistributions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/showBlobSerieGraph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dry Bean_13611_16_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ISOLET_7797_617_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ISOLET_7797_617_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iris_150_4_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iris_150_4_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Iris_150_4_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Wine Quality_6497_11_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1500_2_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1500_2_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1500_2_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1504_2_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1504_2_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_1504_2_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_150_2_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_150_2_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_150_2_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_154_2_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_154_2_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/circles_154_2_histogramms.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/random_150_2_comparisons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/random_150_2_entropies.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/random_150_2_histogramms.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -218,7 +236,7 @@
     "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "last_opened_file_path": "C:/Users/user/PycharmProjects/EntropyML/CodeResearch/Tests",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -233,7 +251,7 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.DNResearch">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -356,14 +374,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00056" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737751778074</created>
-      <option name="number" value="00056" />
-      <option name="presentableId" value="LOCAL-00056" />
-      <option name="project" value="LOCAL" />
-      <updated>1737751778074</updated>
     </task>
     <task id="LOCAL-00057" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -749,7 +759,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746531674753</updated>
     </task>
-    <option name="localTasksCounter" value="105" />
+    <task id="LOCAL-00105" summary="experiments for neur IPS paper">
+      <option name="closed" value="true" />
+      <created>1746653743175</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1746653743175</updated>
+    </task>
+    <option name="localTasksCounter" value="106" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -774,7 +792,8 @@
     <MESSAGE value="updated algorithm, added permutation logic calculation and visualization" />
     <MESSAGE value="tests are passing correctly for numba and fast" />
     <MESSAGE value="tests are passing correctly for cuda, fixed threadsafe bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="tests are passing correctly for cuda, fixed threadsafe bugs" />
+    <MESSAGE value="experiments for neur IPS paper" />
+    <option name="LAST_COMMIT_MESSAGE" value="experiments for neur IPS paper" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
