@@ -5,6 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/megamarket_kmeans_sample.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/megamarket_with_emb_not_norm.parquet" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/sampled_10k.parquet" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/proteins/df_master.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/proteins/df_master_after_redocking.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/extractDataFromMegamarket.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket_rating.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/showMegaMarketExperiment.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/read_data.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/showProteinsExperiment.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_blobs.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_random.json" afterDir="false" />
@@ -94,11 +108,28 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getCorrectDiviser.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getCorrectDiviser.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserProd.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserProd.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/showResultsForPaper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/dataSets.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/permutationHelpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/rademacherHelpers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -180,6 +211,7 @@
     "Python.dataLoader.executor": "Run",
     "Python.dataSets.executor": "Run",
     "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
+    "Python.extractDataFromMegamarket.executor": "Run",
     "Python.getDiviserTrueKS.executor": "Run",
     "Python.gpuTricks.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
@@ -191,6 +223,9 @@
     "Python.plotAndSaveRuntimeSamplesResults.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
+    "Python.runMegaMarketTest.executor": "Run",
+    "Python.runMegamarketExperiment.executor": "Run",
+    "Python.runProteinsExperiment.executor": "Run",
     "Python.runtimeCheck.executor": "Run",
     "Python.runtimeTest.executor": "Debug",
     "Python.runtimeTestSamples.executor": "Run",
@@ -199,6 +234,8 @@
     "Python.showCommonKS.executor": "Run",
     "Python.showDataSetsAndDistributions.executor": "Run",
     "Python.showKS.executor": "Run",
+    "Python.showMegaMarketExperiment.executor": "Run",
+    "Python.showProteinsExperiment.executor": "Run",
     "Python.showResultsForPaper.executor": "Run",
     "Python.showStandardSets.executor": "Run",
     "Python.statisticsCalculator.executor": "Run",
@@ -217,14 +254,14 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Current\Work\Science\CodeResearch\Helpers" />
+      <recent name="C:\Current\Work\Science\CodeResearch\DataExperiments\Megamarket" />
       <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
       <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests\Tricks" />
       <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests" />
-      <recent name="C:\Current\Work\Science\CodeResearch\Tests" />
-      <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.DNResearch">
+  <component name="RunManager">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -347,14 +384,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00058" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737971322413</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1737971322413</updated>
     </task>
     <task id="LOCAL-00059" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -740,7 +769,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746708978734</updated>
     </task>
-    <option name="localTasksCounter" value="107" />
+    <task id="LOCAL-00107" summary="experiments for neur IPS paper">
+      <option name="closed" value="true" />
+      <created>1746712221936</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1746712221936</updated>
+    </task>
+    <option name="localTasksCounter" value="108" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -813,28 +850,18 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>168</line>
+          <line>167</line>
           <option name="timeStamp" value="123" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>344</line>
+          <line>343</line>
           <option name="timeStamp" value="136" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py</url>
-          <line>401</line>
+          <line>400</line>
           <option name="timeStamp" value="151" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py</url>
-          <line>353</line>
-          <option name="timeStamp" value="153" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py</url>
-          <line>294</line>
-          <option name="timeStamp" value="154" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/DiviserCalculation/getCorrectDiviser.py</url>
@@ -918,13 +945,23 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py</url>
-          <line>55</line>
+          <line>53</line>
           <option name="timeStamp" value="254" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/permutationHelpers.py</url>
+          <url>file://$PROJECT_DIR$/CodeResearch/Helpers/permutationHelpers.py</url>
           <line>47</line>
           <option name="timeStamp" value="258" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>167</line>
+          <option name="timeStamp" value="259" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
+          <line>201</line>
+          <option name="timeStamp" value="262" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

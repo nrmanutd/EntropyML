@@ -116,8 +116,10 @@ def processTaskStatistics(task, directory):
     ksMedians = ksMedians[ksRank]
     nnMedians = nnMedians[ksRank]
 
-    ksRank_1 = np.array(range(len(ksRank)))
-    nnRank_1 = np.argsort(nnMedians)
+    #ksRank_1 = np.array(range(len(ksRank)))
+    #nnRank_1 = np.argsort(nnMedians)
+    ksRank_1 = ksMedians
+    nnRank_1 = nnMedians
 
     plt.scatter(ksRank_1, nnRank_1, color='blue', alpha=0.6)
     slope, intercept, r_value, p_value, std_err = linregress(ksRank_1, nnRank_1)
@@ -127,7 +129,7 @@ def processTaskStatistics(task, directory):
     plt.ylabel('ML accuracy rank')
     #plt.title(f'G-SOMKS-SM value rank and ML accuracy rank ({len(ksMedians)} classes pairs)')
     plt.grid(True)
-    plt.savefig(f'{directory}\\{taskName}_KS_ML_dependency.png', dpi=300, bbox_inches='tight')
+    plt.savefig(f'{directory}\\{taskName}_KS_ML_dependency_noranks.png', dpi=300, bbox_inches='tight')
     plt.clf()
 
 directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TargetTasks"

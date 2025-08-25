@@ -4,7 +4,7 @@ import numpy as np
 
 from CodeResearch.DiviserCalculation.diviserHelpers import getIdx, getPointsUnderDiviser, prepareDataSet, \
     get_one_bit_indices
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 def calcTrueKSSingleOrthant(dataSet, target):
     sortedSet = np.sort(dataSet, axis=0)

@@ -5,7 +5,7 @@ import numpy as np
 from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, getIdx, GetSortedDictList, \
     getBestStartDiviser, getPointsUnderDiviser, prepareDataSet
 from CodeResearch.DiviserCalculation.getDiviserRTree import updateDiviser
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 
 def getTopBorderCandidates(currentDiviser, sortedNegDataSet, topPoints, omit):

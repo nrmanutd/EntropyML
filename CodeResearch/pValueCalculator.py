@@ -16,7 +16,7 @@ from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDivise
     getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcModelEstimations import calcModel, calcNN, calcXGBoost
-from CodeResearch.permutationHelpers import GetObjectsPerClass
+from CodeResearch.Helpers.permutationHelpers import GetObjectsPerClass
 
 
 def getDataSetIndexesOfTwoClasses(currentObjects, target, iClass, jClass):

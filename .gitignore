@@ -167,3 +167,5 @@ cython_debug/
 /CodeResearch/PValuesFigures/
 /CodeResearch/DataSets/
 !/CodeResearch/Figures/
+!/CodeResearch/Data/megamarket/megamarket_with_emb_not_norm.parquet
+!/CodeResearch/Data/megamarket/megamarket_kmeans_sample.csv

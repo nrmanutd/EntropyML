@@ -8,7 +8,7 @@ from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetS
     getIdx, GetPowerOfSet, getPointsUnderDiviser, getBestStartDiviser, prepareDataSet, \
     getPointsIdxUnderDiviser
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 
 def GetRTreeIndex(dataSet, valuedTarget):

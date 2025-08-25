@@ -9,10 +9,9 @@ from scipy.stats import bernoulli
 
 from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
-from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 from CodeResearch.calcSupremum import calcSupremum
-from CodeResearch.permutationHelpers import GetSubSet
-from CodeResearch.rademacherHelpers import GetSortedData, ConvertVector
+from CodeResearch.Helpers.permutationHelpers import GetSubSet
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData, ConvertVector
 
 
 def calculateDistributionDelta(dataSet, nObjects, nAttempts):

@@ -3,8 +3,8 @@ import bisect
 import numpy as np
 
 from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently2
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, GetSortedDict
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 def initOmited(nObjects):
 

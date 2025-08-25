@@ -1,11 +1,7 @@
-import math
-
 import numpy as np
 
-from sortedcontainers import SortedList, SortedSet, SortedDict
-
 from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 
 

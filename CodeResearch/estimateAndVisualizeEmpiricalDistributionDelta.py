@@ -163,16 +163,7 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
 
     return
 
-def doubleDataSet(dataSet):
-    newDataSet = np.zeros((dataSet.shape[0], 2 * dataSet.shape[1]), dtype=np.float32)
-    nFeatures = dataSet.shape[1]
-
-    newDataSet[:, 0:nFeatures] = dataSet
-    newDataSet[:, nFeatures:2*nFeatures] = -dataSet
-
-    return newDataSet
-
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures'):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', *args, **kwargs):
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
@@ -218,26 +209,29 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
             pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, pAttempts, True, True, False)
             pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, mlAttempts, False, False, True)
 
-            commonPairs.append(pValues1[0])
-            commonPermutationPairs.append(pValues2[0])
-            commonNNPairs.append(pValues3[1])
+            if len(pValues1[0]) > 0:
+                commonPairs.append(pValues1[0])
+            if len(pValues2[0]) > 0:
+                commonPermutationPairs.append(pValues2[0])
+            if len(pValues3[1]) > 0:
+                commonNNPairs.append(pValues3[1])
 
             labels.append(curPair)
 
             e1 = time.time()
             print('Time elapsed: {:.2f}'.format(e1 - c1))
 
-            visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
-            visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts, curPair, folder)
-            visualizeAndSaveKSForEachPair(commonNNPairs, labels, f'{taskName}_ML', mlAttempts, curPair, folder)
-
             if len(commonPairs) > 0:
+                visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
                 serialize_labeled_list_of_arrays(commonPairs, labels, f'{taskName}_KS', ksAttempts,
                                                  f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}.txt')
             if len(commonPermutationPairs) > 0:
+                visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
+                                              curPair, folder)
                 serialize_labeled_list_of_arrays(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
                                                  f'{logsFolder}\\KS_permutation_{taskName}_{pAttempts}_{curPair}.txt')
             if len(commonNNPairs) > 0:
+                visualizeAndSaveKSForEachPair(commonNNPairs, labels, f'{taskName}_ML', mlAttempts, curPair, folder)
                 serialize_labeled_list_of_arrays(commonNNPairs, labels, f'{taskName}_ML', mlAttempts,
                                                  f'{logsFolder}\\ML_{taskName}_{mlAttempts}_{curPair}.txt')
 

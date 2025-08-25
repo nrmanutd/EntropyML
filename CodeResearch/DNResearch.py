@@ -11,7 +11,8 @@ from tensorflow.keras.utils import to_categorical
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist, make_xor, make_spirals, make_random
+from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist, make_xor, make_spirals, make_random, \
+    load_megamarket
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
     estimatePValuesForClassesSeparation
 
@@ -84,7 +85,6 @@ def checkRandom(l, f, m):
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'random')
 
-
 def checkHyperPlane(l, m):
     elements = l
 
@@ -106,7 +106,6 @@ def checkHyperPlane(l, m):
         estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'hyperPlane')
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane')
-
 
 def checkHyperPlaneWithIntersection(l, alpha, m):
     elements = l - l%2
@@ -135,7 +134,6 @@ def checkHyperPlaneWithIntersection(l, alpha, m):
         estimateAndVisualizeEmpiricalDistributionDelta(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
     else:
         calculateAndVisualizeEmpiricalDistribution(dataSet, target, 'hyperPlane_intersection_{0}'.format(alpha))
-
 
 def checkMnist(t, m):
     trainX, trainY = loadMnist()
@@ -169,6 +167,15 @@ def checkCifar(t, m):
         estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'cifar', t=t)
     else:
         calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'cifar', t=t)
+    pass
+
+def checkMegamarket(t, m):
+    trainX, trainY = load_megamarket('Data\megamarket\sampled_10k.parquet')
+
+    if m == 'delta':
+        estimateAndVisualizeEmpiricalDistributionDelta(trainX, trainY, 'megamarket', t=t)
+    else:
+        calculateAndVisualizeEmpiricalDistribution(trainX, trainY, 'megamarket', t=t)
     pass
 
 def checkBasicTasks(nSamples=2000):
@@ -212,6 +219,8 @@ def checkTask(task, *args, **kwargs):
         checkFashionMnist(t=kwargs.get('t', None), m=kwargs.get('m', None))
     elif task == 'cifar':
         checkCifar(t=kwargs.get('t', None), m=kwargs.get('m', None))
+    elif task == 'megamarket':
+        checkMegamarket(t=kwargs.get('t', None), m=kwargs.get('m', None))
     else:
         empiricalDistributionById(task, t=kwargs.get('t', None), m=kwargs.get('m', None))
 
@@ -233,14 +242,17 @@ lObj = 1000
 #checkTask('fashionmnist', t=10, m='delta')
 
 #synthetic datasets
-checkBasicTasks()#blobs, moons, circles, xor, spirals, random
+#checkBasicTasks()#blobs, moons, circles, xor, spirals, random
 
 #UCI datasets
-checkTask(53, m='delta') #iris
-checkTask(54, m='delta') #isolet
-checkTask(186, m='delta') #wine
-checkTask(602, m='delta') #dry bean
+#checkTask(53, m='delta') #iris
+#checkTask(54, m='delta') #isolet
+#checkTask(186, m='delta') #wine
+#checkTask(602, m='delta') #dry bean
 
 #MNIST and CIFAR
-checkTask('mnist', t=10, m='delta')
-checkTask('cifar', t=10, m='delta')
+#checkTask('mnist', t=10, m='delta')
+#checkTask('cifar', t=10, m='delta')
+
+#Text tasks
+checkTask('megamarket', t=10, m='delta')

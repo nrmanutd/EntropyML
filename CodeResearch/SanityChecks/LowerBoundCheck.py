@@ -9,7 +9,7 @@ import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.DiviserCalculation.diviserHelpers import get_one_bit_indices
+from CodeResearch.DiviserCalculation.diviserHelpers import get_one_bit_indices, doubleDataSet
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserTrueKS import getMaximumDiviserTrueKS
 from CodeResearch.calcModelEstimations import calcXGBoost, calcLinRegression
@@ -36,8 +36,6 @@ def getSubset(currentObjects, dataSet, target, iClass, jClass):
 def calcFastKS(dataSet, target):
     return getMaximumDiviserFastNumba(dataSet, target)[0]
 
-
-
 def calcFastRestartsKS(dataSet, target, n_restarts=8, rng=None):
     X = dataSet
     nFeatures = dataSet.shape[1]
@@ -63,7 +61,6 @@ def calcFastRestartsKS(dataSet, target, n_restarts=8, rng=None):
 def calcTrueKS(dataSet, target):
     return getMaximumDiviserTrueKS(dataSet, target)
 
-
 def compareKSandFastKS(dataSet, target, attempts):
     trueKS = []
     fastKS = []
@@ -79,8 +76,8 @@ def compareKSandFastKS(dataSet, target, attempts):
 
         ds, t, testDs, testT = getSubset(math.floor(nObjects / 2), dataSet, target, 0, 1)
 
-        #fastValue = calcFastKS(ds, t)
-        fastValue = calcFastRestartsKS(ds, t)
+        fastValue = calcFastKS(ds, t)
+        #fastValue = calcFastRestartsKS(ds, t)
         trueValue = calcTrueKS(ds, t)
         #accuracy = calcLinRegression(ds, t, testDs, testT)
 
@@ -210,7 +207,9 @@ def calculateTrueVsFastKS(x, y, taskName):
     attempts = 100
 
     print(f'Task name: {taskName}')
-    trueKS, fastKS, xgBoost = compareKSandFastKS(x, y, attempts)
+    #xx = doubleDataSet(x)
+    xx = x
+    trueKS, fastKS, xgBoost = compareKSandFastKS(xx, y, attempts)
     print(trueKS)
     print(fastKS)
     print(xgBoost)

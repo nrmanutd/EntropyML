@@ -4,7 +4,7 @@ import numpy as np
 
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.pValueCalculator import getDataSetIndexesOfTwoClasses
-from CodeResearch.permutationHelpers import extractDataSet
+from CodeResearch.Helpers.permutationHelpers import extractDataSet
 
 
 def runtimeForClassPairs(xx, yy):

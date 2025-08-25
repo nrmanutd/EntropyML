@@ -310,6 +310,16 @@ def get_one_bit_indices(number):
     return indices
 
 @jit(nopython=True)
+def doubleDataSet(dataSet):
+    newDataSet = np.zeros((dataSet.shape[0], 2 * dataSet.shape[1]), dtype=np.float32)
+    nFeatures = dataSet.shape[1]
+
+    newDataSet[:, 0:nFeatures] = dataSet
+    newDataSet[:, nFeatures:2*nFeatures] = -dataSet
+
+    return newDataSet
+
+@jit(nopython=True)
 def prepareDataSet(dataSet):
     nFeatures = dataSet.shape[1]
 

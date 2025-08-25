@@ -2,7 +2,8 @@ import numba as nb
 import numpy as np
 from numba import jit, prange
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, doubleDataSet
+
 
 @jit(nopython=True)
 def updateStateOnOtherFeatures(currentState, sortedDataSet, valuedTarget, omitedObjects, omitedDelta, updateState):
@@ -164,6 +165,7 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, sortedDataSet):
 @jit(nopython=True)
 def getMaximumDiviserFastNumba(dataSet, target):
     dataSet = prepareDataSet(dataSet)
+    dataSet = doubleDataSet(dataSet)
     nClasses = np.unique(target)
 
     counts = np.zeros(2, dtype=nb.int64)

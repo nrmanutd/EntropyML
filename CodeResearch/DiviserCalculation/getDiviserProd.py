@@ -1,7 +1,7 @@
 import numpy as np
 
 from CodeResearch.DiviserCalculation.diviserCheckers import calculateDeltaIndependently
-from CodeResearch.rademacherHelpers import GetSortedData
+from CodeResearch.Helpers.rademacherHelpers import GetSortedData
 
 
 def getDeltaForFeature(sortedIdx, target, featureState, cClass, cClassKoeff, oClassKoeff, curOmitedObjects):

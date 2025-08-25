@@ -114,6 +114,10 @@ def visualizeAndSaveKSForEachPairAndTwoDistributions(data1, data2, labels, taskN
     plt.close(fig)
 
 def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, nAttempts, curPair, folder='PValuesFigures'):
+    totalPairs = len(pairsNames)
+    return visualizeAndSaveKSForEachPairFirst(data, pairsNames, taskName, nAttempts, curPair, folder, totalPairs)
+
+def visualizeAndSaveKSForEachPairFirst(data, pairsNames, taskName, nAttempts, curPair, folder, totalPairs):
     # Расчет квантилей для каждой пары классов
     quantiles_list = [calculate_quantiles(d) for d in data]
 
@@ -122,7 +126,7 @@ def visualizeAndSaveKSForEachPair(data, pairsNames, taskName, nAttempts, curPair
     ms = [q['50%'] for q in quantiles_list]
 
     # Сортировка пар классов по возрастанию дельты
-    sorted_indices = np.argsort(ms)
+    sorted_indices = np.argsort(ms)[:totalPairs]
     sorted_data = [data[i] for i in sorted_indices]
     sorted_quantiles = [quantiles_list[i] for i in sorted_indices]
     sorted_deltas = [deltas[i] for i in sorted_indices]  # Отсортированные дельты
