@@ -181,6 +181,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
     nClasses = len(np.unique(target))
 
     commonPairs = []
+    commonEntropies = []
+    commonFrequences = []
+    commonErrors = []
     commonPermutationPairs = []
     commonNNPairs = []
     labels = []
@@ -188,6 +191,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
     curIdx = 0
     for iClass in range(nClasses):
         for jClass in range(iClass):
+
+            if iClass != 21 or jClass != 6:
+                continue
 
             iObjectsCount = len(np.where(target == iClass)[0])
             jObjectsCount = len(np.where(target == jClass)[0])
@@ -211,6 +217,9 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
             if len(pValues1[0]) > 0:
                 commonPairs.append(pValues1[0])
+                commonEntropies.append(pValues1[2].calculateComplexity())
+                commonFrequences.append(pValues1[2].getObjectsFrequences())
+                commonErrors.append([pValues1[2].getErrorExpectation()])
             if len(pValues2[0]) > 0:
                 commonPermutationPairs.append(pValues2[0])
             if len(pValues3[1]) > 0:
@@ -225,6 +234,12 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
                 visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
                 serialize_labeled_list_of_arrays(commonPairs, labels, f'{taskName}_KS', ksAttempts,
                                                  f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}.txt')
+                serialize_labeled_list_of_arrays(commonEntropies, labels, f'{taskName}_KS_entropy', ksAttempts,
+                                                 f'{logsFolder}\\KS_entropy_{taskName}_{ksAttempts}_{curPair}.txt')
+                serialize_labeled_list_of_arrays(commonFrequences, labels, f'{taskName}_KS_frequency', ksAttempts,
+                                                 f'{logsFolder}\\KS_frequency_{taskName}_{ksAttempts}_{curPair}.txt')
+                serialize_labeled_list_of_arrays(commonErrors, labels, f'{taskName}_KS_error', ksAttempts,
+                                                 f'{logsFolder}\\KS_error_{taskName}_{ksAttempts}_{curPair}.txt')
             if len(commonPermutationPairs) > 0:
                 visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
                                               curPair, folder)

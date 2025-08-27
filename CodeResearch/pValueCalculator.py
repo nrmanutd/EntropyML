@@ -15,6 +15,7 @@ from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviser
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
     getMaximumDiviserFastNumbaCore
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
+from CodeResearch.ObjectComplexity.complexityCalculator import KSComplexityCalculator
 from CodeResearch.calcModelEstimations import calcModel, calcNN, calcXGBoost
 from CodeResearch.Helpers.permutationHelpers import GetObjectsPerClass
 
@@ -151,6 +152,7 @@ def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     t = target[objectsIdx]
 
     enc = LabelEncoder()
+    complexityCalculator = KSComplexityCalculator(ds, t)
 
     preparationTime = 0
     ksTime = 0
@@ -206,10 +208,13 @@ def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
 
             preparationTime += (time.time() - t2)
             t2 = time.time()
-            values[iAttempt] = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, sds1, vt2, sds2)[0]
+            v, d = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, sds1, vt2, sds2)
+            values[iAttempt] = v
             ksTime += (time.time() - t2)
 
-    return values, NNvalues
+            complexityCalculator.addComplexity(d)
+
+    return values, NNvalues, complexityCalculator
 
 def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation=False, calculateModel=False):
     iObjects = list(np.where(target == iClass)[0])

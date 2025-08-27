@@ -7,18 +7,8 @@
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
       <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/megamarket_kmeans_sample.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/megamarket_with_emb_not_norm.parquet" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/sampled_10k.parquet" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/proteins/df_master.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Data/proteins/df_master_after_redocking.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/extractDataFromMegamarket.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/showMegaMarketExperiment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/read_data.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/showProteinsExperiment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/showMegamarketEdgeObjects.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/complexityCalculator.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_blobs.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_random.json" afterDir="false" />
@@ -108,28 +98,14 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_KScomplexityCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DNResearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DNResearch.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserCalcuation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/diviserHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getCorrectDiviser.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getCorrectDiviser.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastNumba.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserProd.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserProd.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTree.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserRTreeStochastic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserTrueKS.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtimeTest.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket_rating.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/megamarket_rating.xlsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/runtime_samples_0_blobs.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/SanityChecks/LowerBoundCheck.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/StatisticsAnalyzer/statisticsCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/VisualizeAndSaveCommonTopSubsamples.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/calculateDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/dataSets.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/permutationHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/permutationHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/rademacherHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/rademacherHelpers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -176,6 +152,11 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points.executor": "Debug",
     "Python tests.Python tests for test_cudaHelpers.Test.executor": "Run",
     "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor": "Run",
     "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor": "Run",
@@ -211,7 +192,7 @@
     "Python.dataLoader.executor": "Run",
     "Python.dataSets.executor": "Run",
     "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
-    "Python.extractDataFromMegamarket.executor": "Run",
+    "Python.extractDataFromMegamarket.executor": "Debug",
     "Python.getDiviserTrueKS.executor": "Run",
     "Python.gpuTricks.executor": "Run",
     "Python.hist_optimal_bin_width.executor": "Run",
@@ -235,6 +216,7 @@
     "Python.showDataSetsAndDistributions.executor": "Run",
     "Python.showKS.executor": "Run",
     "Python.showMegaMarketExperiment.executor": "Run",
+    "Python.showMegamarketEdgeObjects.executor": "Run",
     "Python.showProteinsExperiment.executor": "Run",
     "Python.showResultsForPaper.executor": "Run",
     "Python.showStandardSets.executor": "Run",
@@ -284,7 +266,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_cudaHelpers.Test" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -295,11 +277,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_cudaHelpers.Test&quot;" />
+      <option name="_new_target" value="&quot;test_KScomplexityCalculator.TestKSComplexityCalculator&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -310,11 +292,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_cudaHelpers.Test.test_get_sorted_cuda_biton&quot;" />
+      <option name="_new_target" value="&quot;test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_cudaHelpers.Test.test_get_updated_numba" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -325,11 +307,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_cudaHelpers.Test.test_get_updated_numba&quot;" />
+      <option name="_new_target" value="&quot;test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -340,11 +322,11 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_cudaHelpers.Test.test_get_updated_numba_bucket&quot;" />
+      <option name="_new_target" value="&quot;test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests for test_getDeiviserCuda.TestDiviserCuda" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+    <configuration name="Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -355,17 +337,17 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_getDeiviserCuda.TestDiviserCuda&quot;" />
+      <option name="_new_target" value="&quot;test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python tests.Python tests for test_cudaHelpers.Test" />
-        <item itemvalue="Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda" />
-        <item itemvalue="Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket" />
-        <item itemvalue="Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba" />
-        <item itemvalue="Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton" />
+        <item itemvalue="Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator" />
+        <item itemvalue="Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points" />
+        <item itemvalue="Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points" />
+        <item itemvalue="Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points" />
+        <item itemvalue="Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase" />
       </list>
     </recent_temporary>
   </component>
@@ -384,14 +366,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00059" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737971943436</created>
-      <option name="number" value="00059" />
-      <option name="presentableId" value="LOCAL-00059" />
-      <option name="project" value="LOCAL" />
-      <updated>1737971943453</updated>
     </task>
     <task id="LOCAL-00060" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -777,7 +751,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746712221936</updated>
     </task>
-    <option name="localTasksCounter" value="108" />
+    <task id="LOCAL-00108" summary="experiments for neur IPS paper">
+      <option name="closed" value="true" />
+      <created>1756117240184</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
+      <option name="project" value="LOCAL" />
+      <updated>1756117240184</updated>
+    </task>
+    <option name="localTasksCounter" value="109" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -960,8 +942,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py</url>
-          <line>201</line>
-          <option name="timeStamp" value="262" />
+          <line>197</line>
+          <option name="timeStamp" value="267" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/extractDataFromMegamarket.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="273" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

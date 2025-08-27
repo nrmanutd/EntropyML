@@ -93,7 +93,7 @@ def load_megamarket(path):
     embedding_col = "embedding"
     data = pd.read_parquet(path)
 
-    y = data[category_col].tolist()
+    y = np.array(data[category_col])
     x = np.vstack(data[embedding_col].values)
 
     return x, y
