@@ -163,10 +163,15 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
 
     return
 
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', *args, **kwargs):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', alpha=0.5, allowedClasses = None, *args, **kwargs):
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
+
+    if allowedClasses is None:
+        allowedClasses = set()
+    else:
+        allowedClasses = set(allowedClasses)
 
     if not os.path.exists(folder):
         os.makedirs(folder)
@@ -181,6 +186,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
     nClasses = len(np.unique(target))
 
     commonPairs = []
+    commonOutOfSamplePairs = []
     commonEntropies = []
     commonFrequences = []
     commonErrors = []
@@ -191,15 +197,14 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
     curIdx = 0
     for iClass in range(nClasses):
         for jClass in range(iClass):
-
-            if iClass != 21 or jClass != 6:
+            if len(allowedClasses) > 0 and '{0}_{1}'.format(iClass, jClass) not in allowedClasses:
                 continue
 
             iObjectsCount = len(np.where(target == iClass)[0])
             jObjectsCount = len(np.where(target == jClass)[0])
 
             totalObjects = (iObjectsCount + jObjectsCount)
-            currentObjects = math.floor(totalObjects / 2)
+            currentObjects = math.floor(totalObjects * alpha)
 
             curPair = f'{iClass}_{jClass}'
 
@@ -217,6 +222,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
             if len(pValues1[0]) > 0:
                 commonPairs.append(pValues1[0])
+                commonOutOfSamplePairs.append(pValues1[3])
                 commonEntropies.append(pValues1[2].calculateComplexity())
                 commonFrequences.append(pValues1[2].getObjectsFrequences())
                 commonErrors.append([pValues1[2].getErrorExpectation()])
@@ -232,23 +238,27 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
             if len(commonPairs) > 0:
                 visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
+                visualizeAndSaveKSForEachPair(commonOutOfSamplePairs, labels, f'{taskName}_KS_OOS', ksAttempts, curPair, folder)
+
                 serialize_labeled_list_of_arrays(commonPairs, labels, f'{taskName}_KS', ksAttempts,
-                                                 f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
+                serialize_labeled_list_of_arrays(commonOutOfSamplePairs, labels, f'{taskName}_KS_OOS', ksAttempts,
+                                                 f'{logsFolder}\\KS_OOS_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
                 serialize_labeled_list_of_arrays(commonEntropies, labels, f'{taskName}_KS_entropy', ksAttempts,
-                                                 f'{logsFolder}\\KS_entropy_{taskName}_{ksAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\KS_entropy_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
                 serialize_labeled_list_of_arrays(commonFrequences, labels, f'{taskName}_KS_frequency', ksAttempts,
-                                                 f'{logsFolder}\\KS_frequency_{taskName}_{ksAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\KS_frequency_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
                 serialize_labeled_list_of_arrays(commonErrors, labels, f'{taskName}_KS_error', ksAttempts,
-                                                 f'{logsFolder}\\KS_error_{taskName}_{ksAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\KS_error_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
             if len(commonPermutationPairs) > 0:
                 visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
                                               curPair, folder)
                 serialize_labeled_list_of_arrays(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
-                                                 f'{logsFolder}\\KS_permutation_{taskName}_{pAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\KS_permutation_{taskName}_{pAttempts}_{curPair}_{currentObjects}.txt')
             if len(commonNNPairs) > 0:
                 visualizeAndSaveKSForEachPair(commonNNPairs, labels, f'{taskName}_ML', mlAttempts, curPair, folder)
                 serialize_labeled_list_of_arrays(commonNNPairs, labels, f'{taskName}_ML', mlAttempts,
-                                                 f'{logsFolder}\\ML_{taskName}_{mlAttempts}_{curPair}.txt')
+                                                 f'{logsFolder}\\ML_{taskName}_{mlAttempts}_{curPair}_{currentObjects}.txt')
 
             curIdx += 1
 

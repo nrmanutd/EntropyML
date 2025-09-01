@@ -18,7 +18,7 @@ class KSComplexityCalculator:
         self.secondClassCount = len(target) - self.firstClassCount
 
         self.goodObject = np.zeros(len(target), dtype=np.int32)
-        self.totalAttempts = 0
+        self.objectAttempts = np.zeros(len(target), dtype=np.int32)
 
     @staticmethod
     def estimateObjectIsOver(obj, div):
@@ -41,7 +41,10 @@ class KSComplexityCalculator:
         return 0
 
     def addComplexity(self, diviser):
-        self.totalAttempts += 1
+        self.addComplexityOutOfIdx(diviser, [])
+
+    def addComplexityOutOfIdx(self, diviser, idx):
+        idxToSkip = set(idx)
 
         firstClass = self.firstClass
         secondClass = self.secondClass
@@ -51,6 +54,9 @@ class KSComplexityCalculator:
 
         isObjectOver = np.full(len(self.goodObject), False, dtype=np.bool)
         for i in np.arange(len(isObjectOver)):
+            if i in idxToSkip:
+                continue
+
             isObjectOver[i] = self.estimateObjectIsOver(self.dataset[i, :], diviser)
 
             if isObjectOver[i]:
@@ -62,23 +68,57 @@ class KSComplexityCalculator:
         goodClassForOver = firstClass if firstClassCount/self.firstClassCount > secondClassCount/self.secondClassCount else secondClass
 
         for i in np.arange(len(isObjectOver)):
+            if i in idxToSkip:
+                continue
+
             goodnessEstimation = self.estimateObjectIsGood(isObjectOver[i], self.target[i], goodClassForOver)
             self.goodObject[i] += goodnessEstimation
+            self.objectAttempts[i] += 1
         pass
+
+    def calculateKSOutOfIdx(self, diviser, idx):
+        idxToSkip = set(idx)
+        firstClass = self.firstClass
+
+        firstClassOver = 0
+        secondClassOver = 0
+
+        firstClassCount = 0
+        secondClassCount = 0
+
+        for i in np.arange(len(self.target)):
+            if i in idxToSkip:
+                continue
+
+            isObjectOver = self.estimateObjectIsOver(self.dataset[i, :], diviser)
+            if isObjectOver:
+                if self.target[i] == firstClass:
+                    firstClassOver += 1
+                else:
+                    secondClassOver += 1
+
+            if self.target[i] == firstClass:
+                firstClassCount += 1
+            else:
+                secondClassCount += 1
+
+        balance = firstClassOver/firstClassCount - secondClassOver/secondClassCount
+        return abs(balance)
 
     def calculateComplexity(self):
         result = np.zeros(len(self.goodObject))
         for i in np.arange(len(result)):
-            p = self.goodObject[i] / self.totalAttempts
+            p = self.goodObject[i] / self.objectAttempts[i]
 
             result[i] = entropy([p, 1-p], base=2)
 
         return result
 
     def getObjectsFrequences(self):
-        return self.goodObject / self.totalAttempts
+        return np.array([self.goodObject[i] / self.objectAttempts[i] for i in range(len(self.target))])
 
     def getErrorExpectation(self):
         p = self.getObjectsFrequences()
+        p = p[~np.isnan(p)]
         errors = np.minimum(p, 1 - p)
         return np.mean(errors)

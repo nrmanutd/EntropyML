@@ -74,3 +74,25 @@ class TestKSComplexityCalculator(TestCase):
 
         self.assertEqual(expectedComplexity.tolist(), actualComplexity.tolist())
         pass
+
+    def test_five_separate_points_with_skip_idx(self):
+        dataSet = np.array([[1, 1], [1.4, 1.4], [1.46, 1.45], [1.6, 1.6], [2, 2]])
+        target = np.array([0, 0, 0, 1, 1])
+        cc = KSComplexityCalculator(dataSet, target)
+
+        cc.addComplexityOutOfIdx(np.array([1.5, 1.5]), [0, 3])
+        cc.addComplexityOutOfIdx(np.array([1.5, 1.5]), [0, 3])
+        cc.addComplexityOutOfIdx(np.array([1.3, 1.3]), [0, 3])
+        cc.addComplexityOutOfIdx(np.array([1.7, 1.7]), [0, 3])
+        cc.addComplexityOutOfIdx(np.array([1.45, 1.7]), [0, 3])
+
+        expectedFrequency = np.array([np.nan, 1, 0.8, np.nan, 0.8])
+        actualFrequency = cc.getObjectsFrequences()
+
+        np.testing.assert_equal(expectedFrequency.tolist(), actualFrequency.tolist())
+
+        expectedComplexity = np.array([np.nan, 0, entropy([0.8, 0.2], base=2), np.nan, entropy([0.8, 0.2], base=2)])
+        actualComplexity = cc.calculateComplexity()
+
+        np.testing.assert_equal(expectedComplexity.tolist(), actualComplexity.tolist())
+        pass

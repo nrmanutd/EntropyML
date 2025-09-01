@@ -142,6 +142,8 @@ def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     objectsIdx = iObjects + jObjects
 
     values = np.zeros(nAttempts)
+    outOfSampleValues = np.zeros(nAttempts)
+
     NNvalues = np.zeros(nAttempts)
 
     currentTime = time.time()
@@ -212,9 +214,10 @@ def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
             values[iAttempt] = v
             ksTime += (time.time() - t2)
 
-            complexityCalculator.addComplexity(d)
+            outOfSampleValues[iAttempt] = complexityCalculator.calculateKSOutOfIdx(d, idx)
+            complexityCalculator.addComplexityOutOfIdx(d, idx)
 
-    return values, NNvalues, complexityCalculator
+    return values, NNvalues, complexityCalculator, outOfSampleValues
 
 def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation=False, calculateModel=False):
     iObjects = list(np.where(target == iClass)[0])

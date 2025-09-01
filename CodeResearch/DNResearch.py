@@ -242,7 +242,7 @@ lObj = 1000
 #checkTask('fashionmnist', t=10, m='delta')
 
 #synthetic datasets
-#checkBasicTasks()#blobs, moons, circles, xor, spirals, random
+checkBasicTasks()#blobs, moons, circles, xor, spirals, random
 
 #UCI datasets
 #checkTask(53, m='delta') #iris

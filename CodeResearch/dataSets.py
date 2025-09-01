@@ -98,6 +98,20 @@ def load_megamarket(path):
 
     return x, y
 
+def load_proteins_bin(path):
+    d = pd.read_csv(path)
+    selected_columns = ['1m2z', '1pbq', '1xoq', '2rh1', '2vt4', '2ydo', '2z5x', '3b66', '3kk6', '3ln1', '3rze', '4djh',
+                        '4ey7', '4iar', '4mqs', '4n6h', '5cxv', '5i71', '5tvn', '5u09', '5va1', '6cm4', '6kpf', '6kux',
+                        '6lqa', '6pdj', '6x3x', '6y1z', '7f8y', '7kwe', '7ljd', '7wc9', '7xnk', '7ym8', '8e9y', '8ef6',
+                        '8fhs', '8pjk', '8st0', '8wty', '8xvk', '8yn3', '9eo4', 'V1A']
+    x = d[selected_columns].to_numpy()
+
+    y = d['-lgLD50, mol/kg'].to_numpy()
+    median_val = np.median(y)
+    yy = np.where(y >= median_val, 1, 0)
+
+    return x, yy
+
 def load_proteins(path):
     d = pd.read_csv(path)
     selected_columns = ['1m2z', '1pbq', '1xoq', '2rh1', '2vt4', '2ydo', '2z5x', '3b66', '3kk6', '3ln1', '3rze', '4djh',
