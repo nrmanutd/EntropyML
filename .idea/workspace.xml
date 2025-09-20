@@ -5,13 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added experiments">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleComplexObjects/blobs_example_200_bad_examples_1_0.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleComplexObjects/blobs_example_200_examples_1_0.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleComplexObjects/blobs_example_200_good_examples_1_0.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleSummary/blobs_example.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleSummary/blobs_example_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleSummary/blobs_example_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Example/ExampleSummary/blobs_example_rating.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/ComplexObjects/ComplexObjects_all_pairs.zip" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/ComplexObjects/megamarket_1000_examples_12_5.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/ComplexObjects/megamarket_200_examples_10_0.csv" afterDir="false" />
@@ -1087,7 +1080,6 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_200_rating.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/indexExtractor.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ligands_complexity.csv" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ligands_complexity.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/blobsComplexObjects/blobs_200_examples_1_0.csv" afterDir="false" />
@@ -1203,20 +1195,10 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Tests/Tricks/PCATrick.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_rating.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_rating.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/runMegamarketExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/complexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/complexityCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Tests/test_KScomplexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Tests/test_KScomplexityCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/filesExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/filesExtractor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/summarizeExperiments.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/summarizeExperiments.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/pValueCalculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -1484,14 +1466,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00062" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1737991142632</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1737991142632</updated>
     </task>
     <task id="LOCAL-00063" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -1877,7 +1851,15 @@
       <option name="project" value="LOCAL" />
       <updated>1756846608076</updated>
     </task>
-    <option name="localTasksCounter" value="111" />
+    <task id="LOCAL-00111" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758401772489</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1758401772489</updated>
+    </task>
+    <option name="localTasksCounter" value="112" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
