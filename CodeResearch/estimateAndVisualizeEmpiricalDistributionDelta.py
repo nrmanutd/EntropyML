@@ -1,16 +1,17 @@
 import math
-import time
 import os
+import time
 
 import numpy as np
-
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.DataSeparationFramework.DataSeparationComposite import DataSeparationComposite
+from CodeResearch.DataSeparationFramework.SimpleDataSeparationCalculator import KSDataSeparationCalculator, \
+    KSPermutationDataSeparationCalculator, MLDataSeparationCalculator
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
 from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistributionDelta
-from CodeResearch.pValueCalculator import calcPValueFastPro
 
 
 def estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs):
@@ -139,15 +140,11 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
     nClasses = len(np.unique(target))
 
-    commonPairs = []
-    commonOutOfSamplePairs = []
-    commonEntropies = []
-    commonFrequences = []
-    commonErrors = []
-    commonPermutationPairs = []
-    commonNNPairs = []
-    commonIndexes = []
-    labels = []
+    ksCalculator = KSDataSeparationCalculator(dataSet, target, ksAttempts, taskName, folder, logsFolder)
+    ksPermutationCalculator = KSPermutationDataSeparationCalculator(dataSet, target, pAttempts, taskName, folder, logsFolder)
+    mlCalculator = MLDataSeparationCalculator(dataSet, target, mlAttempts, taskName, folder, logsFolder)
+
+    calculator = DataSeparationComposite([ksCalculator, ksPermutationCalculator, mlCalculator])
 
     curIdx = 0
     for iClass in range(nClasses):
@@ -161,8 +158,6 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
             totalObjects = (iObjectsCount + jObjectsCount)
             currentObjects = math.floor(totalObjects * alpha)
 
-            curPair = f'{iClass}_{jClass}'
-
             print(f'Current pair of classes: {iClass}/{jClass}, task {taskName}, objects {nObjects}, nFeatures {nFeatures}, nClasses {nClasses}, currentObjects {currentObjects}')
 
             if iObjectsCount + jObjectsCount < currentObjects:
@@ -171,52 +166,12 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
             c1 = time.time()
 
-            pValues1 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, ksAttempts, True, False, False)
-            pValues2 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, pAttempts, True, True, False)
-            pValues3 = calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, mlAttempts, False, False, True)
-
-            if len(pValues1[0]) > 0:
-                commonPairs.append(pValues1[0])
-                commonOutOfSamplePairs.append(pValues1[3])
-                commonEntropies.append(pValues1[2].calculateComplexity())
-                commonFrequences.append(pValues1[2].getObjectsFrequences())
-                commonErrors.append([pValues1[2].getErrorExpectation()])
-                commonIndexes.append(pValues1[2].getObjectsIndex())
-            if len(pValues2[0]) > 0:
-                commonPermutationPairs.append(pValues2[0])
-            if len(pValues3[1]) > 0:
-                commonNNPairs.append(pValues3[1])
-
-            labels.append(curPair)
+            calculator.calculateDataSeparability(currentObjects, iClass, jClass)
 
             e1 = time.time()
             print('Time elapsed: {:.2f}'.format(e1 - c1))
 
-            if len(commonPairs) > 0:
-                visualizeAndSaveKSForEachPair(commonPairs, labels, f'{taskName}_KS', ksAttempts, curPair, folder)
-                visualizeAndSaveKSForEachPair(commonOutOfSamplePairs, labels, f'{taskName}_KS_OOS', ksAttempts, curPair, folder)
-
-                serialize_labeled_list_of_arrays(commonPairs, labels, f'{taskName}_KS', ksAttempts,
-                                                 f'{logsFolder}\\KS_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-                serialize_labeled_list_of_arrays(commonOutOfSamplePairs, labels, f'{taskName}_KS_OOS', ksAttempts,
-                                                 f'{logsFolder}\\KS_OOS_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-                serialize_labeled_list_of_arrays(commonEntropies, labels, f'{taskName}_KS_entropy', ksAttempts,
-                                                 f'{logsFolder}\\KS_entropy_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-                serialize_labeled_list_of_arrays(commonFrequences, labels, f'{taskName}_KS_frequency', ksAttempts,
-                                                 f'{logsFolder}\\KS_frequency_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-                serialize_labeled_list_of_arrays(commonErrors, labels, f'{taskName}_KS_error', ksAttempts,
-                                                 f'{logsFolder}\\KS_error_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-                serialize_labeled_list_of_arrays(commonIndexes, labels, f'{taskName}_KS_indexes', ksAttempts,
-                                                 f'{logsFolder}\\KS_indexes_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
-            if len(commonPermutationPairs) > 0:
-                visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
-                                              curPair, folder)
-                serialize_labeled_list_of_arrays(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
-                                                 f'{logsFolder}\\KS_permutation_{taskName}_{pAttempts}_{curPair}_{currentObjects}.txt')
-            if len(commonNNPairs) > 0:
-                visualizeAndSaveKSForEachPair(commonNNPairs, labels, f'{taskName}_ML', mlAttempts, curPair, folder)
-                serialize_labeled_list_of_arrays(commonNNPairs, labels, f'{taskName}_ML', mlAttempts,
-                                                 f'{logsFolder}\\ML_{taskName}_{mlAttempts}_{curPair}_{currentObjects}.txt')
+            calculator.serializeResults()
 
             curIdx += 1
 
