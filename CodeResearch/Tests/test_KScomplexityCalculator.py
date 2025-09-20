@@ -86,12 +86,12 @@ class TestKSComplexityCalculator(TestCase):
         cc.addComplexityOutOfIdx(np.array([1.7, 1.7]), [0, 3])
         cc.addComplexityOutOfIdx(np.array([1.45, 1.7]), [0, 3])
 
-        expectedFrequency = np.array([np.nan, 1, 0.8, np.nan, 0.8])
+        expectedFrequency = np.array([np.nan, 0.8, 0.6, np.nan, 1])
         actualFrequency = cc.getObjectsFrequences()
 
         np.testing.assert_equal(expectedFrequency.tolist(), actualFrequency.tolist())
 
-        expectedComplexity = np.array([np.nan, 0, entropy([0.8, 0.2], base=2), np.nan, entropy([0.8, 0.2], base=2)])
+        expectedComplexity = np.array([np.nan, entropy([0.8, 0.2], base=2), entropy([0.6, 0.4], base=2), np.nan, 0])
         actualComplexity = cc.calculateComplexity()
 
         np.testing.assert_equal(expectedComplexity.tolist(), actualComplexity.tolist())

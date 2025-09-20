@@ -3,9 +3,11 @@ import numpy as np
 from scipy.stats import entropy
 
 class KSComplexityCalculator:
-    def __init__(self, dataset, target):
+    def __init__(self, dataset, target, objectsIdx=None):
         self.dataset = dataset
         self.target = target
+
+        self.objectsIdx = objectsIdx if objectsIdx is not None else np.arange(len(target))
 
         diffClasses = np.unique(target)
         if len(diffClasses) != 2:
@@ -52,6 +54,9 @@ class KSComplexityCalculator:
         firstClassCount = 0
         secondClassCount = 0
 
+        firstClassOver = 0
+        secondClassOver = 0
+
         isObjectOver = np.full(len(self.goodObject), False, dtype=np.bool)
         for i in np.arange(len(isObjectOver)):
             if i in idxToSkip:
@@ -59,13 +64,18 @@ class KSComplexityCalculator:
 
             isObjectOver[i] = self.estimateObjectIsOver(self.dataset[i, :], diviser)
 
+            if self.target[i] == firstClass:
+                firstClassCount += 1
+            else:
+                secondClassCount += 1
+
             if isObjectOver[i]:
                 if self.target[i] == firstClass:
-                    firstClassCount += 1
+                    firstClassOver += 1
                 else:
-                    secondClassCount += 1
+                    secondClassOver += 1
 
-        goodClassForOver = firstClass if firstClassCount/self.firstClassCount > secondClassCount/self.secondClassCount else secondClass
+        goodClassForOver = firstClass if firstClassOver/firstClassCount > secondClassOver/secondClassCount else secondClass
 
         for i in np.arange(len(isObjectOver)):
             if i in idxToSkip:
@@ -122,3 +132,6 @@ class KSComplexityCalculator:
         p = p[~np.isnan(p)]
         errors = np.minimum(p, 1 - p)
         return np.mean(errors)
+
+    def getObjectsIndex(self):
+        return np.array(self.objectsIdx)

@@ -13,52 +13,6 @@ from CodeResearch.calcModelAndRademacherComplexity import calculateModelAndDistr
 from CodeResearch.pValueCalculator import calcPValueFastPro
 
 
-def estimateOneOverOthers(dataSet, target, iClass, taskName, *args, **kwargs):
-    enc = LabelEncoder()
-
-    nClasses = np.unique(target)
-
-    cIdx = np.where(target == iClass)[0]
-    oIdx = np.where(target != iClass)[0]
-    curTarget = np.copy(target)
-
-    curTarget[cIdx] = iClass
-    curTarget[oIdx] = -1
-
-    curTarget = enc.fit_transform(np.ravel(curTarget))
-
-    estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, curTarget,
-                                                           '{0}_c{1}_of_{2}'.format(taskName, iClass, len(nClasses)),
-                                                           args, kwargs)
-    pass
-
-
-def estimateOneVsOne(dataSet, target, iClass, taskName, args, kwargs):
-    enc = LabelEncoder()
-    nClasses = np.unique(target)
-    nFeatures = dataSet.shape[1]
-
-    for jClass in np.arange(iClass):
-        cIdx = np.where(target == iClass)[0]
-        jIdx = np.where(target == jClass)[0]
-
-        curTarget = np.zeros(len(cIdx) + len(jIdx))
-        curSet = np.zeros((len(curTarget), nFeatures))
-
-        curTarget[0:len(cIdx)] = target[cIdx]
-        curSet[0:len(cIdx), :] = dataSet[cIdx, :]
-
-        curTarget[len(cIdx):len(curTarget)] = target[jIdx]
-        curSet[len(cIdx):len(curTarget), :] = dataSet[jIdx, :]
-
-        curTarget = enc.fit_transform(np.ravel(curTarget))
-
-        estimateAndVisualizeEmpiricalDistributionDeltaConcrete(curSet, curTarget,
-                                                               '{0}_c{1}({4})_vs_c{2}({5})_of_{3}'.format(taskName, iClass, jClass, len(nClasses), len(cIdx), len(jIdx)),
-                                                               args, kwargs)
-
-    pass
-
 def estimateOneVsSelf(dataSet, target, iClass, taskName, args, kwargs):
     enc = LabelEncoder()
     cIdx = np.where(target == iClass)[0]
@@ -163,7 +117,7 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
 
     return
 
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', alpha=0.5, allowedClasses = None, *args, **kwargs):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', alpha=0.5, allowedClasses = None):
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
@@ -192,6 +146,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
     commonErrors = []
     commonPermutationPairs = []
     commonNNPairs = []
+    commonIndexes = []
     labels = []
 
     curIdx = 0
@@ -226,6 +181,7 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
                 commonEntropies.append(pValues1[2].calculateComplexity())
                 commonFrequences.append(pValues1[2].getObjectsFrequences())
                 commonErrors.append([pValues1[2].getErrorExpectation()])
+                commonIndexes.append(pValues1[2].getObjectsIndex())
             if len(pValues2[0]) > 0:
                 commonPermutationPairs.append(pValues2[0])
             if len(pValues3[1]) > 0:
@@ -250,6 +206,8 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
                                                  f'{logsFolder}\\KS_frequency_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
                 serialize_labeled_list_of_arrays(commonErrors, labels, f'{taskName}_KS_error', ksAttempts,
                                                  f'{logsFolder}\\KS_error_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
+                serialize_labeled_list_of_arrays(commonIndexes, labels, f'{taskName}_KS_indexes', ksAttempts,
+                                                 f'{logsFolder}\\KS_indexes_{taskName}_{ksAttempts}_{curPair}_{currentObjects}.txt')
             if len(commonPermutationPairs) > 0:
                 visualizeAndSaveKSForEachPair(commonPermutationPairs, labels, f'{taskName}_KS_permutation', pAttempts,
                                               curPair, folder)

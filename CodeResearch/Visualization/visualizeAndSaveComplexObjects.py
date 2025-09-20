@@ -1,42 +1,65 @@
 import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 import re
 import os
 
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.Visualization.filesExtractor import find_files_with_regex
+from CodeResearch.Visualization.filesExtractor import find_files_with_regex, getLastFiles
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
 
-def plotAndSaveEntropies(target, firstClass, secondClass, entropies, folder, name):
+def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies, folder, name):
     iObjects = list(np.where(target == firstClass)[0])
 
-    # Построение гистограммы
-    fig = plt.figure(figsize=(10, 6))
+    # Создаем фигуру с двумя subplots один под другим
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 12))
 
+    # Разделяем данные для entropies
     e1 = entropies[0:len(iObjects)]
     e2 = entropies[len(iObjects):len(entropies)]
 
-    plt.hist(e1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='blue', density=True)
-    plt.hist(e2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='red', density=True)
+    # Разделяем данные для frequencies
+    f1 = frequencies[0:len(iObjects)]
+    f2 = frequencies[len(iObjects):len(frequencies)]
 
-    # Настройки графика
-    plt.title('Гистограмма распределения данных', fontsize=14)
-    plt.xlabel('Значения', fontsize=12)
-    plt.ylabel('Частота', fontsize=12)
-    plt.grid(alpha=0.3)
-    plt.legend()
+    # Первый график - entropies
+    ax1.hist(e1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='blue', density=True)
+    ax1.hist(e2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='red', density=True)
+    ax1.set_title('Гистограмма распределения энтропий', fontsize=14)
+    ax1.set_xlabel('Значения энтропии', fontsize=12)
+    ax1.set_ylabel('Частота', fontsize=12)
+    ax1.grid(alpha=0.3)
+    ax1.legend()
 
+    # Второй график - frequencies
+    ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
+    ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
+    ax2.set_title('Гистограмма распределения частот', fontsize=14)
+    ax2.set_xlabel('Значения частот', fontsize=12)
+    ax2.set_ylabel('Частота', fontsize=12)
+    ax2.grid(alpha=0.3)
+    ax2.legend()
+
+    # Настраиваем расстояние между subplots
+    plt.tight_layout()
+
+    # Сохраняем график
     plt.savefig('{:}\\{:}.png'.format(folder, name),
                 dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-def extractAndSaveEdgeObjects(entropies, x, target, firstClass, secondClass, resultFolder, name, top):
+def extractAndSaveEdgeObjects(entropies, frequencies, x, target, firstClass, secondClass, resultFolder, name, top):
     iObjects = list(np.where(target == firstClass)[0])
     jObjects = list(np.where(target == secondClass)[0])
 
     e1 = entropies[0:len(iObjects)]
     e2 = entropies[len(iObjects):len(entropies)]
+
+    f1 = frequencies[0:len(iObjects)]
+    f2 = frequencies[len(iObjects):len(frequencies)]
 
     xx1 = x[iObjects]
     xx2 = x[jObjects]
@@ -44,50 +67,116 @@ def extractAndSaveEdgeObjects(entropies, x, target, firstClass, secondClass, res
     e1idx = np.argsort(np.array(e1))
     e2idx = np.argsort(np.array(e2))
 
-    with open(f"{resultFolder}\\{name}_good_examples_{firstClass}_{secondClass}.csv", "w", encoding="utf-8") as file:
-        for i in range(top):
-            idx = e1idx[i]
-            file.write("{0};{1};{2}\n".format(xx1[idx], e1[idx], firstClass))
-        file.write("====================================\n")
-        for i in range(top):
-            idx = e2idx[i]
-            file.write("{0};{1};{2}\n".format(xx2[idx], e2[idx], secondClass))
+    f1idx = np.argsort(np.array(f1))
+    f2idx = np.argsort(np.array(f2))
 
     c1len = len(e1idx)
     c2len = len(e2idx)
 
-    with open(f"{resultFolder}\\{name}_bad_examples_{firstClass}_{secondClass}.csv", "w", encoding="utf-8") as file:
+    with open(f"{resultFolder}\\{name}_examples_{firstClass}_{secondClass}.csv", "w", encoding="utf-8") as file:
+        file.write("====================================\n")
+        file.write("===========Border examples==========\n")
+        file.write("====================================\n")
+        file.write(f"===========Class {firstClass}==========\n")
         for i in range(1, top):
             idx = e1idx[c1len - i]
-            file.write("{0};{1};{2}\n".format(xx1[idx], e1[idx], firstClass))
-        file.write("====================================\n")
+            file.write("{0}:{1};{2};{3}\n".format(iObjects[idx], xx1[idx], e1[idx], firstClass))
+        file.write(f"============Class {secondClass}========\n")
         for i in range(1, top):
             idx = e2idx[c2len - i]
-            file.write("{0};{1};{2}\n".format(xx2[idx], e2[idx], secondClass))
+            file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], e2[idx], secondClass))
 
-def getLastFiles(files):
-    data = {}
-    pattern = r"^.*KS_.*_.*_.*_(\d+)_(\d+)_(\d+).txt$"
+        file.write("====================================\n")
+        file.write("===========Complex examples=========\n")
+        file.write("====================================\n")
+        file.write(f"===========Class {firstClass}==========\n")
+        for i in range(top):
+            idx = f1idx[i]
+            file.write("{0}:{1};{2};{3}\n".format(iObjects[idx], xx1[idx], f1[idx], firstClass))
+        file.write(f"============Class {secondClass}========\n")
+        for i in range(top):
+            idx = f2idx[i]
+            file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], f2[idx], secondClass))
 
-    for file in files:
-        match = re.search(pattern, file)
-        num1, num2, num3 = match.groups()
-        key = "{0}_{1}".format(num1, num2)
+        file.write("====================================\n")
+        file.write("===========Simple examples==========\n")
+        file.write("====================================\n")
+        file.write(f"===========Class {firstClass}==========\n")
+        for i in range(1, top):
+            idx = f1idx[c1len - i]
+            file.write("{0}:{1};{2};{3}\n".format(iObjects[idx], xx1[idx], f1[idx], firstClass))
+        file.write(f"============Class {secondClass}========\n")
+        for i in range(1, top):
+            idx = f2idx[c2len - i]
+            file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], f2[idx], secondClass))
 
-        num3 = int(num3)
+def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Brightness Visualization"):
+    """
+    Версия с настраиваемой функцией яркости
+    """
+    if X.shape[1] != 2:
+        # Используем t-SNE для многомерных данных
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        tsne = TSNE(n_components=2, random_state=42)
+        X_vis = tsne.fit_transform(X_scaled)
+        x_label, y_label = 't-SNE Dim 1', 't-SNE Dim 2'
+    else:
+        # Используем исходные 2D данные
+        X_vis = X
+        x_label, y_label = 'Feature 1', 'Feature 2'
 
-        if key not in data:
-            data[key] = {'file': file, 'objects': num3}
-        else:
-            if data[key]['objects'] < num3:
-                data[key] = {'file': file, 'objects': num3}
+    # Кастомная цветовая карта
+    colors = ['darkred', 'red', 'yellow', 'green', 'darkgreen']
+    positions = [0, 0.3, 0.5, 0.7, 1]
+    cmap = LinearSegmentedColormap.from_list('center_bright', list(zip(positions, colors)))
 
-    files = []
-    for k, v in data.items():
-        files.append(v['file'])
+    # Нелинейная функция яркости - более резкий переход
+    def calculate_alpha(comp):
+        return 1.0 - 1.7 * abs(comp - 0.5)
 
-    return files
+    fig, ax = plt.subplots(figsize=(12, 8))
 
+    unique_classes = np.unique(y)
+    markers = ['o', 's']
+
+    for i, class_label in enumerate(unique_classes):
+        class_mask = (y == class_label)
+        comp_values = complexity[class_mask]
+
+        alpha_values = [calculate_alpha(c) for c in comp_values]
+
+        scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
+                             c=comp_values,
+                             cmap=cmap, vmin=0, vmax=1,
+                             marker = markers[i],
+                             alpha=alpha_values, s=60,
+                             label=f'Class {class_label}',
+                             edgecolors='black', linewidth=0.8)
+
+    cbar = plt.colorbar(scatter, ax=ax)
+    cbar.set_label('Complexity (0=red, 1=green)\nBrightness = f(distance from 0.5)')
+
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.set_title(f"{title}\n(Brightest at complexity=0.5)")
+    ax.legend()
+    ax.grid(True, alpha=0.2)
+
+    plt.savefig('{:}\\{:}.png'.format(resultFolder, title),
+                dpi=300, bbox_inches='tight')
+    plt.close(fig)
+
+def plotAndSave2dVisualization(x, target, firstClass, secondClass, frequencies, resultsFolder, name):
+    iObjects = list(np.where(target == firstClass)[0])
+    jObjects = list(np.where(target == secondClass)[0])
+
+    allObjects = iObjects + jObjects
+
+    xx = x[allObjects]
+    tt = target[allObjects]
+
+    plot_with_custom_brightness(xx, tt, frequencies, resultsFolder, name)
 
 def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, iterations, x, y, top=20):
     pattern = r"^KS_entropy_{0}_{1}_\d+_\d+_\d+.txt$".format(taskName, iterations)
@@ -107,18 +196,18 @@ def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, ite
         key = "{0}_{1}".format(num1, num2)
 
         de = deserialize_labeles_list_of_arrays(file)
-        value = de[0][-1]
+        valueEntropy = de[0][-1]
 
-        ksFile = file.replace("_error", "")
-        dks = deserialize_labeles_list_of_arrays(ksFile)
-        ks = dks[0][-1]
+        f = file.replace('_entropy', '_frequency')
+        de2 = deserialize_labeles_list_of_arrays(f)
+        valueFrequecny = de2[0][-1]
 
         if key not in data:
-            data[key] = {'frequencies': [], 'objects': [], 'ks': []}
+            data[key] = {'frequencies': [], 'entropy':[], 'objects': []}
 
-        data[key]['frequencies'].append(value)
+        data[key]['frequencies'].append(valueFrequecny)
+        data[key]['entropy'].append(valueEntropy)
         data[key]['objects'].append(num3)
-        data[key]['ks'].append(np.mean(ks))
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(y))
@@ -129,16 +218,17 @@ def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, ite
         print('Processing for pair {0} ({1}/{2})'.format(k, counter, len(data)))
         obj = np.array(v['objects'], dtype=np.int32)
         freq = v['frequencies']
-        ks = np.array(v['ks'])
+        entr = v['entropy']
 
         idx = np.argsort(obj)
         frequencies = freq[idx[-1]]
-        ks = ks[idx[-1]]
+        entropies = entr[idx[-1]]
 
         c = k.split('_')
         f = int(c[0])
         s = int(c[1])
 
-        plotAndSaveEntropies(target, f, s, frequencies, resultsFolder, f'entropies_{taskName}_{iterations}_{f}_{s}')
-        extractAndSaveEdgeObjects(frequencies, x, target, f, s, resultsFolder, f'{taskName}_{iterations}', top)
+        plotAndSaveEntropies(target, f, s, entropies, frequencies, resultsFolder, f'entropies_{taskName}_{iterations}_{f}_{s}')
+        extractAndSaveEdgeObjects(entropies, frequencies, x, target, f, s, resultsFolder, f'{taskName}_{iterations}', top)
+        plotAndSave2dVisualization(x, target, f, s, np.array(frequencies), resultsFolder, f'{taskName}_{iterations}_{f}_{s}_colored')
 

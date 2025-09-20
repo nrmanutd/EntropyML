@@ -1,23 +1,19 @@
 import math
 import time
-import torch
 
 import numpy as np
-from joblib import Parallel, delayed
+import torch
 from numba import cuda
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Cuda.cudaHelpers import filterSortedSetByIndex
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget, prepareDataSet, \
     GetValuedTarget
-from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore
-from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba, \
-    getMaximumDiviserFastNumbaCore
-from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
-from CodeResearch.ObjectComplexity.complexityCalculator import KSComplexityCalculator
-from CodeResearch.calcModelEstimations import calcModel, calcNN, calcXGBoost
+from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumbaCore
 from CodeResearch.Helpers.permutationHelpers import GetObjectsPerClass
+from CodeResearch.ObjectComplexity.complexityCalculator import KSComplexityCalculator
+from CodeResearch.calcModelEstimations import calcNN, calcXGBoost
 
 
 def getDataSetIndexesOfTwoClasses(currentObjects, target, iClass, jClass):
@@ -58,73 +54,6 @@ def getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects):
 
     return newSet, newTarget
 
-def calcPValueStochastic(currentObjects, dataSet, target, iClass, jClass, nAttempts):
-    iObjects = list(np.where(target == iClass)[0])
-    jObjects = list(np.where(target == jClass)[0])
-    objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), 10, target[objectsIdx])[
-        'accuracy']
-
-    parallel = Parallel(n_jobs=-1, return_as="generator")
-    output_generator = parallel(
-        delayed(calcStochasticParallel)(currentObjects, dataSet, target, iClass, jClass, iAttempt) for iAttempt in range(nAttempts))
-
-    values = np.array(list(output_generator))
-
-    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
-    pValue = len(np.where(values < targetValue)[0]) / len(values)
-
-    return min(pValue, 1 - pValue), targetValue, values, precision
-
-    newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-
-    #print('Calculating stochastic target...')
-    #targetValue = getMaximumDiviserRTree(newSet, newTarget)[0]
-    targetValue = getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
-    #print(targetValue)
-    totalTime = 0.0
-
-    values = np.zeros(nAttempts)
-    #parallel = Parallel(n_jobs=2, return_as="generator")
-    #output_generator = parallel(delayed(calcRTStochastic)(newSet, newTarget, iAttempt) for iAttempt in range(nAttempts))
-
-    #for iAttempt in range(0, nAttempts):
-        #print('Permutation attempt {:}/{:}'.format(iAttempt, nAttempts))
-
-        #s1 = time.time()
-        #values[iAttempt] = getMaximumDiviserRTreeStochastic(permutedSet, permutedTarget)[0]
-        #e1 = time.time()
-        #totalTime += (e1 - s1)
-        #print('Time is {:.2f}'.format(e1 - s1))
-    #values = list()
-    #valuesIdx = np.argsort(values)
-    #print(values[valuesIdx])
-    #print('Total time for {:} permutations is {:.2f}'.format(nAttempts, totalTime))
-
-    pValue = len(np.where(values < targetValue)[0]) / len(values)
-    return min(pValue, 1 - pValue)
-
-def calcPValueFast(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
-    iObjects = list(np.where(target == iClass)[0])
-    jObjects = list(np.where(target == jClass)[0])
-    objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
-
-    values = np.zeros(nAttempts)
-    for iAttempt in range(nAttempts):
-        if iAttempt % 100 == 0:
-            print('Attempt # ', iAttempt)
-
-        newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-        values[iAttempt] = getMaximumDiviserFast(newSet, newTarget)[0]
-
-    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
-    pValue = len(np.where(values < targetValue)[0]) / len(values)
-    quantile = np.quantile(values, beta)
-    quantileUp = np.quantile(values, 1 - beta)
-
-    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
-
 def calcPValueFastPro(currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS=True, randomPermutation=False, calculateModel=False):
     nFeatures = dataSet.shape[1]
 
@@ -154,7 +83,7 @@ def calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
     t = target[objectsIdx]
 
     enc = LabelEncoder()
-    complexityCalculator = KSComplexityCalculator(ds, t)
+    complexityCalculator = KSComplexityCalculator(ds, t, objectsIdx)
 
     preparationTime = 0
     ksTime = 0
@@ -257,9 +186,6 @@ def calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, nAttemp
             ksTime = 0
             NNTime = 0
             currentTime = time.time()
-
-        #newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-        # values[iAttempt] = getMaximumDiviserFastNumba(newSet, newTarget)[0]
 
         t1 = time.time()
 
@@ -406,36 +332,3 @@ def calcPValueFastCuda(currentObjects, dataSet, target, iClass, jClass, nAttempt
             ksTime += time.time() - t2
 
     return values, NNvalues
-
-def calcPValueFastParallel(currentObjects, dataSet, target, iClass, jClass, nAttempts, nModelAttempts, beta):
-    iObjects = list(np.where(target == iClass)[0])
-    jObjects = list(np.where(target == jClass)[0])
-
-    objectsIdx = iObjects + jObjects
-    precision = calcModel(dataSet[objectsIdx, :], min(currentObjects, len(objectsIdx)), nModelAttempts, target[objectsIdx])
-
-    parallel = Parallel(n_jobs=-1, return_as="generator")
-    output_generator = parallel(delayed(calcRTFastParallel)(currentObjects, dataSet, target, iClass, jClass, iAttempt) for iAttempt in range(nAttempts))
-
-    values = np.array(list(output_generator))
-
-    targetValue = math.sqrt(2 * math.log(currentObjects) / currentObjects)
-    #pValue = len(np.where(values < targetValue)[0]) / len(values)
-    quantile = np.quantile(values, beta)
-    quantileUp = np.quantile(values, 1 - beta)
-
-    return quantile, quantileUp, targetValue, values, (precision['accuracy'][0], precision['modelSigma'][0])
-
-def calcRTFastParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
-    if iAttempt%100 == 0:
-        print("Attempt# {:}".format(iAttempt))
-    newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-
-    return getMaximumDiviserFastNumba(newSet, newTarget)[0]
-    #return getMaximumDiviserFast(newSet, newTarget)[0]
-
-def calcStochasticParallel(currentObjects, dataSet, target, iClass, jClass, iAttempt):
-    if iAttempt%100 == 0:
-        print("Attempt# {:}".format(iAttempt))
-    newSet, newTarget = getDataSetOfTwoClasses(currentObjects, dataSet, target, iClass, jClass)
-    return getMaximumDiviserRTreeStochastic(newSet, newTarget)[0]
