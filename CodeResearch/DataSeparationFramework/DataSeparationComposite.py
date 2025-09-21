@@ -1,4 +1,4 @@
-from CodeResearch.DataSeparationFramework.dataSeparationBaseCalculator import BaseDataSeparationCalculator
+from CodeResearch.DataSeparationFramework.BaseDataSeparationCalculator import BaseDataSeparationCalculator
 from typing import List
 
 class DataSeparationComposite(BaseDataSeparationCalculator):

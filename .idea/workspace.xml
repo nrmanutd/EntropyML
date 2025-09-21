@@ -37,11 +37,9 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/spiralsSummary/spirals_200_rating.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/xorSummary/xor_200.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/xorSummary/xor_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/DataSeparationComposite.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/Metrics/BaseMetricCalculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/Metrics/KSMetric.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/SimpleDataSeparationCalculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/dataSeparationBaseCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/KSPermutationDataSeparationCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/MLDataSeparationCalculator.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_blobs.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_random.json" afterDir="false" />
@@ -131,9 +129,11 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/DataSeparationComposite.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/DataSeparationComposite.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/SimpleDataSeparationCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/SimpleDataSeparationCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/dataSeparationBaseCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/BaseDataSeparationCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/estimateAndVisualizeEmpiricalDistributionDelta.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -177,96 +177,96 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points_with_skip_idx.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor&quot;: &quot;Debug&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Unittests for test_getDiviserFastNumba.executor&quot;: &quot;Run&quot;,
-    &quot;Python.DNResearch.executor&quot;: &quot;Run&quot;,
-    &quot;Python.LowerBoundCheck.executor&quot;: &quot;Run&quot;,
-    &quot;Python.PCATrick.executor&quot;: &quot;Run&quot;,
-    &quot;Python.VisualizeAndSaveCommonTopSubsamples.executor&quot;: &quot;Run&quot;,
-    &quot;Python.calcEntropy.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.calculateDistributionDelta.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.car.executor&quot;: &quot;Run&quot;,
-    &quot;Python.cudaTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dataLoader.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dataSets.executor&quot;: &quot;Run&quot;,
-    &quot;Python.estimateAndVisualizeEmpiricalDistributionDelta.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.extractDataFromMegamarket.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.filesExtractor.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.getDiviserTrueKS.executor&quot;: &quot;Run&quot;,
-    &quot;Python.gpuTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.hist_optimal_bin_width.executor&quot;: &quot;Run&quot;,
-    &quot;Python.imagesTricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.indexExtractor.executor&quot;: &quot;Run&quot;,
-    &quot;Python.joinPictures.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.metricCalcultation.executor&quot;: &quot;Run&quot;,
-    &quot;Python.permutationHelpers.executor&quot;: &quot;Run&quot;,
-    &quot;Python.plotAndSaveRuntimeSamplesResults.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rTreeIndex.executor&quot;: &quot;Run&quot;,
-    &quot;Python.rTreeTricks.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.runExampleExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runMegaMarketTest.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runMegamarketExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runProteinsExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runRandomExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runtimeCheck.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runtimeTest.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.runtimeTestSamples.executor&quot;: &quot;Run&quot;,
-    &quot;Python.serialization.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showBlobSerieGraph.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showCommonKS.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showDataSetsAndDistributions.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showKS.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showMegaMarketExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showMegamarketEdgeObjects.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showProteinsExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showResultsForPaper.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showStandardSets.executor&quot;: &quot;Run&quot;,
-    &quot;Python.statisticsCalculator.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tricks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualizeAndSaveKSSI.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualizeTest.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/PycharmProjects/EntropyML/CodeResearch/Tests&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points_with_skip_idx.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase.executor": "Run",
+    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor": "Run",
+    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor": "Run",
+    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor": "Run",
+    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
+    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor": "Run",
+    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor": "Debug",
+    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
+    "Python tests.Unittests for test_getDiviserFastNumba.executor": "Run",
+    "Python.DNResearch.executor": "Run",
+    "Python.LowerBoundCheck.executor": "Run",
+    "Python.PCATrick.executor": "Run",
+    "Python.VisualizeAndSaveCommonTopSubsamples.executor": "Run",
+    "Python.calcEntropy.executor": "Debug",
+    "Python.calculateDistributionDelta.executor": "Debug",
+    "Python.car.executor": "Run",
+    "Python.cudaTricks.executor": "Run",
+    "Python.dataLoader.executor": "Run",
+    "Python.dataSets.executor": "Run",
+    "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
+    "Python.extractDataFromMegamarket.executor": "Debug",
+    "Python.filesExtractor.executor": "Debug",
+    "Python.getDiviserTrueKS.executor": "Run",
+    "Python.gpuTricks.executor": "Run",
+    "Python.hist_optimal_bin_width.executor": "Run",
+    "Python.imagesTricks.executor": "Run",
+    "Python.indexExtractor.executor": "Run",
+    "Python.joinPictures.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.metricCalcultation.executor": "Run",
+    "Python.permutationHelpers.executor": "Run",
+    "Python.plotAndSaveRuntimeSamplesResults.executor": "Run",
+    "Python.rTreeIndex.executor": "Run",
+    "Python.rTreeTricks.executor": "Debug",
+    "Python.runExampleExperiment.executor": "Run",
+    "Python.runMegaMarketTest.executor": "Run",
+    "Python.runMegamarketExperiment.executor": "Run",
+    "Python.runProteinsExperiment.executor": "Run",
+    "Python.runRandomExperiment.executor": "Run",
+    "Python.runtimeCheck.executor": "Run",
+    "Python.runtimeTest.executor": "Debug",
+    "Python.runtimeTestSamples.executor": "Run",
+    "Python.serialization.executor": "Run",
+    "Python.showBlobSerieGraph.executor": "Run",
+    "Python.showCommonKS.executor": "Run",
+    "Python.showDataSetsAndDistributions.executor": "Run",
+    "Python.showKS.executor": "Run",
+    "Python.showMegaMarketExperiment.executor": "Run",
+    "Python.showMegamarketEdgeObjects.executor": "Run",
+    "Python.showProteinsExperiment.executor": "Run",
+    "Python.showResultsForPaper.executor": "Run",
+    "Python.showStandardSets.executor": "Run",
+    "Python.statisticsCalculator.executor": "Run",
+    "Python.tricks.executor": "Run",
+    "Python.visualizeAndSaveKSSI.executor": "Run",
+    "Python.visualizeTest.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Current/Work/Science/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
@@ -402,14 +402,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00065" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1738151928060</created>
-      <option name="number" value="00065" />
-      <option name="presentableId" value="LOCAL-00065" />
-      <option name="project" value="LOCAL" />
-      <updated>1738151928060</updated>
     </task>
     <task id="LOCAL-00066" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -795,7 +787,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758402585805</updated>
     </task>
-    <option name="localTasksCounter" value="114" />
+    <task id="LOCAL-00114" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758411125991</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1758411125991</updated>
+    </task>
+    <option name="localTasksCounter" value="115" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
