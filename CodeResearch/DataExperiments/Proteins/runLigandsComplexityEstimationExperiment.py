@@ -10,7 +10,7 @@ x, y = load_proteins("../../Data/Proteins/df_master.csv")
 taskName = "proteins_full"
 iterations = 200
 
-estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=[0.5])
+estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=0.5)
 logsFolder = "..\..\PValuesFigures\PValueLogs"
 
 visualizeAndSaveComplexObjects(logsFolder, "ProteinsComplexObjects", taskName, iterations, x, y)
