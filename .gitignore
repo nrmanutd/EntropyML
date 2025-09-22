@@ -165,10 +165,11 @@ cython_debug/
 *.txt
 *.csv
 *.xlsx
+*.parquet
+*.json
 !/Tricks/datafile.json
 /CodeResearch/PValuesFigures/
 /CodeResearch/DataSets/
 !/CodeResearch/Figures/
 !/CodeResearch/Data/megamarket/megamarket_with_emb_not_norm.parquet
 !/CodeResearch/Data/megamarket/megamarket_kmeans_sample.csv
-
