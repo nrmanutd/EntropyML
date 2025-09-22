@@ -1,1 +1,1 @@
-# Single Orthant Multivariate Twi-Sample Kolmogorov-Smirnov Separability Index
+# Single Orthant Multivariate Two-Sample Kolmogorov-Smirnov Separability Index
