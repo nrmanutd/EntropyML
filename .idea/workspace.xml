@@ -21,6 +21,7 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200_rating.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ligands_complexity.xlsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runLigandsComplexityEstimationExperiment.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/blobsSummary/blobs_200.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/blobsSummary/blobs_200_rating.xlsx" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/circlesSummary/circles_200.xlsx" afterDir="false" />
@@ -127,12 +128,6 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/indexExtractor.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/indexExtractor.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runRandomExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/SimpleDataSeparationCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/SimpleDataSeparationCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/saveDataForVisualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -400,22 +395,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00067" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1738189134136</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1738189134136</updated>
-    </task>
-    <task id="LOCAL-00068" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1738316777880</created>
-      <option name="number" value="00068" />
-      <option name="presentableId" value="LOCAL-00068" />
-      <option name="project" value="LOCAL" />
-      <updated>1738316777880</updated>
     </task>
     <task id="LOCAL-00069" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -793,7 +772,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758433350382</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758576955505</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1758576955505</updated>
+    </task>
+    <task id="LOCAL-00117" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758576995257</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1758576995257</updated>
+    </task>
+    <option name="localTasksCounter" value="118" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -990,11 +985,6 @@
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/summarizeExperiments.py</url>
           <line>130</line>
           <option name="timeStamp" value="274" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveKSSI.py</url>
-          <line>130</line>
-          <option name="timeStamp" value="275" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveKSSI.py</url>
