@@ -33,7 +33,7 @@ class SimpleDataSeparationCalculator(BaseDataSeparationCalculator):
     def calculateDataSeparability(self, objects, iClass, jClass):
         curPair = f'{iClass}_{jClass}'
 
-        metricValues= self.calculateMetric(objects, iClass, jClass)
+        metricValues = self.calculateMetric(objects, iClass, jClass)
 
         if len(metricValues[0]) > 0:
             self.commonPermutationPairs.append(metricValues[0])

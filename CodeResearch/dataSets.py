@@ -122,6 +122,9 @@ def load_proteins(path):
 
     y = d['-lgLD50, mol/kg'].to_numpy()
 
+    median_val = np.median(y)
+    y = np.where(y >= median_val, 1, 0)
+
     return x, y
 
 # Генерация XOR

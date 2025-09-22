@@ -43,6 +43,17 @@ def serialize_labeled_list_of_arrays(arrays, names, task_name, n_attempts, filen
     with open(filename, 'w') as f:
         json.dump(data, f, indent=4)  # indent=4 для красивого форматирования
 
+def deserialize_labeles_list_of_arrays_from_files(files, taskName, iterations):
+
+    arrays = []
+    names = []
+
+    for file in files:
+        data = deserialize_labeles_list_of_arrays(file)
+        arrays.append(data[0][-1])
+        names.append(data[1][-1])
+
+    return (arrays, names, taskName, iterations)
 
 def deserialize_labeles_list_of_arrays(filename):
     """

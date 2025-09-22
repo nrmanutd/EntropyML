@@ -19,13 +19,13 @@ class KSDataSeparationCalculator(SimpleDataSeparationCalculator):
         return pValues
 
     def processCalculatedMetric(self, data):
-        pValues1 = data
+        self.commonOutOfSamplePairs.append(data[3])
 
-        self.commonOutOfSamplePairs.append(pValues1[3])
-        self.commonEntropies.append(pValues1[2].calculateComplexity())
-        self.commonFrequences.append(pValues1[2].getObjectsFrequences())
-        self.commonErrors.append([pValues1[2].getErrorExpectation()])
-        self.commonIndexes.append(pValues1[2].getObjectsIndex())
+        complexityCalculator = data[2]
+        self.commonEntropies.append(complexityCalculator.calculateComplexity())
+        self.commonFrequences.append(complexityCalculator.getObjectsFrequences())
+        self.commonErrors.append([complexityCalculator.getErrorExpectation()])
+        self.commonIndexes.append(complexityCalculator.getObjectsIndex())
 
     def serializeConcrete(self, array, subname):
         curPair = self.labels[-1]
