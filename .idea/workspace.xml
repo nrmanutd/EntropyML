@@ -8,125 +8,8 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/Data/megamarket/megamarket_with_emb_not_norm.parquet" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/ComplexObjects/ComplexObjects_all_pairs.zip" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Data/Data.zip" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Data/megamarket_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Data/megamarket_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_1000.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_1000_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_counts_parts.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Megamarket/Summary/megamarket_rating_counts.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ProteinsSummary/proteins_full_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/ligands_complexity.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/blobsSummary/blobs_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/blobsSummary/blobs_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/circlesSummary/circles_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/circlesSummary/circles_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_53Summary/mnist_53_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_53Summary/mnist_53_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_83Summary/mnist_83_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_83Summary/mnist_83_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_85Summary/mnist_85_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/mnist_85Summary/mnist_85_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/randomSummary/random_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/randomSummary/random_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/spiralsSummary/spirals_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/spiralsSummary/spirals_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/xorSummary/xor_200.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/xorSummary/xor_200_rating.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_0_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_1_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_2_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_3_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_cores_4_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_0_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_1_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_2_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_3_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_cifar_1.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_4_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_cifar_1.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_5_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_6_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_7_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_8_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_features_9_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_0_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_10_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_11_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_12_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_13_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_1_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_2_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_3_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_4_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_5_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_6_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_7_random.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_8_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_8_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_9_blobs.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/RuntimeLogs/runtime_samples_9_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_cores_4_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_4_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_6_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_features_7_mnist.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_6_cifar.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/RuntimeExperiments/SelectedLogs/runtime_samples_7_mnist.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runLigandsComplexityEstimationExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runLigandsComplexityEstimationExperiment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -169,97 +52,97 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.executor": "Run",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points.executor": "Run",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points_with_skip_idx.executor": "Run",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points.executor": "Run",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase.executor": "Run",
-    "Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor": "Run",
-    "Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor": "Run",
-    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor": "Run",
-    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor": "Run",
-    "Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor": "Run",
-    "Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor": "Run",
-    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor": "Run",
-    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
-    "Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor": "Run",
-    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor": "Debug",
-    "Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor": "Run",
-    "Python tests.Unittests for test_getDiviserFastNumba.executor": "Run",
-    "Python.DNResearch.executor": "Run",
-    "Python.LowerBoundCheck.executor": "Run",
-    "Python.PCATrick.executor": "Run",
-    "Python.VisualizeAndSaveCommonTopSubsamples.executor": "Run",
-    "Python.calcEntropy.executor": "Debug",
-    "Python.calculateDistributionDelta.executor": "Debug",
-    "Python.car.executor": "Run",
-    "Python.cudaTricks.executor": "Run",
-    "Python.dataLoader.executor": "Run",
-    "Python.dataSets.executor": "Run",
-    "Python.estimateAndVisualizeEmpiricalDistributionDelta.executor": "Debug",
-    "Python.extractDataFromMegamarket.executor": "Debug",
-    "Python.filesExtractor.executor": "Debug",
-    "Python.getDiviserTrueKS.executor": "Run",
-    "Python.gpuTricks.executor": "Run",
-    "Python.hist_optimal_bin_width.executor": "Run",
-    "Python.imagesTricks.executor": "Run",
-    "Python.indexExtractor.executor": "Run",
-    "Python.joinPictures.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.metricCalcultation.executor": "Run",
-    "Python.permutationHelpers.executor": "Run",
-    "Python.plotAndSaveRuntimeSamplesResults.executor": "Run",
-    "Python.rTreeIndex.executor": "Run",
-    "Python.rTreeTricks.executor": "Debug",
-    "Python.runExampleExperiment.executor": "Run",
-    "Python.runLigandsComplexityEstimationExperiment.executor": "Run",
-    "Python.runMegaMarketTest.executor": "Run",
-    "Python.runMegamarketExperiment.executor": "Run",
-    "Python.runProteinsExperiment.executor": "Run",
-    "Python.runRandomExperiment.executor": "Run",
-    "Python.runtimeCheck.executor": "Run",
-    "Python.runtimeTest.executor": "Debug",
-    "Python.runtimeTestSamples.executor": "Run",
-    "Python.serialization.executor": "Run",
-    "Python.showBlobSerieGraph.executor": "Run",
-    "Python.showCommonKS.executor": "Run",
-    "Python.showDataSetsAndDistributions.executor": "Run",
-    "Python.showKS.executor": "Run",
-    "Python.showMegaMarketExperiment.executor": "Run",
-    "Python.showMegamarketEdgeObjects.executor": "Run",
-    "Python.showProteinsExperiment.executor": "Run",
-    "Python.showResultsForPaper.executor": "Run",
-    "Python.showStandardSets.executor": "Run",
-    "Python.statisticsCalculator.executor": "Run",
-    "Python.tricks.executor": "Run",
-    "Python.visualizeAndSaveKSSI.executor": "Run",
-    "Python.visualizeTest.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Current/Work/Science/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_five_separate_points_with_skip_idx.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_four_separate_points.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_simplecase.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_KScomplexityCalculator.TestKSComplexityCalculator.test_two_separate_points.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_cuda_biton.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_sorted_numba.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_cudaHelpers.Test.test_get_updated_numba_bucket.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_cuda_random.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case2.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_cuda_random.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_fast_result_correct_random.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_case6.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case3.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case6.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_case7.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba_check_good_separation_and_many_objects.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_random.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_getDiviserFastNumba.TestDiviserFastNumba.test_numba_result_correct_random.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case0.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Unittests for test_getDeiviserCuda.TestDiviserCuda.test_get_maximum_diviser_numba_cuda_case5.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_fast_numba.executor&quot;: &quot;Debug&quot;,
+    &quot;Python tests.Unittests for test_getDiviserFastNumba.TestDiviserFastNumba.test_get_maximum_diviser_numba_cuda_case1.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Unittests for test_getDiviserFastNumba.executor&quot;: &quot;Run&quot;,
+    &quot;Python.DNResearch.executor&quot;: &quot;Run&quot;,
+    &quot;Python.LowerBoundCheck.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PCATrick.executor&quot;: &quot;Run&quot;,
+    &quot;Python.VisualizeAndSaveCommonTopSubsamples.executor&quot;: &quot;Run&quot;,
+    &quot;Python.calcEntropy.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.calculateDistributionDelta.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.car.executor&quot;: &quot;Run&quot;,
+    &quot;Python.cudaTricks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dataLoader.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dataSets.executor&quot;: &quot;Run&quot;,
+    &quot;Python.estimateAndVisualizeEmpiricalDistributionDelta.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.extractDataFromMegamarket.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.filesExtractor.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.getDiviserTrueKS.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gpuTricks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.hist_optimal_bin_width.executor&quot;: &quot;Run&quot;,
+    &quot;Python.imagesTricks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.indexExtractor.executor&quot;: &quot;Run&quot;,
+    &quot;Python.joinPictures.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.metricCalcultation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.permutationHelpers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.plotAndSaveRuntimeSamplesResults.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rTreeIndex.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rTreeTricks.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.runExampleExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runLigandsComplexityEstimationExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runMegaMarketTest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runMegamarketExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runProteinsExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runRandomExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runtimeCheck.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runtimeTest.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.runtimeTestSamples.executor&quot;: &quot;Run&quot;,
+    &quot;Python.serialization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showBlobSerieGraph.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showCommonKS.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showDataSetsAndDistributions.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showKS.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showMegaMarketExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showMegamarketEdgeObjects.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showProteinsExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showResultsForPaper.executor&quot;: &quot;Run&quot;,
+    &quot;Python.showStandardSets.executor&quot;: &quot;Run&quot;,
+    &quot;Python.statisticsCalculator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tricks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualizeAndSaveKSSI.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualizeTest.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Current/Work/Science/CodeResearch/DataSeparationFramework/KSDataSeparationCalculator.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
@@ -272,7 +155,7 @@
       <recent name="C:\Users\user\PycharmProjects\EntropyML\CodeResearch\Tests" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.DNResearch">
     <configuration name="DNResearch" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Science" />
       <option name="ENV_FILES" value="" />
@@ -395,22 +278,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00070" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1739835455710</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1739835455710</updated>
-    </task>
-    <task id="LOCAL-00071" summary="updated algorithm, added permutation logic calculation and visualization">
-      <option name="closed" value="true" />
-      <created>1739914867350</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1739914867354</updated>
     </task>
     <task id="LOCAL-00072" summary="updated algorithm, added permutation logic calculation and visualization">
       <option name="closed" value="true" />
@@ -788,7 +655,23 @@
       <option name="project" value="LOCAL" />
       <updated>1758577708915</updated>
     </task>
-    <option name="localTasksCounter" value="119" />
+    <task id="LOCAL-00119" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758577980058</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1758577980058</updated>
+    </task>
+    <task id="LOCAL-00120" summary="added experiments">
+      <option name="closed" value="true" />
+      <created>1758578068618</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1758578068618</updated>
+    </task>
+    <option name="localTasksCounter" value="121" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -825,9 +708,9 @@
     <MESSAGE value="tests are passing correctly for cuda, fixed threadsafe bugs" />
     <MESSAGE value="experiments for neur IPS paper" />
     <MESSAGE value="removed file" />
-    <MESSAGE value="added experiments" />
     <MESSAGE value="added ligands start file" />
-    <option name="LAST_COMMIT_MESSAGE" value="added ligands start file" />
+    <MESSAGE value="added experiments" />
+    <option name="LAST_COMMIT_MESSAGE" value="added experiments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
