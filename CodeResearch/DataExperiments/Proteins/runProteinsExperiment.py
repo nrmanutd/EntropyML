@@ -1,7 +1,4 @@
-import numpy as np
-
 from CodeResearch.DataExperiments.Proteins.indexExtractor import getProteinsComplexities
-from CodeResearch.Helpers.commonHelpers import perform_pca
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
 from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
