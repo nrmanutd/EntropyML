@@ -1,7 +1,9 @@
+from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
 from CodeResearch.DataSeparationFramework.SimpleDataSeparationCalculator import SimpleDataSeparationCalculator
+from CodeResearch.ObjectComplexity.Factory.KSComplexityCalculatorFactory import KSComplexityCalculatorFactory
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
-from CodeResearch.pValueCalculator import calcPValueFastPro
+from CodeResearch.DataSeparationFramework.pValueCalculator import PValueCalculator
 
 
 class KSDataSeparationCalculator(SimpleDataSeparationCalculator):
@@ -12,10 +14,10 @@ class KSDataSeparationCalculator(SimpleDataSeparationCalculator):
         self.commonFrequences = []
         self.commonErrors = []
         self.commonIndexes = []
+        self.pValuesCalculator = PValueCalculator(KSComplexityCalculatorFactory(), KSMetric(), attempts,  True, False, False)
 
     def calculateMetric(self, objects, iClass, jClass):
-        pValues = calcPValueFastPro(objects, self.dataSet, self.target, iClass, jClass, self.attempts,
-                                     True, False, False)
+        pValues = self.pValuesCalculator.calcPValueFastPro(objects, self.dataSet, self.target, iClass, jClass)
         return pValues
 
     def processCalculatedMetric(self, data):

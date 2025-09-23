@@ -8,5 +8,9 @@ class BaseMetricCalculator(ABC):
     def calculateMetric(self, ds, target):
         pass
 
+    @abstractmethod
+    def calculateMetricPro(self, ds, target, vt1, sds1, vt2, sds2):
+        pass
+
     def getMetricName(self):
         return self.name

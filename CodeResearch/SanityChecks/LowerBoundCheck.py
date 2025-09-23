@@ -2,19 +2,17 @@ import math
 import time
 from sklearn import datasets
 from scipy import stats
-from sklearn.utils import resample
 
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.DiviserCalculation.diviserHelpers import get_one_bit_indices, doubleDataSet
+from CodeResearch.DiviserCalculation.diviserHelpers import get_one_bit_indices
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserTrueKS import getMaximumDiviserTrueKS
-from CodeResearch.calcModelEstimations import calcXGBoost, calcLinRegression
 from CodeResearch.dataSets import make_spirals, make_xor, make_random
-from CodeResearch.pValueCalculator import getDataSetIndexesOfTwoClasses
+from CodeResearch.Helpers.permutationHelpers import getDataSetIndexesOfTwoClasses
 
 
 def getSubset(currentObjects, dataSet, target, iClass, jClass):

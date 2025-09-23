@@ -1,15 +1,12 @@
-import math
-
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
-from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import mnist
 import numpy as np
 
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
-from CodeResearch.calcModelEstimations import calcModel
 from CodeResearch.dataSets import loadMnist
-from CodeResearch.pValueCalculator import getDataSetIndexesOfTwoClasses, getDataSetOfTwoClassesCore
+from CodeResearch.Helpers.permutationHelpers import getDataSetIndexesOfTwoClasses, getDataSetOfTwoClassesCore
+
 
 def get_index_KS(objectsCount, dataSet, target, level, classesPair, isOver):
     enc = LabelEncoder()

@@ -3,8 +3,7 @@ import time
 import numpy as np
 
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
-from CodeResearch.pValueCalculator import getDataSetIndexesOfTwoClasses
-from CodeResearch.Helpers.permutationHelpers import extractDataSet
+from CodeResearch.Helpers.permutationHelpers import extractDataSet, getDataSetIndexesOfTwoClasses
 
 
 def runtimeForClassPairs(xx, yy):

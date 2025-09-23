@@ -46,3 +46,39 @@ def GetSubSetOnFeatures(x, nFeatures):
     totalFeatures = x.shape[1]
     selectedFeatures = np.random.choice(np.arange(totalFeatures), size=nFeatures, replace=False)
     return x[:, selectedFeatures]
+
+
+def getDataSetIndexesOfTwoClasses(currentObjects, target, iClass, jClass):
+    iClassIdx = np.where(target == iClass)[0]
+    jClassIdx = np.where(target == jClass)[0]
+
+    # print('Total objects: {:}, iClass: {:}, jClass: {:}, currentObjects: {:}'.format(dataSet.shape[0], len(iClassIdx), len(jClassIdx), currentObjects))
+
+    partIClass = len(iClassIdx) / (len(iClassIdx) + len(jClassIdx))
+
+    iObjectsCount = math.ceil(partIClass * currentObjects) if partIClass < 0.5 else math.floor(
+        partIClass * currentObjects)
+    jObjectsCount = currentObjects - iObjectsCount
+
+    iClassObjects = GetObjectsPerClass(target, iClass, iObjectsCount)
+    jClassObjects = GetObjectsPerClass(target, jClass, jObjectsCount)
+
+    return iClassObjects, jClassObjects
+
+
+def getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects):
+
+    iObjectsCount = len(iClassObjects)
+    jObjectsCount = len(jClassObjects)
+
+    nFeatures = dataSet.shape[1]
+    newSet = np.zeros((iObjectsCount + jObjectsCount, nFeatures))
+
+    newSet[0:iObjectsCount, :] = dataSet[iClassObjects, :]
+    newSet[iObjectsCount:(iObjectsCount + jObjectsCount), :] = dataSet[jClassObjects, :]
+
+    newTarget = np.zeros(iObjectsCount + jObjectsCount)
+    newTarget[0:iObjectsCount] = target[iClassObjects]
+    newTarget[iObjectsCount: (iObjectsCount + jObjectsCount)] = target[jClassObjects]
+
+    return newSet, newTarget

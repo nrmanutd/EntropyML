@@ -2,7 +2,10 @@ import math
 import numpy as np
 from scipy.stats import entropy
 
-class KSComplexityCalculator:
+from CodeResearch.ObjectComplexity.baseComplexityCalculator import BaseComplexityCalculator
+
+
+class KSComplexityCalculator(BaseComplexityCalculator):
     def __init__(self, dataset, target, objectsIdx=None):
         self.dataset = dataset
         self.target = target
@@ -21,6 +24,10 @@ class KSComplexityCalculator:
 
         self.goodObject = np.zeros(len(target), dtype=np.int32)
         self.objectAttempts = np.zeros(len(target), dtype=np.int32)
+
+    def updateComplexity(self, d, idx):
+        self.addComplexityOutOfIdx(d, idx)
+        return self.calculateKSOutOfIdx(d, idx)
 
     @staticmethod
     def estimateObjectIsOver(obj, div):
