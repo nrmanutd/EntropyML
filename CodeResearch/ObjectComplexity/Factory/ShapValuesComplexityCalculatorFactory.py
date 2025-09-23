@@ -1,6 +1,7 @@
+from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
 from CodeResearch.ObjectComplexity.Factory.BaseComplexityCalculatorFactory import BaseComplexityCalculatorFactory
 from CodeResearch.ObjectComplexity.shapValueComplexityCalculator import ShapValueComplexityCalculator
 
 class ShapValuesComplexityCalculatorFactory(BaseComplexityCalculatorFactory):
     def createComplexityCalculator(self, ds, target, idx):
-        return ShapValueComplexityCalculator(ds, target, idx)
+        return ShapValueComplexityCalculator(ds, target, idx, 0.1, KSMetric())
