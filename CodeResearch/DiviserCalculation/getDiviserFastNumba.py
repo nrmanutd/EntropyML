@@ -199,7 +199,14 @@ def getMaximumDiviserFastNumbaCore(dataSet, target, valuedTarget1, sortedSet1, v
     c1Banalce, c1diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget1, sortedSet1)
     c2Banalce, c2diviser = getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget2, sortedSet2)
 
-    if c1Banalce > c2Banalce:
-        return c1Banalce, c1diviser
+    firstClass = target[0]
+    secondClass = nClasses[0] if firstClass != nClasses[0] else nClasses[1]
 
-    return c2Banalce, c2diviser
+    classUnderDiviser = firstClass if valuedTarget1[0] < 0 else secondClass
+
+    if c1Banalce > c2Banalce:
+        return c1Banalce, c1diviser, classUnderDiviser
+
+    classUnderDiviser = firstClass if classUnderDiviser != firstClass else secondClass
+
+    return c2Banalce, c2diviser, classUnderDiviser

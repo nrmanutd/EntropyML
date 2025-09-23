@@ -73,14 +73,23 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         shuffledIdx = self.custom_shuffle(idx)
         curIdx = set(idx)
 
-        prevKS, prevDiviser = self.KSCalculator.calculateMetric(self.dataSet[shuffledIdx[0:2], :], self.target[shuffledIdx[0:2], :])
+        prevKS, prevDiviser, prevClassUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[shuffledIdx[0:2], :], self.target[shuffledIdx[0:2], :])
         oosPrevKS = self.calculateKS(prevDiviser, curIdx)
 
         counter = 1
         for i in np.arange(2, math.ceil(len(shuffledIdx) * self.limit)):
 
-            newIdx = shuffledIdx[0:i+1]
-            newKS, d = self.KSCalculator.calculateMetric(self.dataSet[newIdx, :], self.target[newIdx, :])
+            newObject = self.dataSet[shuffledIdx[i], :]
+            isObjectUnderDiviser = self.ifObjectIsUnder(prevDiviser, newObject)
+            objectClass = self.target[shuffledIdx[i]]
+
+            if (isObjectUnderDiviser and objectClass == prevClassUnderDiviser) or (not isObjectUnderDiviser and objectClass != prevClassUnderDiviser):
+                self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (counter - 1) / counter
+                counter += 1
+                continue
+
+            newIdx = shuffledIdx[0:(i + 1)]
+            newKS, d, classUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[newIdx, :], self.target[newIdx, :])
             oosNewKS = self.calculateKS(d, curIdx)
 
             if counter == 1:
@@ -89,6 +98,8 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
                 self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (counter - 1)/counter + 1 / counter * (oosNewKS - oosPrevKS)
 
             oosPrevKS = oosNewKS
+            prevDiviser = d
+            prevClassUnderDiviser = classUnderDiviser
 
             counter += 1
 
