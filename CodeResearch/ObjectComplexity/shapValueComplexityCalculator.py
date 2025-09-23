@@ -107,3 +107,6 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
 
     def getShapValues(self):
         return self.shapValues
+
+    def getObjectsIndex(self):
+        return self.objectIdx
