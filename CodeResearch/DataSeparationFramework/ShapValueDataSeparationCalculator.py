@@ -5,7 +5,6 @@ from CodeResearch.ObjectComplexity.Factory.ShapValuesComplexityCalculatorFactory
     ShapValuesComplexityCalculatorFactory
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
 
-
 class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
     def __init__(self, dataSet, target, attempts, taskName, folder, logsFolder):
         super().__init__(dataSet, target, attempts, "KS_Shap", taskName, folder, logsFolder)

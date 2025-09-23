@@ -14,6 +14,7 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         self.target = target
         self.dataSet = dataSet
         self.limit = limit
+        self.counter = 0
 
         self.shapValues = np.array(len(target))
 
@@ -76,7 +77,7 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         prevKS, prevDiviser, prevClassUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[shuffledIdx[0:2], :], self.target[shuffledIdx[0:2], :])
         oosPrevKS = self.calculateKS(prevDiviser, curIdx)
 
-        counter = 1
+        self.counter += 1
         for i in np.arange(2, math.ceil(len(shuffledIdx) * self.limit)):
 
             newObject = self.dataSet[shuffledIdx[i], :]
@@ -84,24 +85,18 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
             objectClass = self.target[shuffledIdx[i]]
 
             if (isObjectUnderDiviser and objectClass == prevClassUnderDiviser) or (not isObjectUnderDiviser and objectClass != prevClassUnderDiviser):
-                self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (counter - 1) / counter
-                counter += 1
+                self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (self.counter - 1) / self.counter
                 continue
 
             newIdx = shuffledIdx[0:(i + 1)]
             newKS, d, classUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[newIdx, :], self.target[newIdx, :])
             oosNewKS = self.calculateKS(d, curIdx)
 
-            if counter == 1:
-                self.shapValues[shuffledIdx[i]] = oosNewKS - oosPrevKS
-            else:
-                self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (counter - 1)/counter + 1 / counter * (oosNewKS - oosPrevKS)
+            self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (self.counter - 1)/self.counter + 1 / self.counter * (oosNewKS - oosPrevKS)
 
             oosPrevKS = oosNewKS
             prevDiviser = d
             prevClassUnderDiviser = classUnderDiviser
-
-            counter += 1
 
         pass
 
