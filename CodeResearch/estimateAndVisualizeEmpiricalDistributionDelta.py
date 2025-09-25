@@ -10,6 +10,7 @@ from CodeResearch.DataSeparationFramework.KSDataSeparationCalculator import KSDa
 from CodeResearch.DataSeparationFramework.MLDataSeparationCalculator import MLDataSeparationCalculator
 from CodeResearch.DataSeparationFramework.KSPermutationDataSeparationCalculator import \
     KSPermutationDataSeparationCalculator
+from CodeResearch.DataSeparationFramework.ShapValueDataSeparationCalculator import ShapValueDataSeparationCalculator
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPair
 from CodeResearch.Visualization.VisualizeAndSaveDistributionDeltas import VisualizeAndSaveDistributionDeltas
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
@@ -120,7 +121,7 @@ def estimateAndVisualizeEmpiricalDistributionDeltaConcrete(dataSet, target, task
 
     return
 
-def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', alpha=0.5, allowedClasses = None):
+def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 10000, pAttempts = 100, mlAttempts = 100, folder = 'PValuesFigures', alpha=0.5, shapCalculation = False, allowedClasses = None):
 
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(target))
@@ -142,11 +143,15 @@ def estimatePValuesForClassesSeparation(dataSet, target, taskName, ksAttempts = 
 
     nClasses = len(np.unique(target))
 
-    ksCalculator = KSDataSeparationCalculator(dataSet, target, ksAttempts, taskName, folder, logsFolder)
     ksPermutationCalculator = KSPermutationDataSeparationCalculator(dataSet, target, pAttempts, taskName, folder, logsFolder)
     mlCalculator = MLDataSeparationCalculator(dataSet, target, mlAttempts, taskName, folder, logsFolder)
 
-    calculator = DataSeparationComposite([ksCalculator, ksPermutationCalculator, mlCalculator])
+    if shapCalculation:
+        shapCalculator = ShapValueDataSeparationCalculator(dataSet, target, ksAttempts, taskName, folder, logsFolder)
+        calculator = DataSeparationComposite([shapCalculator, ksPermutationCalculator, mlCalculator])
+    else:
+        ksCalculator = KSDataSeparationCalculator(dataSet, target, ksAttempts, taskName, folder, logsFolder)
+        calculator = DataSeparationComposite([ksCalculator, ksPermutationCalculator, mlCalculator])
 
     curIdx = 0
     for iClass in range(nClasses):

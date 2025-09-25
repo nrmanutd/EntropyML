@@ -1,3 +1,5 @@
+import math
+
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from sklearn.manifold import TSNE
@@ -133,7 +135,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        return 1.0 - 1.7 * abs(comp - 0.5)
+        return 1.0 - 1.7*(abs(comp - 0.5))
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -144,11 +146,16 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
         class_mask = (y == class_label)
         comp_values = complexity[class_mask]
 
-        alpha_values = [calculate_alpha(c) for c in comp_values]
+        min_v = np.min(comp_values)
+        max_v = np.max(comp_values)
+
+        cc = (comp_values - min_v) / (max_v - min_v)
+
+        alpha_values = [calculate_alpha(c) for c in cc]
 
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
-                             c=comp_values,
-                             cmap=cmap, vmin=0, vmax=1,
+                             c=cc,
+                             cmap=cmap, vmin=min_v, vmax=max_v,
                              marker = markers[i],
                              alpha=alpha_values, s=60,
                              label=f'Class {class_label}',

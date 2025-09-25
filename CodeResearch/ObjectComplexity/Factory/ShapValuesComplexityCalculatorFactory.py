@@ -4,4 +4,4 @@ from CodeResearch.ObjectComplexity.shapValueComplexityCalculator import ShapValu
 
 class ShapValuesComplexityCalculatorFactory(BaseComplexityCalculatorFactory):
     def createComplexityCalculator(self, ds, target, idx):
-        return ShapValueComplexityCalculator(ds, target, idx, 0.1, KSMetric())
+        return ShapValueComplexityCalculator(ds, target, idx)

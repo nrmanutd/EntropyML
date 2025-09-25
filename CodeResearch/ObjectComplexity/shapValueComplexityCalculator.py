@@ -1,38 +1,23 @@
-import math
-
 import numpy as np
-import random
+from numba import njit, prange
 
-from CodeResearch.DataSeparationFramework.Metrics import BaseMetricCalculator
 from CodeResearch.ObjectComplexity.baseComplexityCalculator import BaseComplexityCalculator
 
 
 class ShapValueComplexityCalculator(BaseComplexityCalculator):
-    def __init__(self, dataSet, target, objectIdx, limit, KSCalculator: BaseMetricCalculator):
-        self.KSCalculator = KSCalculator
+    def __init__(self, dataSet, target, objectIdx):
         self.objectIdx = objectIdx
         self.target = target
         self.dataSet = dataSet
-        self.limit = limit
-        self.counter = 0
 
-        self.shapValues = np.array(len(target))
+        self.usedObjects = []
+        self.accuracy = []
 
-    def custom_shuffle(self, arr):
-        if len(arr) < 2:
-            return arr
-
-        first = arr[0]
-        last = arr[-1]
-        middle = arr[1:-1]
-
-        random.shuffle(middle)
-
-        return [first, last] + middle
-
-    def ifObjectIsUnder(self, diviser, curObject):
-        for i in np.arange(len(diviser)):
-            if diviser[i] > curObject[i]:
+    @staticmethod
+    @njit
+    def ifObjectIsUnder(diviser, curObject):
+        for i in prange(0, len(diviser)):
+            if diviser[i] < curObject[i]:
                 return False
 
         return True
@@ -69,39 +54,47 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         return abs(firstClassCountUnder/firstClassCount - secondClassCountUnder/secondClassCount)
 
 
-    def updateComplexity(self, d, idx):
+    def updateComplexity(self, diviser, classUnderDivisier, idx):
 
-        shuffledIdx = self.custom_shuffle(idx)
-        curIdx = set(idx)
+        totalObjects = len(self.target)
+        currentUsedObjects = np.zeros(totalObjects)
+        currentUsedObjects[idx] = 1
+        self.usedObjects.append(currentUsedObjects)
 
-        prevKS, prevDiviser, prevClassUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[shuffledIdx[0:2], :], self.target[shuffledIdx[0:2], :])
-        oosPrevKS = self.calculateKS(prevDiviser, curIdx)
+        aggregateAccuracy = 0
 
-        self.counter += 1
-        for i in np.arange(2, math.ceil(len(shuffledIdx) * self.limit)):
+        for i in np.arange(totalObjects):
+            newObject = self.dataSet[i, :]
 
-            newObject = self.dataSet[shuffledIdx[i], :]
-            isObjectUnderDiviser = self.ifObjectIsUnder(prevDiviser, newObject)
-            objectClass = self.target[shuffledIdx[i]]
+            isObjectUnderDiviser = self.ifObjectIsUnder(diviser, newObject)
+            objectClass = self.target[i]
 
-            if (isObjectUnderDiviser and objectClass == prevClassUnderDiviser) or (not isObjectUnderDiviser and objectClass != prevClassUnderDiviser):
-                self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (self.counter - 1) / self.counter
-                continue
+            if (isObjectUnderDiviser and objectClass == classUnderDivisier) or (not isObjectUnderDiviser and objectClass != classUnderDivisier):
+                aggregateAccuracy += 1 / totalObjects
 
-            newIdx = shuffledIdx[0:(i + 1)]
-            newKS, d, classUnderDiviser = self.KSCalculator.calculateMetric(self.dataSet[newIdx, :], self.target[newIdx, :])
-            oosNewKS = self.calculateKS(d, curIdx)
-
-            self.shapValues[shuffledIdx[i]] = self.shapValues[shuffledIdx[i]] * (self.counter - 1)/self.counter + 1 / self.counter * (oosNewKS - oosPrevKS)
-
-            oosPrevKS = oosNewKS
-            prevDiviser = d
-            prevClassUnderDiviser = classUnderDiviser
-
-        pass
+        self.accuracy.append(aggregateAccuracy)
 
     def getShapValues(self):
-        return self.shapValues
+
+        totalObjects = len(self.target)
+        totalAttempts = len(self.accuracy)
+
+        shapValues = np.zeros(totalObjects)
+        accuracy = np.array(self.accuracy)
+
+        for i in np.arange(totalObjects):
+            withObjectIdx = []
+            noObjectIdx = []
+
+            for j in np.arange(totalAttempts):
+                if self.usedObjects[j][i] == 1:
+                    withObjectIdx.append(j)
+                else:
+                    noObjectIdx.append(j)
+
+            shapValues[i] = np.sum(accuracy[withObjectIdx]) - np.sum(accuracy[noObjectIdx])
+
+        return shapValues / totalAttempts
 
     def getObjectsIndex(self):
-        return self.objectIdx
+        return np.array(self.objectIdx)

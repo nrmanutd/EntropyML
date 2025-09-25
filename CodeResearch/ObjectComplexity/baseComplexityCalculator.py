@@ -2,5 +2,5 @@ from abc import ABC, abstractmethod
 
 class BaseComplexityCalculator(ABC):
     @abstractmethod
-    def updateComplexity(self, d, idx):
+    def updateComplexity(self, diviser, classUnderDiviser, idx):
         pass

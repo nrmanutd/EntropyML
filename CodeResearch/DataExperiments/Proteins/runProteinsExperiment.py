@@ -7,18 +7,19 @@ from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimate
 
 x, y = load_proteins("../../Data/Proteins/df_master.csv")
 
-alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
-taskName = "proteins_full"
-iterations = 200
+#alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+alphas = [0.5]
+taskName = "proteins_full_shap"
+iterations = 100
 
 for alpha in alphas:
-    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha)
+    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True)
 
 logsFolder = "..\..\PValuesFigures\PValueLogs"
 
-visualizeAndSaveKSSI(logsFolder, "ProteinsKSSI", alphas, taskName, iterations)
+#visualizeAndSaveKSSI(logsFolder, "ProteinsKSSI", alphas, taskName, iterations)
 visualizeAndSaveComplexObjects(logsFolder, "ProteinsComplexObjects", taskName, iterations, x, y)
-summarizeExperiments(logsFolder, "ProteinsSummary", y, taskName, iterations)
+#summarizeExperiments(logsFolder, "ProteinsSummary", y, taskName, iterations)
 
 ligandsIndexes = getProteinsComplexities(logsFolder, taskName, iterations)
 ligandsIndexes.to_csv('ProteinsSummary\ligands.csv', index=False)

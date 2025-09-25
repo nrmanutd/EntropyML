@@ -25,7 +25,7 @@ class KSComplexityCalculator(BaseComplexityCalculator):
         self.goodObject = np.zeros(len(target), dtype=np.int32)
         self.objectAttempts = np.zeros(len(target), dtype=np.int32)
 
-    def updateComplexity(self, d, idx):
+    def updateComplexity(self, d, c, idx):
         self.addComplexityOutOfIdx(d, idx)
         return self.calculateKSOutOfIdx(d, idx)
 

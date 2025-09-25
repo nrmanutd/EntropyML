@@ -165,7 +165,7 @@ def getMaximumDiviserPerClassFastNumba(dataSet, valuedTarget, sortedDataSet):
 @jit(nopython=True)
 def getMaximumDiviserFastNumba(dataSet, target):
     dataSet = prepareDataSet(dataSet)
-    dataSet = doubleDataSet(dataSet)
+    #dataSet = doubleDataSet(dataSet)
     nClasses = np.unique(target)
 
     counts = np.zeros(2, dtype=nb.int64)
