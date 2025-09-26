@@ -5,6 +5,11 @@ from CodeResearch.DiviserCalculation.getDiviserFast import getMaximumDiviserFast
 from CodeResearch.DiviserCalculation.getDiviserRTree import getMaximumDiviserRTree
 from CodeResearch.DiviserCalculation.getDiviserRTreeStochastic import getMaximumDiviserRTreeStochastic
 
+a = np.array([1, 2, 3, 4, 5])
+b = np.mean(a[[]])
+print('b=',b)
+pass
+
 temp = np.array([1, 3, 2, 8, 5])
 print(np.argsort(temp))
 print(np.argsort(-temp))

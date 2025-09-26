@@ -7,13 +7,13 @@ from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimate
 
 x, y = load_proteins("../../Data/Proteins/df_master.csv")
 
-#alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
-alphas = [0.5]
+alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+#alphas = [0.005]
 taskName = "proteins_full_shap"
-iterations = 100
+iterations = 1000
 
-for alpha in alphas:
-    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True)
+#for alpha in alphas:
+#    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True)
 
 logsFolder = "..\..\PValuesFigures\PValueLogs"
 

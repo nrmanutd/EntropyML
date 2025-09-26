@@ -31,5 +31,5 @@ class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
 
     def serializeCalculatedData(self):
         self.serializeConcrete(self.commonShapValues, f"{self.name}_frequency")
-        self.serializeConcrete([x**2 for x in self.commonShapValues], f"{self.name}_entropy")
+        self.serializeConcrete(self.commonShapValues, f"{self.name}_entropy")
         self.serializeConcrete(self.commonIndexes, f"{self.name}_indexes")

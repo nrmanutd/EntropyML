@@ -66,8 +66,8 @@ def extractAndSaveEdgeObjects(entropies, frequencies, x, target, firstClass, sec
     xx1 = x[iObjects]
     xx2 = x[jObjects]
 
-    e1idx = np.argsort(np.array(e1))
-    e2idx = np.argsort(np.array(e2))
+    e1idx = np.argsort(np.array(-np.abs(e1)))
+    e2idx = np.argsort(np.array(-np.abs(e2)))
 
     f1idx = np.argsort(np.array(f1))
     f2idx = np.argsort(np.array(f2))
@@ -113,20 +113,9 @@ def extractAndSaveEdgeObjects(entropies, frequencies, x, target, firstClass, sec
             file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], f2[idx], secondClass))
 
 def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Brightness Visualization"):
-    """
-    Версия с настраиваемой функцией яркости
-    """
-    if X.shape[1] != 2:
-        # Используем t-SNE для многомерных данных
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
-        tsne = TSNE(n_components=2, random_state=42)
-        X_vis = tsne.fit_transform(X_scaled)
-        x_label, y_label = 't-SNE Dim 1', 't-SNE Dim 2'
-    else:
-        # Используем исходные 2D данные
-        X_vis = X
-        x_label, y_label = 'Feature 1', 'Feature 2'
+
+    X_vis = X
+    x_label, y_label = 'Feature 1', 'Feature 2'
 
     # Кастомная цветовая карта
     colors = ['darkred', 'red', 'yellow', 'green', 'darkgreen']
@@ -135,7 +124,8 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        return 1.0 - 1.7*(abs(comp - 0.5))
+        #return 1.0 - (abs(comp - 1))
+        return comp**4
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -154,7 +144,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
         alpha_values = [calculate_alpha(c) for c in cc]
 
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
-                             c=cc,
+                             c=comp_values,
                              cmap=cmap, vmin=min_v, vmax=max_v,
                              marker = markers[i],
                              alpha=alpha_values, s=60,
@@ -174,7 +164,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
                 dpi=300, bbox_inches='tight')
     plt.close(fig)
 
-def plotAndSave2dVisualization(x, target, firstClass, secondClass, frequencies, resultsFolder, name):
+def extractData(x, target, firstClass, secondClass):
     iObjects = list(np.where(target == firstClass)[0])
     jObjects = list(np.where(target == secondClass)[0])
 
@@ -183,12 +173,23 @@ def plotAndSave2dVisualization(x, target, firstClass, secondClass, frequencies, 
     xx = x[allObjects]
     tt = target[allObjects]
 
-    plot_with_custom_brightness(xx, tt, frequencies, resultsFolder, name)
+    return xx, tt
+
+def transformDataTo2D(x):
+
+    if x.shape[1] <= 2:
+        return x
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(x)
+    tsne = TSNE(n_components=2, random_state=42)
+    X_vis = tsne.fit_transform(X_scaled)
+    return X_vis
 
 def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, iterations, x, y, top=20):
     pattern = r"^KS_entropy_{0}_{1}_\d+_\d+_\d+.txt$".format(taskName, iterations)
     files = find_files_with_regex(folderWithFiles, pattern)
-    files = getLastFiles(files)
+    #files = getLastFiles(files)
 
     if not os.path.exists(resultsFolder):
         os.makedirs(resultsFolder)
@@ -227,15 +228,21 @@ def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, ite
         freq = v['frequencies']
         entr = v['entropy']
 
-        idx = np.argsort(obj)
-        frequencies = freq[idx[-1]]
-        entropies = entr[idx[-1]]
-
         c = k.split('_')
         f = int(c[0])
         s = int(c[1])
 
-        plotAndSaveEntropies(target, f, s, entropies, frequencies, resultsFolder, f'entropies_{taskName}_{iterations}_{f}_{s}')
-        extractAndSaveEdgeObjects(entropies, frequencies, x, target, f, s, resultsFolder, f'{taskName}_{iterations}', top)
-        plotAndSave2dVisualization(x, target, f, s, np.array(frequencies), resultsFolder, f'{taskName}_{iterations}_{f}_{s}_colored')
+        print(obj)
+
+        xx, yy = extractData(x, y, f, s)
+        xx = transformDataTo2D(x)
+
+        for i in range(len(obj)):
+            currentObjects = obj[i]
+            ff = freq[i]
+            ee = entr[i]
+
+            plotAndSaveEntropies(target, f, s, ee, ff, resultsFolder, f'entropies_{taskName}_{iterations}_{currentObjects}_{f}_{s}')
+            extractAndSaveEdgeObjects(ee, ff, x, target, f, s, resultsFolder, f'{taskName}_{iterations}_{currentObjects}', top)
+            plot_with_custom_brightness(xx, yy, np.array(ff), resultsFolder, f'{taskName}_{iterations}_{currentObjects}_{f}_{s}_colored')
 

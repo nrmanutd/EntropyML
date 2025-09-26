@@ -1,8 +1,10 @@
+import random
+
 import numba as nb
 import numpy as np
 from numba import jit, prange
 
-from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, doubleDataSet
+from CodeResearch.DiviserCalculation.diviserHelpers import GetValuedTarget, prepareDataSet, getSortedSet, f2s
 
 
 @jit(nopython=True)
@@ -203,6 +205,18 @@ def getMaximumDiviserFastNumbaCore(dataSet, target, valuedTarget1, sortedSet1, v
     secondClass = nClasses[0] if firstClass != nClasses[0] else nClasses[1]
 
     classUnderDiviser = firstClass if valuedTarget1[0] < 0 else secondClass
+
+    #print (f'c1: {classUnderDiviser}, b1: {f2s(c1Banalce)}, b2: {f2s(c2Banalce)}')
+
+    if abs(c1Banalce - c2Banalce) < 0.001:
+
+        decision = random.random() > 0.5
+
+        #if decision:
+        #    return c1Banalce, c1diviser, classUnderDiviser
+        #else:
+        #    classUnderDiviser = firstClass if classUnderDiviser != firstClass else secondClass
+        #    return c2Banalce, c2diviser, classUnderDiviser
 
     if c1Banalce > c2Banalce:
         return c1Banalce, c1diviser, classUnderDiviser

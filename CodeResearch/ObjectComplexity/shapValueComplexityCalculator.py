@@ -3,6 +3,13 @@ from numba import njit, prange
 
 from CodeResearch.ObjectComplexity.baseComplexityCalculator import BaseComplexityCalculator
 
+@njit
+def ifObjectIsUnder(diviser, curObject):
+    for i in np.arange(len(diviser)):
+        if diviser[i] < curObject[i]:
+            return False
+
+    return True
 
 class ShapValueComplexityCalculator(BaseComplexityCalculator):
     def __init__(self, dataSet, target, objectIdx):
@@ -15,44 +22,30 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
 
     @staticmethod
     @njit
-    def ifObjectIsUnder(diviser, curObject):
-        for i in prange(0, len(diviser)):
-            if diviser[i] < curObject[i]:
-                return False
-
-        return True
-
-    def calculateKS(self, diviser, idx):
-
-        firstClass = self.target[0]
-
-        firstClassCountUnder = 0
-        secondClassCountUnder = 0
-
-        firstClassCount = 0
-        secondClassCount = 0
-
-        for i in np.arange(len(self.target)):
-            if i in idx:
+    def calculateAggregateScore(classUnderDivisier, currentUsedObjects, diviser, totalObjects, dataSet, target):
+        positiveObjects = 0
+        negativeObjects = 0
+        positiveObjectsCount = 0
+        negativeObjectsCount = 0
+        for i in prange(0, totalObjects):
+            if currentUsedObjects[i] == 1:
                 continue
 
-            curObject = self.dataSet[i, :]
+            newObject = dataSet[i, :]
 
-            curObjectIsUnder = self.ifObjectIsUnder(diviser, curObject)
+            isObjectUnderDiviser = ifObjectIsUnder(diviser, newObject)
+            objectClass = target[i]
 
-            if self.target[i] == firstClass:
-                firstClassCount += 1
+            if objectClass == classUnderDivisier:
+                positiveObjectsCount += 1
+                positiveObjects += (1 if isObjectUnderDiviser else 0)
             else:
-                secondClassCount += 1
+                negativeObjectsCount += 1
+                negativeObjects += (1 if isObjectUnderDiviser else 0)
+                # negativeObjects += (0 if isObjectUnderDiviser else 1)
 
-            if curObjectIsUnder:
-                if self.target[i] == firstClass:
-                    firstClassCountUnder += 1
-                else:
-                    secondClassCountUnder += 1
-
-        return abs(firstClassCountUnder/firstClassCount - secondClassCountUnder/secondClassCount)
-
+        aggregateAccuracy = positiveObjects / positiveObjectsCount - negativeObjects / negativeObjectsCount
+        return aggregateAccuracy
 
     def updateComplexity(self, diviser, classUnderDivisier, idx):
 
@@ -61,18 +54,11 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         currentUsedObjects[idx] = 1
         self.usedObjects.append(currentUsedObjects)
 
-        aggregateAccuracy = 0
-
-        for i in np.arange(totalObjects):
-            newObject = self.dataSet[i, :]
-
-            isObjectUnderDiviser = self.ifObjectIsUnder(diviser, newObject)
-            objectClass = self.target[i]
-
-            if (isObjectUnderDiviser and objectClass == classUnderDivisier) or (not isObjectUnderDiviser and objectClass != classUnderDivisier):
-                aggregateAccuracy += 1 / totalObjects
-
+        aggregateAccuracy = ShapValueComplexityCalculator.calculateAggregateScore(classUnderDivisier, currentUsedObjects, diviser, totalObjects, self.dataSet, self.target)
+        #aggregateAccuracy = (positiveObjects + negativeObjects) / (positiveObjectsCount + negativeObjectsCount)
         self.accuracy.append(aggregateAccuracy)
+
+
 
     def getShapValues(self):
 
@@ -92,9 +78,9 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
                 else:
                     noObjectIdx.append(j)
 
-            shapValues[i] = np.sum(accuracy[withObjectIdx]) - np.sum(accuracy[noObjectIdx])
+            shapValues[i] = np.mean(accuracy[withObjectIdx]) - np.mean(accuracy[noObjectIdx])
 
-        return shapValues / totalAttempts
+        return shapValues
 
     def getObjectsIndex(self):
         return np.array(self.objectIdx)
