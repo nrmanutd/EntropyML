@@ -235,9 +235,10 @@ def visualizeAndSaveComplexObjects(folderWithFiles, resultsFolder, taskName, ite
         print(obj)
 
         xx, yy = extractData(x, y, f, s)
-        xx = transformDataTo2D(x)
+        xx = transformDataTo2D(xx)
 
         for i in range(len(obj)):
+            print(f'Processing for objects {obj[i]}')
             currentObjects = obj[i]
             ff = freq[i]
             ee = entr[i]

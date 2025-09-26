@@ -16,17 +16,17 @@ nSamples = 2000
 x, y = loadMnist()
 
 #x = np.hstack((x, -x))
-#alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
-alphas= [0.5]
+alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+#alphas= [0.5]
 
-#allowedClasses=["8_3"]
-allowedClasses=[]
+allowedClasses=["8_3", "8_5", "5_3"]
+#allowedClasses=[]
 taskName = "mnist_shap"
 iterations = 1000
 
-for alpha in alphas:
-    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
+#for alpha in alphas:
+#    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
 
-#visualizeAndSaveKSSI("..\..\PValuesFigures\PValueLogs", f"{taskName}KSSI", alphas, taskName, iterations)
+visualizeAndSaveKSSI("..\..\PValuesFigures\PValueLogs", f"{taskName}KSSI", alphas, taskName, iterations)
 visualizeAndSaveComplexObjects("..\..\PValuesFigures\PValueLogs", f"{taskName}_ComplexObjects", taskName, iterations, x, y)
-#summarizeExperiments("..\..\PValuesFigures\PValueLogs", f"{taskName}Summary", y, taskName, iterations)
+summarizeExperiments("..\..\PValuesFigures\PValueLogs", f"{taskName}Summary", y, taskName, iterations)
