@@ -16,7 +16,7 @@ def plotValues(plt, x, y, c, l, m='x'):
     plt.plot(x, y, color=c, linestyle='-', label=l, marker=m, markersize=8, markeredgewidth=2)
     return
 
-directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_Serie_Blobs"
+directory = "C:\\Users\\user\\PycharmProjects\\EntropyML\\CodeResearch\\PValuesFigures\\PValueLogs_Serie_Blobs"
 data = loadData(directory)
 
 xSerie = range(1, 1 + len(data))

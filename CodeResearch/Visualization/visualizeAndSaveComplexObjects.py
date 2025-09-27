@@ -2,6 +2,7 @@ import math
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+from scipy import stats
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import StandardScaler
 import numpy as np
@@ -36,10 +37,27 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     ax1.grid(alpha=0.3)
     ax1.legend()
 
+    arrf1 = np.array(f1)
+    arrf2 = np.array(f2)
+    noNanF1 = arrf1[~np.isnan(arrf1)]
+    noNanF2 = arrf2[~np.isnan(arrf2)]
+    x = np.linspace(np.min(noNanF2), np.max(noNanF2), 1000)
+    std1 = np.std(arrf1[~np.isnan(arrf1)])
+    std2 = np.std(noNanF2)
+    fnorm1 = stats.norm.pdf(x, 0, std1)
+    fnorm2 = stats.norm.pdf(x, 0, std2)
+
     # Второй график - frequencies
     ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
     ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
-    ax2.set_title('Гистограмма распределения частот', fontsize=14)
+    plt.plot(x, fnorm2, 'r-', linewidth=2, label='Нормальное распределение')
+
+    f1normSample = np.random.normal(0, std1, len(f1))
+    f2normSample = np.random.normal(0, std2, len(f2))
+    ks_statistic1, p_value1 = stats.ks_2samp(noNanF1, f1normSample)
+    ks_statistic2, p_value2 = stats.ks_2samp(noNanF2, f2normSample)
+
+    ax2.set_title(f'Гистограмма распределения частот (#1: {ks_statistic1:.2f}, {p_value1:.4f}, #2: {ks_statistic2:.2f}, {p_value2:.4f})', fontsize=14)
     ax2.set_xlabel('Значения частот', fontsize=12)
     ax2.set_ylabel('Частота', fontsize=12)
     ax2.grid(alpha=0.3)
@@ -113,7 +131,6 @@ def extractAndSaveEdgeObjects(entropies, frequencies, x, target, firstClass, sec
             file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], f2[idx], secondClass))
 
 def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Brightness Visualization"):
-
     X_vis = X
     x_label, y_label = 'Feature 1', 'Feature 2'
 
@@ -132,9 +149,14 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
     unique_classes = np.unique(y)
     markers = ['o', 's']
 
+    non_nan_indices = np.argwhere(~np.isnan(complexity)).flatten()
+    X_vis = X_vis[non_nan_indices, :]
+    labels = y[non_nan_indices]
+    non_nan_complexity = complexity[non_nan_indices]
+
     for i, class_label in enumerate(unique_classes):
-        class_mask = (y == class_label)
-        comp_values = complexity[class_mask]
+        class_mask = (labels == class_label)
+        comp_values = non_nan_complexity[class_mask]
 
         min_v = np.min(comp_values)
         max_v = np.max(comp_values)

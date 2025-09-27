@@ -51,7 +51,8 @@ def generateDataSet(taskName, sd = 1):
 
     raise ValueError(f'Error in processing task {taskName}')
 
-directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TestTasks_10000"
+directory = "C:\\Users\\user\\PycharmProjects\\EntropyML\\CodeResearch\\PValuesFigures\\PValueLogs_TestTasks_100"
+#directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TestTasks_10000"
 #directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_Serie_Blobs"
 #directory = "C:\\Current\\Work\\Science\\CodeResearch\\PValuesFigures\\PValueLogs_TargetTasks"
 data = loadData(directory)
@@ -96,7 +97,7 @@ for idx, ((X, y), (dist1, dist2)) in enumerate(zip(dataSets, distributions)):
     plot_scatter(axes[row, col], X, y, f'{taskNames[idx]}')
 
     # Distribution plot (соседний столбец)
-    plot_distributions(axes[row, col + 1], dist1, dist2, f'{taskNames[idx]}')
+    plot_distributions(axes[row, col + 1], dist1, dist1, f'{taskNames[idx]}')
 
     ax_dist = axes[row, col + 1]
     ax_dist.text(0.5, 0.95, f'{max(0, metrics[idx]):.4f}',
