@@ -12,7 +12,7 @@ class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
 
         self.commonShapValues = []
         self.commonIndexes = []
-        self.commonWelchTest = []
+        self.commonPValue = []
         self.pValuesCalculator = PValueCalculator(ShapValuesComplexityCalculatorFactory(), KSMetric(), attempts,  True, False, False)
 
     def calculateMetric(self, objects, iClass, jClass):
@@ -21,9 +21,9 @@ class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
 
     def processCalculatedMetric(self, data):
         complexityCalculator = data[2]
-        shapValues, welchTest = complexityCalculator.getShapValues()
+        shapValues, pValue = complexityCalculator.getShapValues()
         self.commonShapValues.append(shapValues)
-        self.commonWelchTest.append(welchTest)
+        self.commonPValue.append(pValue)
         self.commonIndexes.append(complexityCalculator.getObjectsIndex())
 
     def serializeConcrete(self, array, subname):
@@ -33,6 +33,6 @@ class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
                                          self.attempts, f'{self.logsFolder}\\{subname}_{self.taskName}_{self.attempts}_{curPair}_{currentObjects}.txt')
 
     def serializeCalculatedData(self):
-        self.serializeConcrete(self.commonWelchTest, f"{self.name}_frequency")
+        self.serializeConcrete(self.commonPValue, f"{self.name}_frequency")
         self.serializeConcrete(self.commonShapValues, f"{self.name}_entropy")
         self.serializeConcrete(self.commonIndexes, f"{self.name}_indexes")

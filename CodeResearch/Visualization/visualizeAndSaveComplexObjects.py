@@ -11,8 +11,11 @@ import os
 
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.Helpers.commonHelpers import calculateNormalityTest, calculateNormalityWithMeanTest
 from CodeResearch.Visualization.filesExtractor import find_files_with_regex, getLastFiles
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
+
+
 
 def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies, folder, name):
     iObjects = list(np.where(target == firstClass)[0])
@@ -36,15 +39,15 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     std1 = np.std(noNanF1)
     fnorm1 = stats.norm.pdf(x, 0, std1)
 
-    ks_statistic1, p_value1 = stats.shapiro(noNanF1)
-    ks_statistic2, p_value2 = stats.shapiro(noNanF2)
+    p_value1 = calculateNormalityWithMeanTest(noNanF1)
+    p_value2 = calculateNormalityWithMeanTest(noNanF2)
 
     # Первый график - entropies
     ax1.hist(e1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='blue', density=True)
     ax1.hist(e2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='red', density=True)
     ax1.plot(x, fnorm1, 'r-', linewidth=2, label='Нормальное распределение')
 
-    ax1.set_title(f'Гистограмма распределения энтропий (#1: {ks_statistic1:.2f}, {p_value1:.4f}, #2: {ks_statistic2:.2f}, {p_value2:.4f})', fontsize=14)
+    ax1.set_title(f'Гистограмма распределения энтропий (#1: {p_value1:.4f}, #2: {p_value2:.4f})', fontsize=14)
     ax1.set_xlabel('Значения энтропии', fontsize=12)
     ax1.set_ylabel('Частота', fontsize=12)
     ax1.grid(alpha=0.3)
@@ -54,7 +57,11 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
     ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
 
-    ax2.set_title(f'Гистограмма распределения частот', fontsize=14)
+    f1_array = np.array(f1)
+    f2_array = np.array(f2)
+    selectedObjectsCount = np.sum(f1_array > 0) + np.sum(f2_array > 0)
+
+    ax2.set_title(f'Гистограмма распределения частот (всего объектов = {selectedObjectsCount})', fontsize=14)
     ax2.set_xlabel('Значения частот', fontsize=12)
     ax2.set_ylabel('Частота', fontsize=12)
     ax2.grid(alpha=0.3)
@@ -138,8 +145,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        #return 1.0 - (abs(comp - 1))
-        return comp**4
+        return comp**6
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -158,14 +164,16 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
         min_v = np.min(comp_values)
         max_v = np.max(comp_values)
 
-        cc = (comp_values - min_v) / (max_v - min_v)
+        if max_v == min_v:
+            cc = np.zeros(len(comp_values))
+        else:
+            cc = (comp_values - min_v) / (max_v - min_v)
 
         alpha_values = [calculate_alpha(c) for c in cc]
-
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
-                             c=cc,
+                             c=comp_values,
                              cmap=cmap, vmin=min_v, vmax=max_v,
-                             marker = markers[i],
+                             marker=markers[i],
                              alpha=alpha_values, s=60,
                              label=f'Class {class_label}',
                              edgecolors='black', linewidth=0.8)

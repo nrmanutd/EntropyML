@@ -17,17 +17,17 @@ x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_s
 
 #xx = np.hstack((x, -x))
 xx = x
-alphas = [0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
+alphas = 0.001 * np.arange(1, 11)
 #alphas= [0.5]
 
 #allowedClasses=["8_3", "8_5", "5_3"]
 allowedClasses=[]
 taskName = "circles_shap"
-iterations = 200
+iterations = 500
 
 for alpha in alphas:
-    estimatePValuesForClassesSeparation(xx, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\..\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
+    estimatePValuesForClassesSeparation(xx, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\\..\\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
 
-visualizeAndSaveKSSI("..\..\PValuesFigures\PValueLogs", f"{taskName}KSSI", alphas, taskName, iterations)
-visualizeAndSaveComplexObjects("..\..\PValuesFigures\PValueLogs", f"{taskName}_ComplexObjects", taskName, iterations, x, y)
-summarizeExperiments("..\..\PValuesFigures\PValueLogs", f"{taskName}Summary", y, taskName, iterations)
+visualizeAndSaveKSSI("..\\..\\PValuesFigures\\PValueLogs", f"{taskName}KSSI", alphas, taskName, iterations)
+visualizeAndSaveComplexObjects("..\\..\\PValuesFigures\\PValueLogs", f"{taskName}_ComplexObjects", taskName, iterations, x, y)
+summarizeExperiments("..\\..\\PValuesFigures\\PValueLogs", f"{taskName}Summary", y, taskName, iterations)

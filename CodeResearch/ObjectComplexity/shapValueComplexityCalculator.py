@@ -1,7 +1,9 @@
 import numpy as np
+import scipy.stats
 from numba import njit, prange
 from scipy import stats
 
+from CodeResearch.Helpers.commonHelpers import calculateNormalityTest, calculateNormalityWithMeanTest
 from CodeResearch.ObjectComplexity.baseComplexityCalculator import BaseComplexityCalculator
 
 @njit
@@ -60,46 +62,58 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         self.accuracy.append(aggregateAccuracy)
 
     @staticmethod
+    def checkConcreteClassIsNormal(shapValues, target, c):
+        cIdx = np.where(target == c)[0]
+        shaps = shapValues[cIdx]
+        noNanShaps = shaps[np.where(~np.isnan(shaps))[0]]
+
+        return calculateNormalityWithMeanTest(noNanShaps)
+
+    @staticmethod
+    def checkIfClassesAreNormal(shapValues, target):
+        classes = np.unique(target)
+        alpha = 0.01
+
+        pv1 = ShapValueComplexityCalculator.checkConcreteClassIsNormal(shapValues, target, classes[0])
+        pv2 = ShapValueComplexityCalculator.checkConcreteClassIsNormal(shapValues, target, classes[1])
+
+        print(f'pv1 = {pv1}, pv2 = {pv2}, alpha = {alpha}')
+        if pv1 > alpha or pv2 > alpha:
+            return True
+
+        return False
+
+    @staticmethod
     def calculateObjectImportance(shapValues):
-        std = np.std(shapValues)
 
-        sortIndex = np.argsort(shapValues)
-        curCumulative = 0
+        noNanIndexes = np.where(~np.isnan(shapValues))[0]
+        shaps = shapValues[noNanIndexes]
+
+        std = np.std(shaps)
+
+        sortIndex = np.argsort(-shaps)
         totalObjects = len(sortIndex)
-        deltas = np.zeros(totalObjects)
 
-        totalNotNaN = totalObjects - np.isnan(shapValues).sum()
+        curCumulative = 1
 
         norm_dist = stats.norm(loc=0, scale=std)
+        selectedObjects = np.zeros(totalObjects)
+        distributionWeight = 1 / totalObjects
 
-        for i in np.arange(len(sortIndex)):
-            if np.isnan(shapValues[sortIndex[i]]):
-                continue
+        for i in prange(totalObjects):
+            normDistributionValue = norm_dist.cdf(shaps[sortIndex[i]])
 
-            curCumulative += 1/totalNotNaN
-            normDistribution = norm_dist.cdf(shapValues[sortIndex[i]])
+            if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
+                selectedObjects[sortIndex[i]] = 1
 
-            deltas[sortIndex[i]] = -abs(normDistribution - curCumulative)
+            curCumulative -= 1 / totalObjects
 
-        deltasIdx = np.argsort(deltas)
-        maximumElement = max(1, totalObjects // 10)
+        pValuesToReturn = np.zeros(len(shapValues))
+        for i in prange(totalObjects):
+            if selectedObjects[i] == 1:
+                pValuesToReturn[noNanIndexes[i]] = shaps[i]
 
-        pValues = np.zeros(totalObjects)
-
-        for i in range(maximumElement):
-            curIdx = deltasIdx[i]
-            if deltas[curIdx] == 0:
-                continue
-
-            pValues[curIdx] = 1
-
-        ks_statistic_before, p_value_before = stats.shapiro(shapValues)
-        ks_statistic_after, p_value_after = stats.shapiro(shapValues[maximumElement::])
-
-        print(f'Before: {ks_statistic_before:.4f}, {p_value_before:.4f}')
-        print(f'After: {ks_statistic_after:.4f}, {p_value_after:.4f}')
-
-        return pValues
+        return pValuesToReturn
 
     def getShapValues(self):
 
@@ -122,9 +136,12 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
 
             shapValues[i] = np.mean(accuracy[withObjectIdx]) - np.mean(accuracy[noObjectIdx])
 
-        pvalue = ShapValueComplexityCalculator.calculateObjectImportance(shapValues)
+        if ShapValueComplexityCalculator.checkIfClassesAreNormal(shapValues, self.target):
+            pValue = np.zeros(len(shapValues))
+        else:
+            pValue = ShapValueComplexityCalculator.calculateObjectImportance(shapValues)
 
-        return shapValues, pvalue
+        return shapValues, pValue
 
     def getObjectsIndex(self):
         return np.array(self.objectIdx)

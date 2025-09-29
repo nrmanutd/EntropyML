@@ -5,14 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/ShapValueDataSeparationCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/ShapValueDataSeparationCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/dataSets.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/dataSets.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -284,14 +282,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00081" summary="tests are passing correctly for numba and fast">
-      <option name="closed" value="true" />
-      <created>1742275823623</created>
-      <option name="number" value="00081" />
-      <option name="presentableId" value="LOCAL-00081" />
-      <option name="project" value="LOCAL" />
-      <updated>1742275823623</updated>
     </task>
     <task id="LOCAL-00082" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
       <option name="closed" value="true" />
@@ -677,7 +667,15 @@
       <option name="project" value="LOCAL" />
       <updated>1758914973988</updated>
     </task>
-    <option name="localTasksCounter" value="130" />
+    <task id="LOCAL-00130" summary="added shapiro test">
+      <option name="closed" value="true" />
+      <created>1759155736915</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1759155736915</updated>
+    </task>
+    <option name="localTasksCounter" value="131" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -719,7 +717,8 @@
     <MESSAGE value="added first shap value calculation logic" />
     <MESSAGE value="added correct shap value evaluation" />
     <MESSAGE value="added experiments" />
-    <option name="LAST_COMMIT_MESSAGE" value="added experiments" />
+    <MESSAGE value="added shapiro test" />
+    <option name="LAST_COMMIT_MESSAGE" value="added shapiro test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -891,7 +890,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py</url>
-          <line>103</line>
+          <line>110</line>
           <option name="timeStamp" value="278" />
         </line-breakpoint>
       </breakpoints>

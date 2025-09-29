@@ -1,5 +1,22 @@
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from scipy import stats
+
+def calculateNormalityTest(x):
+    if len(x) < 5000:
+        return stats.shapiro(x)
+
+    return stats.normaltest(x)
+
+def calculateNormalityWithMeanTest(x):
+    v2, pv2 = stats.ttest_1samp(x, 0)
+
+    if len(x) < 5000:
+        v1, pv1 = stats.shapiro(x)
+        return max(pv1, pv2)
+
+    v1, pv1 = stats.normaltest(x)
+    return min(pv1, pv2)
 
 def perform_pca(X, n_components=10, scale=True):
     """
