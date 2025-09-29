@@ -28,36 +28,33 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     f1 = frequencies[0:len(iObjects)]
     f2 = frequencies[len(iObjects):len(frequencies)]
 
+    arrf1 = np.array(e1)
+    arrf2 = np.array(e2)
+    noNanF1 = arrf1[~np.isnan(arrf1)]
+    noNanF2 = arrf2[~np.isnan(arrf2)]
+    x = np.linspace(np.min(noNanF1), np.max(noNanF1), 1000)
+    std1 = np.std(noNanF1)
+    fnorm1 = stats.norm.pdf(x, 0, std1)
+
+    ks_statistic1, p_value1 = stats.shapiro(noNanF1)
+    ks_statistic2, p_value2 = stats.shapiro(noNanF2)
+
     # Первый график - entropies
     ax1.hist(e1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='blue', density=True)
     ax1.hist(e2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='red', density=True)
-    ax1.set_title('Гистограмма распределения энтропий', fontsize=14)
+    ax1.plot(x, fnorm1, 'r-', linewidth=2, label='Нормальное распределение')
+
+    ax1.set_title(f'Гистограмма распределения энтропий (#1: {ks_statistic1:.2f}, {p_value1:.4f}, #2: {ks_statistic2:.2f}, {p_value2:.4f})', fontsize=14)
     ax1.set_xlabel('Значения энтропии', fontsize=12)
     ax1.set_ylabel('Частота', fontsize=12)
     ax1.grid(alpha=0.3)
     ax1.legend()
 
-    arrf1 = np.array(f1)
-    arrf2 = np.array(f2)
-    noNanF1 = arrf1[~np.isnan(arrf1)]
-    noNanF2 = arrf2[~np.isnan(arrf2)]
-    x = np.linspace(np.min(noNanF2), np.max(noNanF2), 1000)
-    std1 = np.std(arrf1[~np.isnan(arrf1)])
-    std2 = np.std(noNanF2)
-    fnorm1 = stats.norm.pdf(x, 0, std1)
-    fnorm2 = stats.norm.pdf(x, 0, std2)
-
     # Второй график - frequencies
     ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
     ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
-    plt.plot(x, fnorm2, 'r-', linewidth=2, label='Нормальное распределение')
 
-    f1normSample = np.random.normal(0, std1, len(f1))
-    f2normSample = np.random.normal(0, std2, len(f2))
-    ks_statistic1, p_value1 = stats.ks_2samp(noNanF1, f1normSample)
-    ks_statistic2, p_value2 = stats.ks_2samp(noNanF2, f2normSample)
-
-    ax2.set_title(f'Гистограмма распределения частот (#1: {ks_statistic1:.2f}, {p_value1:.4f}, #2: {ks_statistic2:.2f}, {p_value2:.4f})', fontsize=14)
+    ax2.set_title(f'Гистограмма распределения частот', fontsize=14)
     ax2.set_xlabel('Значения частот', fontsize=12)
     ax2.set_ylabel('Частота', fontsize=12)
     ax2.grid(alpha=0.3)
@@ -166,7 +163,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
         alpha_values = [calculate_alpha(c) for c in cc]
 
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
-                             c=comp_values,
+                             c=cc,
                              cmap=cmap, vmin=min_v, vmax=max_v,
                              marker = markers[i],
                              alpha=alpha_values, s=60,

@@ -6,7 +6,6 @@ import numpy as np
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import mnist
 
-
 def loadMnist():
     num_train = 60000  # there are 60000 training examples in MNIST
     num_test = 10000  # there are 10000 test examples in MNIST

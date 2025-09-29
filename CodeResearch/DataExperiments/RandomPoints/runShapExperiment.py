@@ -11,18 +11,18 @@ nSamples = 10000
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
 #x, y = make_xor(nSamples)
-#x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
+x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
 #x, y = make_spirals(nSamples)
-x, y = loadMnist()
+#x, y = loadMnist()
 
-xx = np.hstack((x, -x))
-#alphas = [0.01, 0.05, 0.1]
-alphas = np.arange(0.06, 0.1, 0.01)
+#xx = np.hstack((x, -x))
+xx = x
+alphas = [0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
 #alphas= [0.5]
 
 #allowedClasses=["8_3", "8_5", "5_3"]
-allowedClasses=["5_3"]
-taskName = "mnist_shap"
+allowedClasses=[]
+taskName = "circles_shap"
 iterations = 200
 
 for alpha in alphas:

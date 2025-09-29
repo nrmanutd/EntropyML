@@ -1,5 +1,6 @@
 import numpy as np
 from numba import njit, prange
+from scipy import stats
 
 from CodeResearch.ObjectComplexity.baseComplexityCalculator import BaseComplexityCalculator
 
@@ -58,7 +59,47 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         #aggregateAccuracy = (positiveObjects + negativeObjects) / (positiveObjectsCount + negativeObjectsCount)
         self.accuracy.append(aggregateAccuracy)
 
+    @staticmethod
+    def calculateObjectImportance(shapValues):
+        std = np.std(shapValues)
 
+        sortIndex = np.argsort(shapValues)
+        curCumulative = 0
+        totalObjects = len(sortIndex)
+        deltas = np.zeros(totalObjects)
+
+        totalNotNaN = totalObjects - np.isnan(shapValues).sum()
+
+        norm_dist = stats.norm(loc=0, scale=std)
+
+        for i in np.arange(len(sortIndex)):
+            if np.isnan(shapValues[sortIndex[i]]):
+                continue
+
+            curCumulative += 1/totalNotNaN
+            normDistribution = norm_dist.cdf(shapValues[sortIndex[i]])
+
+            deltas[sortIndex[i]] = -abs(normDistribution - curCumulative)
+
+        deltasIdx = np.argsort(deltas)
+        maximumElement = max(1, totalObjects // 10)
+
+        pValues = np.zeros(totalObjects)
+
+        for i in range(maximumElement):
+            curIdx = deltasIdx[i]
+            if deltas[curIdx] == 0:
+                continue
+
+            pValues[curIdx] = 1
+
+        ks_statistic_before, p_value_before = stats.shapiro(shapValues)
+        ks_statistic_after, p_value_after = stats.shapiro(shapValues[maximumElement::])
+
+        print(f'Before: {ks_statistic_before:.4f}, {p_value_before:.4f}')
+        print(f'After: {ks_statistic_after:.4f}, {p_value_after:.4f}')
+
+        return pValues
 
     def getShapValues(self):
 
@@ -66,6 +107,7 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         totalAttempts = len(self.accuracy)
 
         shapValues = np.zeros(totalObjects)
+        pvalue = np.zeros(totalObjects)
         accuracy = np.array(self.accuracy)
 
         for i in np.arange(totalObjects):
@@ -80,7 +122,9 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
 
             shapValues[i] = np.mean(accuracy[withObjectIdx]) - np.mean(accuracy[noObjectIdx])
 
-        return shapValues
+        pvalue = ShapValueComplexityCalculator.calculateObjectImportance(shapValues)
+
+        return shapValues, pvalue
 
     def getObjectsIndex(self):
         return np.array(self.objectIdx)
