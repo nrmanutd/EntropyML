@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import scipy.stats
 from numba import njit, prange
@@ -86,6 +88,8 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
     @staticmethod
     def calculateObjectImportance(shapValues):
 
+        delta = 0.05
+
         noNanIndexes = np.where(~np.isnan(shapValues))[0]
         shaps = shapValues[noNanIndexes]
 
@@ -94,17 +98,20 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         sortIndex = np.argsort(-shaps)
         totalObjects = len(sortIndex)
 
+        threshold = math.sqrt(math.log(2 / delta) / (2 * totalObjects))
         curCumulative = 1
 
         norm_dist = stats.norm(loc=0, scale=std)
         selectedObjects = np.zeros(totalObjects)
         distributionWeight = 1 / totalObjects
 
-        for i in prange(totalObjects):
+        for i in range(totalObjects):
             normDistributionValue = norm_dist.cdf(shaps[sortIndex[i]])
 
-            if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
-                selectedObjects[sortIndex[i]] = 1
+            #print(f'{abs(curCumulative - normDistributionValue)} vs {threshold}')
+            if abs(curCumulative - normDistributionValue) > threshold:
+                if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
+                    selectedObjects[sortIndex[i]] = 1
 
             curCumulative -= 1 / totalObjects
 
