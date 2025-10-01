@@ -8,8 +8,8 @@ from CodeResearch.dataSets import make_random, make_xor, loadMnist, make_spirals
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
 
 nSamples = 10000
-x, y = make_random(nSamples)
-#x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
+#x, y = make_random(nSamples)
+x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
 #x, y = make_xor(nSamples)
 #x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
 #x, y = make_spirals(nSamples)
@@ -17,12 +17,13 @@ x, y = make_random(nSamples)
 
 #xx = np.hstack((x, -x))
 xx = x
-alphas = np.concatenate((0.01 * np.arange(1, 10), 0.1 * np.arange(1, 5)))
+#alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 5)))
+alphas = [0.3]
 #alphas= [0.5]
 
 #allowedClasses=["8_3", "8_5", "5_3"]
 allowedClasses=[]
-taskName = "random_shap"
+taskName = "blobs_shap"
 iterations = 1000
 
 for alpha in alphas:

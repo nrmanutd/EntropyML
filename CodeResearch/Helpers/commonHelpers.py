@@ -13,9 +13,9 @@ def calculateNormalityWithMeanTest(x):
 
     if len(x) < 5000:
         v1, pv1 = stats.shapiro(x)
-        return max(pv1, pv2)
+    else:
+        v1, pv1 = stats.normaltest(x)
 
-    v1, pv1 = stats.normaltest(x)
     return min(pv1, pv2)
 
 def perform_pca(X, n_components=10, scale=True):

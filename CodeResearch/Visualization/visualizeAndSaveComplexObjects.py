@@ -21,7 +21,7 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     iObjects = list(np.where(target == firstClass)[0])
 
     # Создаем фигуру с двумя subplots один под другим
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 12))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 12), sharex=True)
 
     # Разделяем данные для entropies
     e1 = entropies[0:len(iObjects)]
@@ -47,19 +47,24 @@ def plotAndSaveEntropies(target, firstClass, secondClass, entropies, frequencies
     ax1.hist(e2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='red', density=True)
     ax1.plot(x, fnorm1, 'r-', linewidth=2, label='Нормальное распределение')
 
+
+    ax1.set_yscale('log')
+    ax1.set_xlim(min(min(noNanF1), min(noNanF2)), max(max(noNanF1), max(noNanF2)))
+
     ax1.set_title(f'Гистограмма распределения энтропий (#1: {p_value1:.4f}, #2: {p_value2:.4f})', fontsize=14)
     ax1.set_xlabel('Значения энтропии', fontsize=12)
     ax1.set_ylabel('Частота', fontsize=12)
     ax1.grid(alpha=0.3)
     ax1.legend()
 
-    # Второй график - frequencies
-    ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
-    ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
-
     f1_array = np.array(f1)
     f2_array = np.array(f2)
-    selectedObjectsCount = np.sum(f1_array > 0) + np.sum(f2_array > 0)
+    selectedObjectsCount = np.sum(f1_array != 0) + np.sum(f2_array != 0)
+    if selectedObjectsCount > 0:
+        # Второй график - frequencies
+        ax2.hist(f1, bins=30, alpha=0.5, label=f'Распределение {firstClass}', color='green', density=True)
+        ax2.hist(f2, bins=30, alpha=0.5, label=f'Распределение {secondClass}', color='orange', density=True)
+        ax2.set_yscale('log')
 
     ax2.set_title(f'Гистограмма распределения частот (всего объектов = {selectedObjectsCount})', fontsize=14)
     ax2.set_xlabel('Значения частот', fontsize=12)

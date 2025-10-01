@@ -80,15 +80,14 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         pv2 = ShapValueComplexityCalculator.checkConcreteClassIsNormal(shapValues, target, classes[1])
 
         print(f'pv1 = {pv1}, pv2 = {pv2}, alpha = {alpha}')
-        if pv1 > alpha or pv2 > alpha:
+        if pv1 > alpha and pv2 > alpha:
             return True
 
         return False
 
     @staticmethod
     def calculateObjectImportance(shapValues):
-
-        delta = 0.05
+        delta = 0.1
 
         noNanIndexes = np.where(~np.isnan(shapValues))[0]
         shaps = shapValues[noNanIndexes]
@@ -108,12 +107,12 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         for i in range(totalObjects):
             normDistributionValue = norm_dist.cdf(shaps[sortIndex[i]])
 
-            #print(f'{abs(curCumulative - normDistributionValue)} vs {threshold}')
+            print(f'{abs(curCumulative - normDistributionValue)} vs {threshold}')
             if abs(curCumulative - normDistributionValue) > threshold:
                 if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
                     selectedObjects[sortIndex[i]] = 1
 
-            curCumulative -= 1 / totalObjects
+            curCumulative -= distributionWeight
 
         pValuesToReturn = np.zeros(len(shapValues))
         for i in prange(totalObjects):
@@ -128,7 +127,6 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         totalAttempts = len(self.accuracy)
 
         shapValues = np.zeros(totalObjects)
-        pvalue = np.zeros(totalObjects)
         accuracy = np.array(self.accuracy)
 
         for i in np.arange(totalObjects):
