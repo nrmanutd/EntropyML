@@ -9,7 +9,8 @@ from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimate
 x, y = load_proteins("../../Data/Proteins/df_master.csv")
 
 #alphas = [0.05, 0.1, 0.2, 0.3, 0.4, 0.5]
-alphas = np.arange(0.01, 0.1, 0.01)
+#alphas = np.arange(0.01, 0.1, 0.01)
+alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 6)))
 #alphas = [0.5]
 taskName = "proteins_full_shap"
 iterations = 1000
@@ -19,9 +20,9 @@ for alpha in alphas:
 
 logsFolder = "..\..\PValuesFigures\PValueLogs"
 
-#visualizeAndSaveKSSI(logsFolder, "ProteinsKSSI", alphas, taskName, iterations)
+visualizeAndSaveKSSI(logsFolder, "ProteinsKSSI", alphas, taskName, iterations)
 visualizeAndSaveComplexObjects(logsFolder, "ProteinsComplexObjects", taskName, iterations, x, y)
-#summarizeExperiments(logsFolder, "ProteinsSummary", y, taskName, iterations)
+summarizeExperiments(logsFolder, "ProteinsSummary", y, taskName, iterations)
 
 ligandsIndexes = getProteinsComplexities(logsFolder, taskName, iterations)
 ligandsIndexes.to_csv('ProteinsSummary\ligands.csv', index=False)

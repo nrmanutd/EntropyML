@@ -87,6 +87,9 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
 
     @staticmethod
     def calculateObjectImportance(shapValues):
+
+        return shapValues
+
         delta = 0.1
 
         noNanIndexes = np.where(~np.isnan(shapValues))[0]
@@ -104,16 +107,40 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         selectedObjects = np.zeros(totalObjects)
         distributionWeight = 1 / totalObjects
 
-        for i in range(totalObjects):
-            normDistributionValue = norm_dist.cdf(shaps[sortIndex[i]])
+        epsilon = 0.1 / totalObjects
+        ad = np.zeros(totalObjects)
 
-            print(f'{abs(curCumulative - normDistributionValue)} vs {threshold}')
-            if abs(curCumulative - normDistributionValue) > threshold:
-                if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
-                    selectedObjects[sortIndex[i]] = 1
+        for i in range(totalObjects):
+            value = shaps[sortIndex[i]]
+            normDistributionValue = norm_dist.cdf(value)
+
+            if normDistributionValue < epsilon or (1 - normDistributionValue) < epsilon:
+                normalCoefff = (epsilon * (1 - epsilon))
+            else:
+                normalCoefff = normDistributionValue * (1 - normDistributionValue)
+
+            ad[sortIndex[i]] = (curCumulative - normDistributionValue) ** 2 / normalCoefff
+
+            #print(f'{abs(curCumulative - normDistributionValue)} vs {threshold}')
+            #if abs(curCumulative - normDistributionValue) > threshold:
+            #    if (curCumulative > normDistributionValue) and abs(curCumulative - distributionWeight - normDistributionValue) < abs(curCumulative - normDistributionValue):
+            #        selectedObjects[sortIndex[i]] = 1
 
             curCumulative -= distributionWeight
 
+        adSortedIdx = np.argsort(-ad)
+        selectedObjects[adSortedIdx[0]] = 1
+        prevRatio = ad[adSortedIdx[1]] / ad[adSortedIdx[0]]
+
+        for i in range(1, totalObjects - 1):
+            ratio = ad[adSortedIdx[i + 1]] / ad[adSortedIdx[i]]
+            if abs(ratio / prevRatio - 1) < 0.01:
+                break
+
+            selectedObjects[adSortedIdx[i]] = 1
+            prevRatio = ratio
+
+        #print(ad[np.argsort(-ad)])
         pValuesToReturn = np.zeros(len(shapValues))
         for i in prange(totalObjects):
             if selectedObjects[i] == 1:

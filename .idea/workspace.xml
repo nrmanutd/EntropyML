@@ -5,11 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="eb8c1e06-7b55-45fa-97d9-6cbe19ea3163" name="Changes" comment="added distribution comparison">
-      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/Proteins/runProteinsExperiment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeAndSaveComplexObjects.py" afterDir="false" />
     </list>
@@ -84,7 +82,15 @@
       <option name="presentableId" value="Default" />
       <updated>1759219386538</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added distribution comparison">
+      <option name="closed" value="true" />
+      <created>1759311064117</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1759311064117</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
