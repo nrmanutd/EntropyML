@@ -150,7 +150,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        return comp**4
+        return (comp - 0.5)**10*1024
 
     fig, ax = plt.subplots(figsize=(12, 8))
 

@@ -173,7 +173,8 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         else:
             pValue = ShapValueComplexityCalculator.calculateObjectImportance(shapValues)
 
-        return shapValues, pValue
+        #return shapValues, pValue
+        return shapValues, shapValues
 
     def getObjectsIndex(self):
         return np.array(self.objectIdx)

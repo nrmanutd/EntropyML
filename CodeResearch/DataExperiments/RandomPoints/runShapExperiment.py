@@ -17,14 +17,14 @@ x, y = loadMnist()
 
 #xx = np.hstack((x, -x))
 xx = x
-alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 6)))
+#alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 6)))
 #alphas = [0.3]
-#alphas= [0.5]
+alphas= [0.5]
 
-allowedClasses=["8_5", "5_3", "9_6", "8_1"]
-#allowedClasses=[]
+#allowedClasses=["8_5", "5_3", "9_6", "8_1"]
+allowedClasses=["9_6"]
 taskName = "mnist_shap"
-iterations = 1000
+iterations = 2000
 
 for alpha in alphas:
     estimatePValuesForClassesSeparation(xx, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\\..\\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)

@@ -212,11 +212,11 @@ def getMaximumDiviserFastNumbaCore(dataSet, target, valuedTarget1, sortedSet1, v
 
         decision = random.random() > 0.5
 
-        #if decision:
-        #    return c1Banalce, c1diviser, classUnderDiviser
-        #else:
-        #    classUnderDiviser = firstClass if classUnderDiviser != firstClass else secondClass
-        #    return c2Banalce, c2diviser, classUnderDiviser
+        if decision:
+            return c1Banalce, c1diviser, classUnderDiviser
+        else:
+            classUnderDiviser = firstClass if classUnderDiviser != firstClass else secondClass
+            return c2Banalce, c2diviser, classUnderDiviser
 
     if c1Banalce > c2Banalce:
         return c1Banalce, c1diviser, classUnderDiviser
