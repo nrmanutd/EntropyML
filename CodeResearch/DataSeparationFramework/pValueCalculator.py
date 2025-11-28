@@ -64,7 +64,7 @@ class PValueCalculator:
 
         for iAttempt in range(nAttempts):
             if iAttempt % 10 == 0:
-                print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
+                #print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
                 preparationTime = 0
                 ksTime = 0
                 NNTime = 0
@@ -157,7 +157,7 @@ class PValueCalculator:
 
         for iAttempt in range(nAttempts):
             if iAttempt % 10 == 0:
-                print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
+                #print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
                 preparationTime = 0
                 ksTime = 0
                 NNTime = 0

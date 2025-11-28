@@ -4,17 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Curriculum learning/clSampleTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/Curriculum learning/hardnessImportanceVisualization.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CurML" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added shapiro test">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clHelpers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clSampleTest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/batches.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/data_batch_1" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/data_batch_2" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/data_batch_3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/data_batch_4" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/data_batch_5" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/readme.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/test_batch" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-python.tar.gz" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/hardnessImportanceVisualization.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/runCLExperiment.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/LogitLearner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/XGBoostLearner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/baseLearner.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomSubsetSampler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomWithFixedLengthSampler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/baseSampler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/generalLearningEstimator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/basePriorityCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/shapBasedPriorityCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/standardPriorityCalculator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/visualizeLearningErrors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataExperiments/RandomPoints/runShapExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/ShapValueDataSeparationCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/ShapValueDataSeparationCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Curriculum learning/clSampleTest.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Curriculum learning/hardnessImportanceVisualization.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,6 +137,7 @@
     "Python.plotAndSaveRuntimeSamplesResults.executor": "Run",
     "Python.rTreeIndex.executor": "Run",
     "Python.rTreeTricks.executor": "Debug",
+    "Python.runCLExperiment.executor": "Run",
     "Python.runExampleExperiment.executor": "Run",
     "Python.runLigandsComplexityEstimationExperiment.executor": "Run",
     "Python.runMegaMarketTest.executor": "Run",
@@ -158,11 +177,11 @@
       <recent name="C:\Current\Work\Science\CodeResearch\DiviserCalculation" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Current\Work\Science\CodeResearch\LearningFramework\Learners" />
       <recent name="C:\Current\Work\Science\CodeResearch\ObjectComplexity\Factory" />
       <recent name="C:\Current\Work\Science\CodeResearch\DataSeparationFramework" />
       <recent name="C:\Current\Work\Science\CodeResearch\Helpers" />
       <recent name="C:\Current\Work\Science\CodeResearch\DataExperiments\Megamarket" />
-      <recent name="C:\Current\Work\Science\CodeResearch\Visualization" />
     </key>
   </component>
   <component name="RunManager">
@@ -288,14 +307,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00084" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
-      <option name="closed" value="true" />
-      <created>1742391692221</created>
-      <option name="number" value="00084" />
-      <option name="presentableId" value="LOCAL-00084" />
-      <option name="project" value="LOCAL" />
-      <updated>1742391692221</updated>
     </task>
     <task id="LOCAL-00085" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
       <option name="closed" value="true" />
@@ -681,7 +692,15 @@
       <option name="project" value="LOCAL" />
       <updated>1759219199661</updated>
     </task>
-    <option name="localTasksCounter" value="133" />
+    <task id="LOCAL-00133" summary="added shapiro test">
+      <option name="closed" value="true" />
+      <created>1764252674158</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1764252674160</updated>
+    </task>
+    <option name="localTasksCounter" value="134" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
