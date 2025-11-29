@@ -12,7 +12,7 @@ class GeneralLearningEstimator:
         self.iterations = iterations
 
     def estimateLearner(self, sampler: BaseSampler, learner: BaseLearner):
-        losses = np.zeros(self.iterations)
+        losses = []
 
         t0 = time.time()
         t1 = t0
@@ -22,10 +22,13 @@ class GeneralLearningEstimator:
                 print(f'Iteration {i} of {self.iterations}, time: {time.time() - t0} s, delta time: {time.time() - t1}')
                 t1 = time.time()
 
+            print('sampling...')
             trainX, trainY, testX, testY = sampler.sample()
+            print('training model...')
             model = learner.train(trainX, trainY)
+            print('testing model...')
             modelAccuracy = learner.test(model, testX, testY)
 
-            losses[i] = modelAccuracy
+            losses.append(modelAccuracy)
 
         return losses

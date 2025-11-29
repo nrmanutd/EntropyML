@@ -3,4 +3,4 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 class StandardPriorityCalculator(BasePriorityCalculator):
     def calculatePriority(self, dataSet, target):
-        return range(len(target))
+        return [range(len(target))]

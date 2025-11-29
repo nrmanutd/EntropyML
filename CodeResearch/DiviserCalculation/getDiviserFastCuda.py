@@ -376,10 +376,17 @@ def getMaximumDiviserFastCudaCore(dataSet, dataSet_device, target, sortedSet1, s
     c1Banalce, c1diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet1, sortedSet1_device, valuedTarget1, boolValuedTarget1, [counts[0], counts[1]])
     c2Banalce, c2diviser = getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet2, sortedSet2_device, valuedTarget2, boolValuedTarget2, [counts[1], counts[0]])
 
-    if c1Banalce > c2Banalce:
-        return c1Banalce, c1diviser
+    firstClass = target[0]
+    secondClass = nClasses[0] if firstClass != nClasses[0] else nClasses[1]
 
-    return c2Banalce, c2diviser
+    classUnderDiviser = firstClass if valuedTarget1[0] < 0 else secondClass
+
+    if c1Banalce > c2Banalce:
+        return c1Banalce, c1diviser, classUnderDiviser
+
+    classUnderDiviser = firstClass if classUnderDiviser != firstClass else secondClass
+
+    return c2Banalce, c2diviser, classUnderDiviser
 
 def getMaximumDiviserFastCudaPreloadedToDevice(dataSet, dataSet_device, target, sortedSet1, sortedSet1_device, sortedSet2, sortedSet2_device):
     nClasses, counts = np.unique(target, return_counts=True)

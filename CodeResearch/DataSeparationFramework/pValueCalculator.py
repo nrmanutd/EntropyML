@@ -29,8 +29,9 @@ class PValueCalculator:
     def calcPValueFastPro(self, currentObjects, dataSet, target, iClass, jClass):
         nFeatures = dataSet.shape[1]
 
-        if not torch.cuda.is_available():
-            return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
+        #if not torch.cuda.is_available():
+        #    print('torch cuda is not available')
+        #    return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
 
         if nFeatures < 1000:
             return self.calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
@@ -130,6 +131,7 @@ class PValueCalculator:
         objectsIdx = iObjects + jObjects
 
         values = np.zeros(nAttempts)
+        outOfSampleValues = np.zeros(nAttempts)
         NNvalues = np.zeros(nAttempts)
 
         currentTime = time.time()
@@ -155,9 +157,11 @@ class PValueCalculator:
         ksTime = 0
         NNTime = 0
 
+        complexityCalculator = self.complexityCalculatorFactory.createComplexityCalculator(ds, t, objectsIdx)
+
         for iAttempt in range(nAttempts):
             if iAttempt % 10 == 0:
-                #print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
+                print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
                 preparationTime = 0
                 ksTime = 0
                 NNTime = 0
@@ -205,10 +209,14 @@ class PValueCalculator:
 
                 preparationTime += (time.time() - t2)
                 t2 = time.time()
-                values[iAttempt] = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, ss1, vt2, ss2)[0]
+
+                v, d, c = self.metricCalculator.calculateMetricPro(dsClasses, tClasses, vt1, ss1, vt2, ss2)
+
+                values[iAttempt] = v
+                outOfSampleValues[iAttempt] = complexityCalculator.updateComplexity(d, c, idx)
                 ksTime += (time.time() - t2)
 
-        return values, NNvalues
+        return values, NNvalues, complexityCalculator, outOfSampleValues
 
     def calcPValueFastCuda(self, currentObjects, dataSet, target, iClass, jClass, nAttempts, calculateKS = True, randomPermutation = False, calculateModel = False):
         iObjects = list(np.where(target == iClass)[0])
@@ -216,6 +224,7 @@ class PValueCalculator:
         objectsIdx = iObjects + jObjects
 
         values = np.zeros(nAttempts)
+        outOfSampleValues = np.zeros(nAttempts)
         NNvalues = np.zeros(nAttempts)
 
         currentTime = time.time()
@@ -241,6 +250,8 @@ class PValueCalculator:
         preparationTime = 0
         nnTime = 0
         ksTime = 0
+
+        complexityCalculator = self.complexityCalculatorFactory.createComplexityCalculator(ds, t, objectsIdx)
 
         for iAttempt in range(nAttempts):
             if iAttempt % 10 == 0:
@@ -304,7 +315,11 @@ class PValueCalculator:
                 preparationTime += time.time() - t2
 
                 t2 = time.time()
-                values[iAttempt] = getMaximumDiviserFastCudaCore(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2)[0]
+                v, d, c = self.metricCalculator.calculateMetricGpu(dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2)
+
+                values[iAttempt] = v
+                outOfSampleValues[iAttempt] = complexityCalculator.updateComplexity(d, c, idx)
+
                 ksTime += time.time() - t2
 
-        return values, NNvalues
+        return values, NNvalues, complexityCalculator, outOfSampleValues

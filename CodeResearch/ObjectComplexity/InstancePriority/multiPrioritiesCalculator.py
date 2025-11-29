@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 
 from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
@@ -9,33 +8,46 @@ from CodeResearch.ObjectComplexity.Factory.ShapValuesComplexityCalculatorFactory
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 
 
-class ShapBasedPriorityCalculator(BasePriorityCalculator):
-
-    def __init__(self, attempts, useImportance, useHardness):
+class MultiPrioritiesCalculator(BasePriorityCalculator):
+    def __init__(self, attempts, useBasedPriority, useImportance, useHardness, useBoth):
+        self.useBoth = useBoth
         self.useHardness = useHardness
         self.useImportance = useImportance
+        self.useBasedPriority = useBasedPriority
         self.pValueCalculator = PValueCalculator(ShapValuesComplexityCalculatorFactory(), KSMetric(), attempts,  True, False, False)
-
-        if not useImportance and not useHardness:
-            raise ValueError('At least one of importance or hardness should be set')
 
     def calculatePriority(self, dataSet, target):
 
+        print('Calculating values pro...', len(target))
         result = self.pValueCalculator.calcPValueFastPro(math.ceil(len(target)/2), dataSet, target, 0, 1)
+
+        print('Calculated values pro...')
 
         complexityCalculator = result[2]
         importance, easiness = complexityCalculator.getShapValues()
 
-        if self.useImportance and not self.useHardness:
-            return np.argsort(importance)[::-1]
-
-        if not self.useImportance and self.useHardness:
-            hardness = 1 - easiness
-            return np.argsort(hardness)
+        importanceIdx = np.argsort(importance)[::-1]
+        hardnessIdx = np.argsort(easiness)[::-1]
 
         minImportance = np.min(importance)
         maxImportance = np.max(importance)
 
         correctedImportance = (importance - minImportance) / (maxImportance - minImportance)
 
-        return [np.argsort(easiness * correctedImportance)[::-1]]
+        bothIdx = np.argsort(easiness * correctedImportance)[::-1]
+
+        resultPriorities = []
+
+        if self.useBasedPriority:
+            resultPriorities.append(range(len(target)))
+
+        if self.useImportance:
+            resultPriorities.append(importanceIdx)
+
+        if self.useHardness:
+            resultPriorities.append(hardnessIdx)
+
+        if self.useBoth:
+            resultPriorities.append(bothIdx)
+
+        return resultPriorities

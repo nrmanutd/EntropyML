@@ -7,5 +7,8 @@ class StubMetric(BaseMetricCalculator):
     def calculateMetricPro(self, ds, target, vt1, sds1, vt2, sds2):
         return 0, [], 0
 
+    def calculateMetricGpu(self, dsClasses, dsClasses_device, tClasses, ss1, ss1_device, vt1, bvt1, ss2, ss2_device, vt2, bvt2):
+        return 0, [], 0
+
     def calculateMetric(self, ds, target):
         return 0, [], 0

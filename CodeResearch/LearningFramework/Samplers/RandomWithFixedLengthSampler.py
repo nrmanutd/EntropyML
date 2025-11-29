@@ -49,7 +49,19 @@ class RandomWithFixedLengthSampler(BaseSampler):
             raise ValueError("Not enough train objects according to desired part.")
 
         priority = self.priorityCalculator.calculatePriority(self.dataset[remaining_idx], self.target[remaining_idx])
-        prioritized_idx = remaining_idx[priority]
-        train_idx = prioritized_idx[:n_train]
 
-        return self.dataset[train_idx], self.target[train_idx], self.dataset[test_idx], self.target[test_idx]
+        trainX = []
+        trainY = []
+        testX = []
+        testY = []
+
+        for p in priority:
+            prioritized_idx = remaining_idx[p]
+            train_idx = prioritized_idx[:n_train]
+
+            trainX.append(self.dataset[train_idx])
+            trainY.append(self.target[train_idx])
+            testX.append(self.dataset[test_idx])
+            testY.append(self.target[test_idx])
+
+        return trainX, trainY, testX, testY
