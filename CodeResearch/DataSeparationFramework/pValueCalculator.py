@@ -1,7 +1,6 @@
 import time
 
 import numpy as np
-import torch
 from numba import cuda
 from sklearn.preprocessing import LabelEncoder
 
@@ -9,11 +8,10 @@ from CodeResearch.Cuda.cudaHelpers import filterSortedSetByIndex
 from CodeResearch.DataSeparationFramework.Metrics import BaseMetricCalculator
 from CodeResearch.DiviserCalculation.diviserHelpers import getSortedSet, GetValuedAndBoolTarget, prepareDataSet, \
     GetValuedTarget
-from CodeResearch.DiviserCalculation.getDiviserFastCuda import getMaximumDiviserFastCudaCore
-from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumbaCore
 from CodeResearch.Helpers.permutationHelpers import getDataSetIndexesOfTwoClasses
 from CodeResearch.ObjectComplexity.Factory import BaseComplexityCalculatorFactory
 from CodeResearch.calcModelEstimations import calcNN, calcXGBoost
+
 
 class PValueCalculator:
 

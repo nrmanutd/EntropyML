@@ -1,30 +1,25 @@
 import math
+
 import numpy as np
 
-from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
-from CodeResearch.DataSeparationFramework.pValueCalculator import PValueCalculator
-from CodeResearch.ObjectComplexity.Factory.ShapValuesComplexityCalculatorFactory import \
-    ShapValuesComplexityCalculatorFactory
+from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, attempts, useBasedPriority, useImportance, useHardness, useBoth):
+    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, useBasedPriority, useImportance, useHardness, useBoth):
+        self.hardnessCalculator = hardnessCalculator
+        self.alphas = alphas
         self.useBoth = useBoth
         self.useHardness = useHardness
         self.useImportance = useImportance
         self.useBasedPriority = useBasedPriority
-        self.pValueCalculator = PValueCalculator(ShapValuesComplexityCalculatorFactory(), KSMetric(), attempts,  True, False, False)
 
     def calculatePriority(self, dataSet, target):
 
-        print('Calculating values pro...', len(target))
-        result = self.pValueCalculator.calcPValueFastPro(math.ceil(len(target)/2), dataSet, target, 0, 1)
-
-        print('Calculated values pro...')
-
-        complexityCalculator = result[2]
-        importance, easiness = complexityCalculator.getShapValues()
+        hardnessResult = self.hardnessCalculator.calculateHardness(dataSet, target)
+        importance = hardnessResult[0]
+        easiness = hardnessResult[1]
 
         importanceIdx = np.argsort(importance)[::-1]
         hardnessIdx = np.argsort(easiness)[::-1]
@@ -38,16 +33,19 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         resultPriorities = []
 
-        if self.useBasedPriority:
-            resultPriorities.append(range(len(target)))
+        for alpha in self.alphas:
+            nTrain = math.ceil(alpha * len(target))
 
-        if self.useImportance:
-            resultPriorities.append(importanceIdx)
+            if self.useBasedPriority:
+                resultPriorities.append(range(nTrain))
 
-        if self.useHardness:
-            resultPriorities.append(hardnessIdx)
+            if self.useImportance:
+                resultPriorities.append(importanceIdx[:nTrain])
 
-        if self.useBoth:
-            resultPriorities.append(bothIdx)
+            if self.useHardness:
+                resultPriorities.append(hardnessIdx[:nTrain])
+
+            if self.useBoth:
+                resultPriorities.append(bothIdx[:nTrain])
 
         return resultPriorities

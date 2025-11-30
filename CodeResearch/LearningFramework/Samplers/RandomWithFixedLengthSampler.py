@@ -57,7 +57,9 @@ class RandomWithFixedLengthSampler(BaseSampler):
 
         for p in priority:
             prioritized_idx = remaining_idx[p]
-            train_idx = prioritized_idx[:n_train]
+
+            curTrain = len(p) if n_train == 0 else n_train
+            train_idx = prioritized_idx[:curTrain]
 
             trainX.append(self.dataset[train_idx])
             trainY.append(self.target[train_idx])

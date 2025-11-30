@@ -46,7 +46,6 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
             else:
                 negativeObjectsCount += 1
                 negativeObjects += (1 if isObjectUnderDiviser else 0)
-                # negativeObjects += (0 if isObjectUnderDiviser else 1)
 
         aggregateAccuracy = positiveObjects / positiveObjectsCount - negativeObjects / negativeObjectsCount
         return aggregateAccuracy

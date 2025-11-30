@@ -354,9 +354,9 @@ def getMaximumDiviserPerClassFastCuda(dataSet, dataSet_device, sortedSet, sorted
         if curBalance > maxBalance:
             maxBalance = curBalance
 
-            #for kFeature in range(nFeatures):
-            #    objectIdx = sortedSet[currentState[kFeature], kFeature]
-            #    maxState[kFeature] = dataSet[objectIdx, kFeature]
+            for kFeature in range(nFeatures):
+                objectIdx = sortedSet[currentState[kFeature], kFeature]
+                maxState[kFeature] = dataSet[objectIdx, kFeature]
 
         updatingTime += (time.time() - t1)
 
