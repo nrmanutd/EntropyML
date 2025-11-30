@@ -2,6 +2,7 @@ import math
 import matplotlib.pyplot as plt
 
 import numpy as np
+from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
@@ -119,5 +120,103 @@ def plot_complexity_distributions(easiness, importance, filename):
     plt.tight_layout()
 
     # Сохраняем график
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+
+
+def filter_data(easiness, importance):
+    """
+    Фильтрует данные, удаляя NaN и бесконечные значения
+    """
+    # Преобразуем в numpy arrays
+    easiness = np.array(easiness, dtype=float)
+    importance = np.array(importance, dtype=float)
+
+    # Создаем маску для валидных данных
+    mask = np.isfinite(easiness) & np.isfinite(importance)
+
+    # Подсчитываем количество отфильтрованных точек
+    filtered_count = len(easiness) - np.sum(mask)
+    if filtered_count > 0:
+        print(f"Предупреждение: отфильтровано {filtered_count} невалидных точек")
+
+    return easiness[mask], importance[mask]
+
+def plot_distributions_kde_with_metrics(easiness, importance, filename):
+    """
+    Версия с метриками сравнения реального распределения и идеальной гауссианы
+    """
+    if len(easiness) != len(importance):
+        raise ValueError("Массивы должны быть одинаковой длины")
+
+    easiness, importance = filter_data(easiness, importance)
+
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(13, 11))
+
+    # Easiness
+    kde_easiness = stats.gaussian_kde(easiness)
+    x_easiness = np.linspace(min(easiness), max(easiness), 100)
+    ax1.plot(x_easiness, kde_easiness(x_easiness),
+             color='blue', linewidth=2, label='KDE')
+    ax1.fill_between(x_easiness, kde_easiness(x_easiness),
+                     alpha=0.3, color='skyblue')
+    ax1.set_xlabel('Easiness', fontsize=12)
+    ax1.set_ylabel('Density', fontsize=12)
+    ax1.set_title('Easiness Distribution (KDE)', fontsize=14)
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    # Importance с расширенной информацией
+    kde_importance = stats.gaussian_kde(importance)
+    variance_importance = np.var(importance)
+    std_importance = np.sqrt(variance_importance)
+    mean_importance = np.mean(importance)
+
+    # Диапазон для графиков
+    x_min = min(min(importance), -4 * std_importance)
+    x_max = max(max(importance), 4 * std_importance)
+    x_combined = np.linspace(x_min, x_max, 400)
+
+    # Реальное распределение
+    real_pdf = kde_importance(x_combined)
+    ax2.plot(x_combined, real_pdf,
+             color='red', linewidth=2.5, label='Реальное распределение (KDE)')
+    ax2.fill_between(x_combined, real_pdf, alpha=0.3, color='lightcoral')
+
+    # Идеальная гауссиана
+    ideal_gaussian = stats.norm(loc=0, scale=std_importance)
+    ideal_pdf = ideal_gaussian.pdf(x_combined)
+    ax2.plot(x_combined, ideal_pdf,
+             color='green', linewidth=2, linestyle='--',
+             label='Идеальная гауссиана')
+
+    # Вычисляем расхождение между распределениями (KL divergence approximation)
+    # Используем только точки где оба PDF > 0
+    mask = (real_pdf > 1e-6) & (ideal_pdf > 1e-6)
+    if np.sum(mask) > 10:
+        kl_divergence = np.sum(real_pdf[mask] * np.log(real_pdf[mask] / ideal_pdf[mask])) * (
+                    x_combined[1] - x_combined[0])
+        kl_text = f'KL divergence: {kl_divergence:.3f}'
+    else:
+        kl_text = 'KL divergence: N/A'
+
+    # Добавляем текстовую информацию
+    stats_text = (f'Реальное распределение:\n'
+                  f'μ = {mean_importance:.2f}, σ = {std_importance:.2f}\n'
+                  f'Идеальная гауссиана:\n'
+                  f'μ = 0, σ = {std_importance:.2f}\n'
+                  f'{kl_text}')
+
+    ax2.text(0.02, 0.98, stats_text, transform=ax2.transAxes,
+             verticalalignment='top', fontsize=10,
+             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+    ax2.set_xlabel('Importance', fontsize=12)
+    ax2.set_ylabel('Density', fontsize=12)
+    ax2.set_title('Сравнение распределения Importance с идеальной гауссианой', fontsize=14)
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    plt.tight_layout()
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()

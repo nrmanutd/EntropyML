@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated complexity calculation for cifar and mnist">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/visualizeComplexity.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/Hardness/BaseHardnessCalculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/Hardness/ExpandingDatasetHardnessCalculator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/Hardness/HardnessCalculator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clHelpers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/runCLExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/runCLExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DiviserCalculation/getDiviserFastCuda.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomWithFixedLengthSampler.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomWithFixedLengthSampler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/multiPrioritiesCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/multiPrioritiesCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/shapValueComplexityCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/visualizeComplexity.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/visualizeComplexity.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,24 +49,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.runCLExperiment.executor": "Run",
-    "Python.runProteinsExperiment.executor": "Run",
-    "Python.runShapExperiment.executor": "Run",
-    "Python.visualizeComplexity.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.runCLExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runProteinsExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.runShapExperiment.executor&quot;: &quot;Run&quot;,
+    &quot;Python.visualizeComplexity.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -93,7 +85,7 @@
       <updated>1758962712157</updated>
     </task>
     <task active="true" id="Default" summary="Default task">
-      <changelist id="eb8c1e06-7b55-45fa-97d9-6cbe19ea3163" name="Changes" comment="added distribution comparison" />
+      <changelist id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="updated complexity calculation for cifar and mnist" />
       <created>1759219386538</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -123,7 +115,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764396876787</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="updated complexity calculation for cifar and mnist">
+      <option name="closed" value="true" />
+      <created>1764481952761</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1764481952761</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
