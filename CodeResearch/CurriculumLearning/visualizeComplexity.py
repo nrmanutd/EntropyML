@@ -21,14 +21,14 @@ nSamples = 2000
 #x, y = make_xor(nSamples)
 #x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
 #x, y = make_spirals(nSamples)
-#x, y = loadMnist()
+x, y = loadMnist()
 #x, y = loadCifar()
-#x, y = filterDataSet(x, y, 1, 3, 5)
-x, y = load_proteins("../Data/Proteins/df_master.csv")
+x, y = filterDataSet(x, y, 1, 3, 5)
+#x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 x = np.hstack((x, -x))
 
-taskName = 'spirals'
+taskName = 'mnist'
 fractions = [0.5]
 
 targetProduct = 0.2 * 100 * 5
