@@ -21,4 +21,4 @@ class RandomComplexityBasedPrioritizer(BasePriorityCalculator):
         keys = np.random.random(len(weights)) ** (1.0 / weights)
 
         # сортировка — чем меньше key, тем выше позиция
-        return np.argsort(keys), self.probs
+        return np.argsort(-keys), self.probs

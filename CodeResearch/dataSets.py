@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import mnist
+from tensorflow.keras.datasets import fashion_mnist
 
 def loadMnist():
     num_train = 60000  # there are 60000 training examples in MNIST
@@ -15,6 +16,26 @@ def loadMnist():
 
     # load dataset
     (trainX, trainY), (testX, testY) = mnist.load_data()
+    # reshape dataset to have a single channel
+
+    trainX = trainX.reshape(num_train, height * width)  # Flatten data to 1D
+    testX = testX.reshape(num_test, height * width)  # Flatten data to 1D
+    trainX = trainX.astype('float32')
+    testX = testX.astype('float32')
+    trainX /= 255  # Normalise data to [0, 1] range
+    testX /= 255  # Normalise data to [0, 1] range
+
+    return trainX, trainY
+
+def loadFashionMnist():
+    num_train = 60000  # there are 60000 training examples in MNIST
+    num_test = 10000  # there are 10000 test examples in MNIST
+
+    height, width, depth = 28, 28, 1  # Fashion MNIST images are 28x28 and greyscale
+    num_classes = 10  # there are 10 classes (1 per digit)
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = fashion_mnist.load_data()
     # reshape dataset to have a single channel
 
     trainX = trainX.reshape(num_train, height * width)  # Flatten data to 1D
@@ -64,28 +85,6 @@ def load_raw_fashionmnist(path='DataSets/'):
     test_df = pd.read_csv(test_dir)
 
     return train_df, test_df
-
-def loadFashionMnist():
-    num_train = 60000  # there are 60000 training examples in MNIST
-    num_test = 10000  # there are 10000 test examples in MNIST
-
-    height, width, depth = 28, 28, 1  # MNIST images are 28x28 and greyscale
-    num_classes = 10  # there are 10 classes (1 per digit)
-
-    train_df, test_df = load_raw_fashionmnist()
-
-    train_images = load_images_from_df(train_df)
-    train_labels = load_labels_from_df(train_df)
-    test_images = load_images_from_df(test_df)
-    test_labels = load_labels_from_df(test_df)
-
-    train_labels = train_df.iloc[:, 0].values
-    test_labels = test_df.iloc[:, 0].values
-
-    trainX = train_images.reshape(num_train, height * width)  # Flatten data to 1D
-    testX = test_images.reshape(num_test, height * width)  # Flatten data to 1D
-
-    return trainX, train_labels
 
 def load_megamarket(path):
     category_col = "cat_level_1"

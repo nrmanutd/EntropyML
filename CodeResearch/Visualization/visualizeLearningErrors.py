@@ -68,7 +68,10 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     if len(errors_nested) != len(labels):
         raise ValueError("Length of errors_nested must match length of labels.")
 
-    fig, ax = plt.subplots()
+    width_px = 1280
+    height_px = 1024
+    dpi = 300  # или 150, 200 - чем выше, тем качественнее текст
+    fig, ax = plt.subplots(figsize=(width_px/dpi, height_px/dpi), dpi=dpi)
 
     for clf_errors, label in zip(errors_nested, labels):
         if len(clf_errors) != len(alphas):
@@ -101,5 +104,5 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     if not os.path.exists(resultsFolder):
         os.makedirs(resultsFolder)
 
-    plt.savefig('{:}\\{:}.png'.format(resultsFolder, taskName), format='png')
+    plt.savefig('{:}\\{:}.png'.format(resultsFolder, taskName), format='png', dpi=300, bbox_inches='tight')
     plt.close(fig)

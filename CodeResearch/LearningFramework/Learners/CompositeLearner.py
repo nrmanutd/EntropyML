@@ -22,10 +22,11 @@ class CompositeLearner(BaseLearner):
             self.learner.update(currentModel, x[i], y[i])
 
     def test(self, model, x, y):
-        results = np.zeros(len(model))
+        results = []
 
         for i in range(len(model)):
             currentModel = model[i]
-            results[i] = self.learner.test(currentModel, x[i], y[i])
+            r = self.learner.test(currentModel, x[i], y[i])
+            results.append(r)
 
         return results

@@ -8,24 +8,25 @@ from tensorflow.keras import optimizers
 
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
-
 class NNEpochLearner(BaseLearner):
-    def __init__(self):
-        self.optimizer = optimizers.Adam(learning_rate=1e-3)
-        self.loss_fn = losses.CategoricalCrossentropy()
 
     def train(self, x, y, probs):
         nFeatures = x.shape[1]
         nClasses = len(np.unique(y))
+        self.optimizer = optimizers.Adam(learning_rate=1e-3)
+        self.loss_fn = losses.CategoricalCrossentropy()
 
         model = self.define_model(nFeatures, nClasses)
         model = self.update(model, x, y)
         return model
 
     def update(self, model, x, y):
+        nClasses = len(np.unique(y))
+
         with tf.GradientTape() as tape:
             predictions = model(x, training=True)
-            loss_value = self.loss_fn(y, predictions)
+            y_onehot = tf.one_hot(y, depth=nClasses)
+            loss_value = self.loss_fn(y_onehot, predictions)
 
         # считаем и применяем градиенты
         grads = tape.gradient(loss_value, model.trainable_variables)

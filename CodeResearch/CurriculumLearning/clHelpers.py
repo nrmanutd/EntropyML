@@ -20,11 +20,23 @@ def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, generalLearner
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     result = generalLearner.estimateLearner(sampler, learner)
+    return result
 
+
+def processLosses(result):
     arr = np.array(result)
     res = arr.T
 
     return res
+
+def processEpochLosses(losses):
+    result = []
+
+    for loss in losses:
+        flat_list = np.concatenate([np.array(sublist) for sublist in loss])
+        result.append(flat_list)
+
+    return result
 
 def filterDataSet(x, y, alpha, firstClass, secondClass):
     enc = LabelEncoder()

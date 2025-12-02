@@ -14,7 +14,7 @@ class RandomAllsetSampler(BaseSampler):
     def sample(self, seed=None):
         batches = []
 
-        newIdx = self.prioritizer.calculatePriority(self.dataset, self.target)
+        newIdx, weights = self.prioritizer.calculatePriority(self.dataset, self.target)
         n = len(self.target)
 
         for i in range(0, n, self.batchsize):

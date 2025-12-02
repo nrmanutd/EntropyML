@@ -2,13 +2,15 @@ import time
 
 import numpy as np
 
+from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.LearningFramework.Samplers.baseSampler import BaseSampler
 
 
 class GeneralLearningEstimator:
 
-    def __init__(self, iterations):
+    def __init__(self, iterations, logger: BaseLogger):
+        self.logger = logger
         self.iterations = iterations
 
     def estimateLearner(self, sampler: BaseSampler, learner: BaseLearner):
@@ -30,5 +32,7 @@ class GeneralLearningEstimator:
             modelAccuracy = learner.test(model, testX, testY)
 
             losses.append(modelAccuracy)
+
+            self.logger.logDebug(losses)
 
         return losses

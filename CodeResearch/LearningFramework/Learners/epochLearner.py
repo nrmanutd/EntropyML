@@ -1,3 +1,6 @@
+from tensorflow.python.keras.models import clone_model
+import copy
+
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.LearningFramework.Samplers.SamplersFactories.baseSamplersFactory import BaseSamplersFactory
 
@@ -21,7 +24,6 @@ class EpochLearner(BaseLearner):
         return accuracies
 
     def train(self, x, y, probs):
-
         currentModel = None
         sampler = self.samplersFactory.createSampler(x, y, probs)
 
@@ -33,6 +35,6 @@ class EpochLearner(BaseLearner):
             for xx, yy in batches:
                 currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(currentModel, xx, yy)
 
-            trainedModels.append(currentModel)
+            trainedModels.append(copy.deepcopy(currentModel))
 
         return trainedModels
