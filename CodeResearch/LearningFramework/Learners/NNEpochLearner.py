@@ -4,7 +4,7 @@ from keras import Sequential, Input
 from keras.src.layers import Dense
 from keras.src.losses import losses
 from keras.src.utils import to_categorical
-from tensorflow.python.keras import optimizers
+from tensorflow.keras import optimizers
 
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 

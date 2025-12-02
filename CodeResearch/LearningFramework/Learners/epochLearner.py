@@ -3,6 +3,9 @@ from CodeResearch.LearningFramework.Samplers.SamplersFactories.baseSamplersFacto
 
 
 class EpochLearner(BaseLearner):
+    def update(self, model, x, y):
+        pass
+
     def __init__(self, epochs, learner: BaseLearner, samplersFactory: BaseSamplersFactory):
         self.samplersFactory = samplersFactory
         self.learner = learner

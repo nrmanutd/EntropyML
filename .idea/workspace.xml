@@ -14,34 +14,9 @@
       <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/readme.html" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-batches-py/test_batch" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/data/cifar-10-python.tar.gz" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/NNEpochLearner.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/epochLearner.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/Batches/randomAllsetSampler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/Batches/sequentialSampler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/SamplersFactories/RandomAllSetSamplerFactory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/SamplersFactories/SequentialSamplerFactory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/SamplersFactories/baseSamplersFactory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/PrioritizerType.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/RandomComplexityBasedPrioritizer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/randomPrioritizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/runCLExperiment.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/runCLExperiment.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/Metrics/KSMetric.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/Metrics/KSMetric.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/DataSeparationFramework/pValueCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Helpers/commonHelpers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/CompositeLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/CompositeLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/LogitLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/LogitLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/NNLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/NNLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/XGBoostLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/XGBoostLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/baseLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/baseLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomSubsetSampler.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomSubsetSampler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomWithFixedLengthSampler.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Samplers/RandomWithFixedLengthSampler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/generalLearningEstimator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/generalLearningEstimator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/multiPrioritiesCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/multiPrioritiesCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/shapBasedPriorityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/shapBasedPriorityCalculator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/standardPriorityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/standardPriorityCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/NNEpochLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/NNEpochLearner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/epochLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/epochLearner.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -316,14 +291,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1719741553975</updated>
-    </task>
-    <task id="LOCAL-00085" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
-      <option name="closed" value="true" />
-      <created>1742395357150</created>
-      <option name="number" value="00085" />
-      <option name="presentableId" value="LOCAL-00085" />
-      <option name="project" value="LOCAL" />
-      <updated>1742395357150</updated>
     </task>
     <task id="LOCAL-00086" summary="tests are passing correctly for cuda, fixed threadsafe bugs">
       <option name="closed" value="true" />
@@ -709,7 +676,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764252674160</updated>
     </task>
-    <option name="localTasksCounter" value="134" />
+    <task id="LOCAL-00134" summary="added epochs learning">
+      <option name="closed" value="true" />
+      <created>1764664414120</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
+      <option name="project" value="LOCAL" />
+      <updated>1764664414120</updated>
+    </task>
+    <option name="localTasksCounter" value="135" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -752,7 +727,9 @@
     <MESSAGE value="added correct shap value evaluation" />
     <MESSAGE value="added experiments" />
     <MESSAGE value="added shapiro test" />
-    <option name="LAST_COMMIT_MESSAGE" value="added shapiro test" />
+    <MESSAGE value="updated complexity calculation for cifar and mnist" />
+    <MESSAGE value="added epochs learning" />
+    <option name="LAST_COMMIT_MESSAGE" value="added epochs learning" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
