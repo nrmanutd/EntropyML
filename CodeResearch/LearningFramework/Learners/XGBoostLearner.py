@@ -6,7 +6,7 @@ from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 class XGBoostLearner(BaseLearner):
 
-    def train(self, x, y):
+    def train(self, x, y, probs):
         model = XGBClassifier().fit(x, y)
         return model
 

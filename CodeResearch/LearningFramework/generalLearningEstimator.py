@@ -23,9 +23,9 @@ class GeneralLearningEstimator:
                 t1 = time.time()
 
             print('sampling...')
-            trainX, trainY, testX, testY = sampler.sample()
+            trainX, trainY, testX, testY, probs = sampler.sample()
             print('training model...')
-            model = learner.train(trainX, trainY)
+            model = learner.train(trainX, trainY, probs)
             print('testing model...')
             modelAccuracy = learner.test(model, testX, testY)
 

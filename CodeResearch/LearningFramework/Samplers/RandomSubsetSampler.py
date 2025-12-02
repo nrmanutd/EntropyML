@@ -20,4 +20,4 @@ class RandomSubsetSampler(BaseSampler):
         test_idx = indices[:test_count]
         train_idx = indices[test_count:]
 
-        return self.dataset[train_idx], self.target[train_idx], self.dataset[test_idx], self.target[test_idx]
+        return self.dataset[train_idx], self.target[train_idx], self.dataset[test_idx], self.target[test_idx], np.full(n, 1.0/n)

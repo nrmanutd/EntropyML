@@ -28,8 +28,8 @@ class PValueCalculator:
         nFeatures = dataSet.shape[1]
 
         #if not torch.cuda.is_available():
-        #    print('torch cuda is not available')
-        #    return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
+        print('torch cuda is not available')
+        return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
 
         if nFeatures < 1000:
             return self.calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
@@ -63,7 +63,7 @@ class PValueCalculator:
 
         for iAttempt in range(nAttempts):
             if iAttempt % 10 == 0:
-                #print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
+                print('Attempt #' + str(iAttempt) + ' Time: ' + str(time.time() - currentTime) + ' Preparation time: ' + str(preparationTime), ' KS time: ' + str(ksTime) + ' NN time: ' + str(NNTime))
                 preparationTime = 0
                 ksTime = 0
                 NNTime = 0

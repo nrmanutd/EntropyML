@@ -27,15 +27,19 @@ class ShapBasedPriorityCalculator(BasePriorityCalculator):
         importance, easiness = complexityCalculator.getShapValues()
 
         if self.useImportance and not self.useHardness:
-            return np.argsort(importance)[::-1]
+            idx = np.argsort(importance)[::-1]
+            return [idx], [importance[idx]]
 
         if not self.useImportance and self.useHardness:
             hardness = 1 - easiness
-            return np.argsort(hardness)
+            idx = np.argsort(hardness)
+            return [idx], [hardness[idx]]
 
         minImportance = np.min(importance)
         maxImportance = np.max(importance)
 
         correctedImportance = (importance - minImportance) / (maxImportance - minImportance)
+        values = easiness * correctedImportance
+        idx = np.argsort(values)[::-1]
 
-        return [np.argsort(easiness * correctedImportance)[::-1]]
+        return [idx], [values[idx]]

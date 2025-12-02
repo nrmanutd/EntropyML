@@ -19,7 +19,7 @@ def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, generalLearner
 
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
-    result =  generalLearner.estimateLearner(sampler, learner)
+    result = generalLearner.estimateLearner(sampler, learner)
 
     arr = np.array(result)
     res = arr.T

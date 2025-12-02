@@ -1,28 +1,43 @@
 import numpy as np
+import tensorflow as tf
 from keras import Sequential, Input
 from keras.src.layers import Dense
+from keras.src.losses import losses
 from keras.src.utils import to_categorical
+from tensorflow.python.keras import optimizers
 
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 
-class NNLearner(BaseLearner):
-    def test(self, model, x, y):
-
-        nClasses = len(np.unique(y))
-        y_test = to_categorical(y, nClasses)
-        _, acc = model.evaluate(x, y_test, verbose=0)
-        return acc
+class NNEpochLearner(BaseLearner):
+    def __init__(self):
+        self.optimizer = optimizers.Adam(learning_rate=1e-3)
+        self.loss_fn = losses.CategoricalCrossentropy()
 
     def train(self, x, y, probs):
         nFeatures = x.shape[1]
         nClasses = len(np.unique(y))
 
         model = self.define_model(nFeatures, nClasses)
-        # fit model
-        y_train = to_categorical(y, nClasses)
-        model.fit(x, y_train, epochs=10, batch_size=128, validation_split=0.1, verbose=0)#todo: check if validation split is necessary here
+        model = self.update(model, x, y)
         return model
+
+    def update(self, model, x, y):
+        with tf.GradientTape() as tape:
+            predictions = model(x, training=True)
+            loss_value = self.loss_fn(y, predictions)
+
+        # считаем и применяем градиенты
+        grads = tape.gradient(loss_value, model.trainable_variables)
+        self.optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+        return model
+
+    def test(self, model, x, y):
+        nClasses = len(np.unique(y))
+        y_test = to_categorical(y, nClasses)
+        _, acc = model.evaluate(x, y_test, verbose=0)
+        return acc
 
     def define_model(self, nFeatures, nClasses):
         model = Sequential()

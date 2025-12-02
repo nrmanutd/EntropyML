@@ -11,7 +11,7 @@ class LogitLearner(BaseLearner):
 
         return accuracy
 
-    def train(self, x, y):
+    def train(self, x, y, probs):
         clf = LogisticRegression(
             max_iter=1000,  # увеличиваем число итераций, чтобы точно сошлось
             solver="lbfgs"  # стандартный солвер (подходит для L2-регуляризации)
