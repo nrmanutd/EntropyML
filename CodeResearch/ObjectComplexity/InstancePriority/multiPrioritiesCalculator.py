@@ -38,7 +38,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 for beta in betas:
                     curNTrain = math.ceil(beta * nTrain)
                     for r in range(self.repeats):
-                        resultPriorities.append(range(curNTrain))
+                        rIdx = np.random.permutation(len(target))
+                        resultPriorities.append(rIdx[range(curNTrain)])
+
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             #if self.useImportance:#beta = 0.1

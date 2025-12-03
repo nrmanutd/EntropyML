@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import numpy as np
 from tensorflow.keras.datasets import cifar10
+from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.datasets import fashion_mnist
 
@@ -65,6 +66,23 @@ def loadCifar():
     testX = testX.astype('float32')
     trainX /= 255  # Normalise data to [0, 1] range
     testX /= 255  # Normalise data to [0, 1] range
+
+    return trainX, trainY
+
+def loadCifar100():
+    num_train = 50000  # there are 60000 training examples in CIFAR
+    num_test = 10000  # there are 10000 test examples in CIFAR
+
+    height, width, depth = 32, 32, 3  # MNIST images are 32x32 and greyscale
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = cifar100.load_data(label_mode='fine')
+    # reshape dataset to have a single channel
+
+    trainX = trainX.reshape(num_train, height * width * 3)  # Flatten data to 1D
+    testX = testX.reshape(num_test, height * width * 3)  # Flatten data to 1D
+    trainX = trainX.astype('float32')/255
+    testX = testX.astype('float32')/255
 
     return trainX, trainY
 

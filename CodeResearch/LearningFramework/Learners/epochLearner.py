@@ -62,7 +62,6 @@ class EpochLearner(BaseLearner):
             for xx, yy in batches:
                 currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(currentModel, xx, yy)
 
-            #trainedModels.append(copy.deepcopy(currentModel))
             currentModelState = currentModel.state_dict()
             key = f'TempModels\\model_{self.trainId}_{epoch}.pt'
             if not os.path.exists("TempModels"):

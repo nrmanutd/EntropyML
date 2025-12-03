@@ -100,12 +100,11 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
             label=label
         )
 
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)
     ax.set_xlabel("Epoch number")
     ax.set_ylabel("Test Error")
 
     ax.grid(True)
-    ax.legend()
     plt.tight_layout()
 
     if not os.path.exists(resultsFolder):
