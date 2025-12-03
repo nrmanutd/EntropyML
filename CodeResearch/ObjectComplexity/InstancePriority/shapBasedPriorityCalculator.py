@@ -35,11 +35,7 @@ class ShapBasedPriorityCalculator(BasePriorityCalculator):
             idx = np.argsort(hardness)
             return [idx], [hardness[idx]]
 
-        minImportance = np.min(importance)
-        maxImportance = np.max(importance)
-
-        correctedImportance = (importance - minImportance) / (maxImportance - minImportance)
-        values = easiness * correctedImportance
+        values = easiness * importance
         idx = np.argsort(values)[::-1]
 
         return [idx], [values[idx]]

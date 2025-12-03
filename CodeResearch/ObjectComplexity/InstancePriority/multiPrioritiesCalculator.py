@@ -26,13 +26,6 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         importanceIdx = np.argsort(importance)[::-1]
         hardnessIdx = np.argsort(easiness)[::-1]
 
-        minImportance = np.min(importance)
-        maxImportance = np.max(importance)
-
-        correctedImportance = (importance - minImportance) / (maxImportance - minImportance)
-
-        bothIdx = np.argsort(easiness * correctedImportance)[::-1]
-
         resultPriorities = []
         probs = []
 
@@ -54,9 +47,66 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 probs.append(softmax(easiness[cutIdx]))
 
             if self.useBoth:
-                cutIdx = bothIdx[:nTrain]
-                resultPriorities.append(cutIdx)
-                values = easiness * correctedImportance
-                probs.append(softmax(values[cutIdx]))
+                curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, easiness)
+
+                idx = curIdx[:nTrain]
+                resultPriorities.append(idx)
+                probs.append(curProbs[:nTrain])
 
         return resultPriorities, probs
+
+    @staticmethod
+    def assign_weights(importance, easiness):
+        """
+        Присваивает веса элементам с двумя признаками.
+
+        Порядок:
+        1. Элементы с x > 0.5 идут первыми
+        2. Элементы с x <= 0.5 идут после
+        3. Внутри каждой группы сортировка по убыванию x*y
+
+        Веса: 1, 2, 3, ... N в полученном порядке.
+
+        Parameters:
+        -----------
+        x_arr, y_arr : array-like
+            Массивы значений от 0 до 1 одинаковой длины
+
+        Returns:
+        --------
+        weights : ndarray
+            Массив весов в исходном порядке элементов
+        sorted_indices : ndarray
+            Индексы элементов в порядке сортировки
+        """
+        x = np.asarray(importance)
+        y = np.asarray(easiness)
+        n = len(x)
+
+        # Индексы всех элементов
+        indices = np.arange(n)
+
+        # Вычисляем x*y для всех элементов
+        xy_product = x * y
+
+        # Маска для группы x > 0.5
+        mask_a = x > 0.5
+
+        # Индексы группы A
+        idx_a = indices[mask_a]
+        # Индексы группы B
+        idx_b = indices[~mask_a]
+
+        # Сортируем группу A по убыванию x*y
+        sorted_idx_a = idx_a[np.argsort(-xy_product[idx_a])]
+
+        # Сортируем группу B по убыванию x*y
+        sorted_idx_b = idx_b[np.argsort(-xy_product[idx_b])]
+
+        # Объединяем: сначала группа A, потом группа B
+        idx = np.concatenate([sorted_idx_a, sorted_idx_b])
+
+        # Создаём массив весов в порядке сортировки
+        probs = softmax(np.arange(n, 0, -1))
+
+        return idx, probs

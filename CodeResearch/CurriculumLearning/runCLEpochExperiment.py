@@ -38,7 +38,7 @@ datasetFraction = 1
 alphas = np.array([0.5])
 fraction = 0.5
 testAlpha = 0.5
-epochs = 30
+epochs = 10
 
 taskNames = ['mnist_epoch','mnist_epoch', 'fashionMnist_epoch', 'fashionMnist_epoch', 'cifar_epoch', 'cifar_epoch', 'proteins_epoch']
 firstClasses = [5, 0, 0, 1, 3, 0, 0]
