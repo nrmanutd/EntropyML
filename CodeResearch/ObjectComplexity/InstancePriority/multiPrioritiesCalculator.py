@@ -8,8 +8,9 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, repeats, useBasedPriority, useImportance, useHardness,
                  useBoth):
+        self.repeats = repeats
         self.hardnessCalculator = hardnessCalculator
         self.alphas = alphas
         self.useBoth = useBoth
@@ -28,17 +29,17 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         resultPriorities = []
         probs = []
+        betas = [0.05, 0.1, 0.5, 1]
 
         for alpha in self.alphas:
             nTrain = math.ceil(alpha * len(target))
 
             if self.useBasedPriority:
-                betas = [0.1, 0.5, 1]
-
                 for beta in betas:
                     curNTrain = math.ceil(beta * nTrain)
-                    resultPriorities.append(range(curNTrain))
-                    probs.append(np.full(curNTrain, 1.0 / curNTrain))
+                    for r in range(self.repeats):
+                        resultPriorities.append(range(curNTrain))
+                        probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             #if self.useImportance:#beta = 0.1
             #    cutIdx = importanceIdx[:nTrain]
@@ -52,13 +53,13 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
             if self.useBoth:
                 curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, easiness)
-                betas = [0.1, 0.5, 1]
 
                 for beta in betas:
                     curNTrain = math.ceil(nTrain * beta)
                     idx = curIdx[:curNTrain]
-                    resultPriorities.append(idx)
-                    probs.append(curProbs[:curNTrain] / np.sum(curProbs[:curNTrain]))
+                    for r in range(self.repeats):
+                        resultPriorities.append(idx)
+                        probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
         return resultPriorities, probs
 

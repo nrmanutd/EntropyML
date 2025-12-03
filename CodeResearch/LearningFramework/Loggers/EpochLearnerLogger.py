@@ -5,12 +5,16 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 
 
 class EpochLearnerLogger(BaseLogger):
-    def __init__(self, epochs, taskName, prefix, nAttempts):
+    def __init__(self, epochs, taskName, prefix, nAttempts, nRepeats, nArrays):
+        super().__init__()
+        self.nArrays = nArrays
+        self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_lmh'
+        self.prefix = f'{prefix}_llmh'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
+        self.errors = []
 
     def logConcreteObject(self, object):
 
@@ -18,34 +22,30 @@ class EpochLearnerLogger(BaseLogger):
         tripleLosses = processEpochLosses(tripleLosses)
         tripleLosses = processLosses(tripleLosses)
 
-        losses = []
-        lossesl = []
-        lossesm = []
-
-        lossesHardAndImportant = []
-        lossesHardAndImportantl = []
-        lossesHardAndImportantm = []
+        errors = [[] for _ in range(self.nArrays)]
 
         for i in range(self.epochs):
             curShift = i
-            lossesl.append(tripleLosses[curShift])
-            lossesm.append(tripleLosses[curShift + self.epochs])
-            losses.append(tripleLosses[curShift + 2 * self.epochs])
 
-            lossesHardAndImportantl.append(tripleLosses[curShift + 3 * self.epochs])
-            lossesHardAndImportantm.append(tripleLosses[curShift + 4 * self.epochs])
-            lossesHardAndImportant.append(tripleLosses[curShift + 5 * self.epochs])
+            for arr in errors:
+                curError = []
+
+                for k in range(self.nRepeats):
+                    curError = curError + tripleLosses[curShift + k * self.epochs].tolist()
+
+                arr.append(curError)
+                curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        labels = ['l (0.1)', 'l (0.5)', 'l (1)',  'h&i (0.5)', 'h&i (0.1)', 'h&i (1)']
-        errors = [lossesl, lossesm, losses, lossesHardAndImportantl, lossesHardAndImportantm, lossesHardAndImportant]
+        labels = ['l (0.05)', 'l (0.1)', 'l (0.5)', 'l (1)', 'h&i (0.05)', 'h&i (0.1)', 'h&i (0.5)', 'h&i (1)']
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,
                                              f'{self.taskName}\\{self.prefix}_{labels[i]}_{self.counter}_data.txt')
 
         plot_multi_errors_vs_alpha(errors, xAxis, labels, self.taskName, f'{self.prefix}_{self.counter}')
+        plot_multi_errors_vs_alpha(errors, xAxis, labels, self.taskName, f'{self.prefix}_5_{self.counter}', 5)
 
         self.counter += 1
 
-        pass
+        return

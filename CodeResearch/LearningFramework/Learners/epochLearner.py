@@ -1,7 +1,13 @@
+import gc
+import os
+
+import numpy as np
+import torch.cuda
 from tensorflow.python.keras.models import clone_model
 import copy
 
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
+from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import NeuralNetwork
 from CodeResearch.LearningFramework.Samplers.SamplersFactories.baseSamplersFactory import BaseSamplersFactory
 
 
@@ -13,14 +19,35 @@ class EpochLearner(BaseLearner):
         self.samplersFactory = samplersFactory
         self.learner = learner
         self.epochs = epochs
+        self.trainId = 0
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    def loadModel(self, model):
+        key = model[0]
+        nFeatures = model[1]
+        nClasses = model[2]
+
+        m = NeuralNetwork(nFeatures, nClasses, 512).to(self.device)
+        state = torch.load(key, map_location=self.device)
+        m.load_state_dict(state)
+
+        return m
 
     def test(self, models, x, y):
 
         accuracies = []
         for model in models:
-            accuracy = self.learner.test(model, x, y)
+
+            m = self.loadModel(model)
+
+            accuracy = self.learner.test(m, x, y)
             accuracies.append(accuracy)
 
+            os.remove(model[0])
+            del m
+            torch.cuda.empty_cache()
+
+        gc.collect()
         return accuracies
 
     def train(self, x, y, probs):
@@ -35,6 +62,19 @@ class EpochLearner(BaseLearner):
             for xx, yy in batches:
                 currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(currentModel, xx, yy)
 
-            trainedModels.append(copy.deepcopy(currentModel))
+            #trainedModels.append(copy.deepcopy(currentModel))
+            currentModelState = currentModel.state_dict()
+            key = f'TempModels\\model_{self.trainId}_{epoch}.pt'
+            if not os.path.exists("TempModels"):
+                os.mkdir("TempModels")
 
+            torch.save(currentModelState, key)
+            trainedModels.append((key, x.shape[1], len(np.unique(y))))
+
+        del currentModel.optimizer
+        del currentModel
+        torch.cuda.empty_cache()
+
+        self.trainId += 1
+        torch.cuda.empty_cache()
         return trainedModels

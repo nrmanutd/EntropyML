@@ -16,23 +16,21 @@ class GeneralLearningEstimator:
     def estimateLearner(self, sampler: BaseSampler, learner: BaseLearner):
         losses = []
 
-        t0 = time.time()
-        t1 = t0
         for i in range(self.iterations):
 
             if i %10 == 0:
-                print(f'Iteration {i} of {self.iterations}, time: {time.time() - t0} s, delta time: {time.time() - t1}')
-                t1 = time.time()
+                self.logger.logDebug(f'Iteration {i} of {self.iterations}')
 
-            print('sampling...')
+            self.logger.logDebug('Sampling...')
             trainX, trainY, testX, testY, probs = sampler.sample()
-            print('training model...')
+            self.logger.logDebug('Training model...')
             model = learner.train(trainX, trainY, probs)
-            print('testing model...')
+            self.logger.logDebug(f'Testing {len(model)} models...')
             modelAccuracy = learner.test(model, testX, testY)
+            self.logger.logDebug(f'Tested models.')
 
             losses.append(modelAccuracy)
 
-            self.logger.logDebug(losses)
+            self.logger.logConcreteObject(losses)
 
         return losses

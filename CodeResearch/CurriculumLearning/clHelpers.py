@@ -11,11 +11,11 @@ from CodeResearch.ObjectComplexity.Hardness.HardnessCalculator import HardnessCa
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
-def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, generalLearner, learner):
+def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
     hc = HardnessCalculator(nAttempts, fraction)
     hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
 
-    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, True, True, True, True)
+    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)
 
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
@@ -33,6 +33,7 @@ def processEpochLosses(losses):
     result = []
 
     for loss in losses:
+        print(len(loss))
         flat_list = np.concatenate([np.array(sublist) for sublist in loss])
         result.append(flat_list)
 

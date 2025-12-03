@@ -5,6 +5,7 @@ from CodeResearch.CurriculumLearning.clHelpers import calculateLosses, filterDat
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.NNEpochLearner import NNEpochLearner
 from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
+from CodeResearch.LearningFramework.Learners.NNPytorchEpochLearner import NNEpochLearnerPyTorch
 from CodeResearch.LearningFramework.Learners.XGBoostLearner import XGBoostLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -17,7 +18,7 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist
 
 nIterations = 10
-nAttempts = 100
+nAttempts = 200
 nSamples = 2000
 datasetFraction = 0.5
 
@@ -35,13 +36,15 @@ datasetFraction = 0.5
 alphas = np.array([0.5])
 fraction = 0.5
 testAlpha = 0.5
-epochs = 10
+epochs = 15
+repeats = 20
+nArrays = 8
 
 taskNames = ['mnist_epoch','mnist_epoch', 'fashionMnist_epoch', 'fashionMnist_epoch', 'cifar_epoch', 'cifar_epoch', 'proteins_epoch']
 firstClasses = [5, 0, 0, 1, 3, 0, 0]
 secondClasses = [6, 1, 6, 5, 5, 8, 1]
 
-for i in range(len(taskNames)):
+for i in range(0, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -56,9 +59,9 @@ for i in range(len(taskNames)):
         x, y = load_proteins("../Data/Proteins/df_master.csv")
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-    prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{firstClass}_{secondClass}_NN'
-    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearner(),  RandomAllsetSamplerFactory(50, PrioritizerType.Probability)))
-    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts)
+    prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{firstClass}_{secondClass}_NN'
+    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(50, PrioritizerType.Probability)))
+    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     losses = []
@@ -68,5 +71,5 @@ for i in range(len(taskNames)):
 
     t = time.time()
 
-    tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), testAlpha, nAttempts, fraction, generalLearner, compositeLearner)
+    tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), testAlpha, nAttempts, fraction, repeats, generalLearner, compositeLearner)
     print('######################## Current time: ' + str(time.time() - t))

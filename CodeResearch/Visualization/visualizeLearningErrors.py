@@ -37,7 +37,7 @@ def visualizeLearningErrors(errors_list, alphas, resultsFolder, taskName):
     plt.savefig('{:}\\{:}.png'.format(resultsFolder, taskName), format='png')
     plt.close(fig)
 
-def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, taskName):
+def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, taskName, startIdx = 0):
     """
     Plot learning curves for multiple classifiers on the same figure.
 
@@ -73,6 +73,7 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     dpi = 300  # или 150, 200 - чем выше, тем качественнее текст
     fig, ax = plt.subplots(figsize=(width_px/dpi, height_px/dpi), dpi=dpi)
 
+    idx = range(startIdx,len(alphas))
     for clf_errors, label in zip(errors_nested, labels):
         if len(clf_errors) != len(alphas):
             raise ValueError(
@@ -85,16 +86,22 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
         means = np.array([e.mean() for e in clf_errors])
         stds  = np.array([e.std(ddof=1) if len(e) > 1 else 0.0 for e in clf_errors])
 
+
         ax.errorbar(
-            alphas,
-            means,
-            yerr=stds,
+            alphas[idx],
+            means[idx],
+            yerr=stds[idx],
             fmt='o-',
-            capsize=5,
+            capsize=4,
+            markersize=4,
+            linewidth=1,
+            capthick=1,
+            elinewidth=0.8,
             label=label
         )
 
-    ax.set_xlabel("Training Set Fraction (alpha)")
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    ax.set_xlabel("Epoch number")
     ax.set_ylabel("Test Error")
 
     ax.grid(True)
@@ -104,5 +111,5 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     if not os.path.exists(resultsFolder):
         os.makedirs(resultsFolder)
 
-    plt.savefig('{:}\\{:}.png'.format(resultsFolder, taskName), format='png', dpi=300, bbox_inches='tight')
+    plt.savefig('{:}\\{:}.png'.format(resultsFolder, taskName), format='png', dpi=500, bbox_inches='tight')
     plt.close(fig)
