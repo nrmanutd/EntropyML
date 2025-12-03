@@ -31,7 +31,7 @@ class EpochLearnerLogger(BaseLogger):
             lossesHardAndImportant.append(tripleLosses[curShift + 3 * self.epochs])
 
         xAxis = range(self.epochs)
-        labels = ['l', 'hard', 'important', 'both']
+        labels = ['l', 'hard (0.5)', 'important (0.1)', 'both']
         errors = [losses, lossesHardness, lossesImportant, lossesHardAndImportant]
         for i in range(len(errors)):
             err = errors[i]

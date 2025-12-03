@@ -16,13 +16,10 @@ from CodeResearch.Visualization.saveDataForVisualization import serialize_labele
 from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist
 
-nIterations = 20
-nAttempts = 200
+nIterations = 10
+nAttempts = 100
 nSamples = 2000
-datasetFraction = 1
-
-#firstClass = 0
-#secondClass = 6
+datasetFraction = 0.5
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
