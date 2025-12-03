@@ -7,7 +7,7 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 class EpochLearnerLogger(BaseLogger):
     def __init__(self, epochs, taskName, prefix, nAttempts):
         self.nAttempts = nAttempts
-        self.prefix = prefix
+        self.prefix = f'{prefix}_lmh'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -19,20 +19,26 @@ class EpochLearnerLogger(BaseLogger):
         tripleLosses = processLosses(tripleLosses)
 
         losses = []
-        lossesHardness = []
-        lossesImportant = []
+        lossesl = []
+        lossesm = []
+
         lossesHardAndImportant = []
+        lossesHardAndImportantl = []
+        lossesHardAndImportantm = []
 
         for i in range(self.epochs):
             curShift = i
-            losses.append(tripleLosses[curShift])
-            lossesImportant.append(tripleLosses[curShift + self.epochs])
-            lossesHardness.append(tripleLosses[curShift + 2 * self.epochs])
-            lossesHardAndImportant.append(tripleLosses[curShift + 3 * self.epochs])
+            lossesl.append(tripleLosses[curShift])
+            lossesm.append(tripleLosses[curShift + self.epochs])
+            losses.append(tripleLosses[curShift + 2 * self.epochs])
+
+            lossesHardAndImportantl.append(tripleLosses[curShift + 3 * self.epochs])
+            lossesHardAndImportantm.append(tripleLosses[curShift + 4 * self.epochs])
+            lossesHardAndImportant.append(tripleLosses[curShift + 5 * self.epochs])
 
         xAxis = range(self.epochs)
-        labels = ['l', 'hard (0.5)', 'important (0.1)', 'both']
-        errors = [losses, lossesHardness, lossesImportant, lossesHardAndImportant]
+        labels = ['l (0.1)', 'l (0.5)', 'l (1)',  'h&i (0.5)', 'h&i (0.1)', 'h&i (1)']
+        errors = [lossesl, lossesm, losses, lossesHardAndImportantl, lossesHardAndImportantm, lossesHardAndImportant]
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,

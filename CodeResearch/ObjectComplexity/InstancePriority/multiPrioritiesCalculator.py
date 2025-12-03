@@ -33,8 +33,12 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             nTrain = math.ceil(alpha * len(target))
 
             if self.useBasedPriority:
-                resultPriorities.append(range(nTrain))
-                probs.append(np.full(nTrain, 1.0 / nTrain))
+                betas = [0.1, 0.5, 1]
+
+                for beta in betas:
+                    curNTrain = math.ceil(beta * nTrain)
+                    resultPriorities.append(range(curNTrain))
+                    probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             #if self.useImportance:#beta = 0.1
             #    cutIdx = importanceIdx[:nTrain]
