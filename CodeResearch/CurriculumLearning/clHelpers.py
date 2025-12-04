@@ -33,7 +33,6 @@ def processEpochLosses(losses):
     result = []
 
     for loss in losses:
-        print(len(loss))
         flat_list = np.concatenate([np.array(sublist) for sublist in loss])
         result.append(flat_list)
 
