@@ -1,7 +1,8 @@
 from CodeResearch.CurriculumLearning.clHelpers import processEpochLosses, processLosses
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
-from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha
+from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha, \
+    plot_multi_errors_vs_alpha_std
 
 
 class EpochLearnerLogger(BaseLogger):
@@ -10,7 +11,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_llmh'
+        self.prefix = f'{prefix}_llmh_probs'#probs - means, that we are adding
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -43,8 +44,8 @@ class EpochLearnerLogger(BaseLogger):
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,
                                              f'{self.taskName}\\{self.prefix}_{labels[i]}_{self.counter}_data.txt')
 
-        plot_multi_errors_vs_alpha(errors, xAxis, labels, self.taskName, f'{self.prefix}_{self.counter}')
-        plot_multi_errors_vs_alpha(errors, xAxis, labels, self.taskName, f'{self.prefix}_5_{self.counter}', 5)
+        plot_multi_errors_vs_alpha_std(errors, xAxis, labels, self.taskName, f'{self.prefix}_{self.counter}')
+        plot_multi_errors_vs_alpha_std(errors, xAxis, labels, self.taskName, f'{self.prefix}_5_{self.counter}', 5)
 
         self.counter += 1
 

@@ -61,7 +61,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     idx = curIdx[:curNTrain]
                     for r in range(self.repeats):
                         resultPriorities.append(idx)
-                        probs.append(np.full(curNTrain, 1.0 / curNTrain))
+                        probs.append(curProbs[:curNTrain] / sum(curProbs[:curNTrain]))
 
         return resultPriorities, probs
 

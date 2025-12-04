@@ -1,5 +1,3 @@
-import time
-
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import calculateLosses, filterDataSet
@@ -18,6 +16,7 @@ nAttempts = 200
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
+
 fraction = 0.5
 testAlpha = 0.5
 epochs = 15
@@ -61,12 +60,12 @@ for i in range(0, len(taskNames)):
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
+    logger.logDebug(f'Starting task {prefix}')
+
     losses = []
     lossesHardness = []
     lossesImportant = []
     lossesHardAndImportant = []
 
-    t = time.time()
-
     tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), testAlpha, nAttempts, fraction, repeats, generalLearner, compositeLearner)
-    print('######################## Current time: ' + str(time.time() - t))
+    logger.logDebug(f'Finished task {prefix}')

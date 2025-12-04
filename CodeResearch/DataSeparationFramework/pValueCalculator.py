@@ -143,6 +143,9 @@ class PValueCalculator:
         enc = LabelEncoder()
 
         nClasses, counts = np.unique(t, return_counts=True)
+
+        if (len(nClasses) != 2):
+            raise ValueError(f'Number of classes should be equal to 2, instead {len(nClasses)}')
         valuedTarget1, boolValuedTarget1 = GetValuedAndBoolTarget(t, nClasses[0], 1 / counts[0], -1 / counts[1])
         valuedTarget2, boolValuedTarget2 = GetValuedAndBoolTarget(t, nClasses[1], 1 / counts[1], -1 / counts[0])
 
