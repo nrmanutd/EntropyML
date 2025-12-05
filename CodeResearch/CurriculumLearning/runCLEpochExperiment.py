@@ -11,16 +11,16 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
-nIterations = 10
-nAttempts = 200
+nIterations = 50
+nAttempts = 400
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 15
-repeats = 20
+epochs = 40
+repeats = 10
 nArrays = 8
 
 #x, y = make_random(nSamples)
@@ -34,9 +34,9 @@ nArrays = 8
 #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
-taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch','mnist_epoch', 'fashionMnist_epoch', 'fashionMnist_epoch', 'cifar_epoch', 'cifar_epoch', 'proteins_epoch']
-firstClasses = [82, 13, 43, 5, 0, 0, 1, 3, 0, 0]
-secondClasses = [62, 30, 88, 6, 1, 6, 5, 5, 8, 1]
+taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
+firstClasses = [43, 81, 47, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [88, 62, 52, 87, 91, 10, 33, 6, 5, 8]
 
 for i in range(0, len(taskNames)):
     taskName = taskNames[i]
@@ -45,17 +45,13 @@ for i in range(0, len(taskNames)):
 
     if taskName == taskNames[0]:
         x, y = loadCifar100()
-    elif taskName == taskNames[3]:
-        x, y = loadMnist()
-    elif taskName == taskNames[4]:
-        x, y = loadFashionMnist()
     elif taskName == taskNames[7]:
-        x, y = loadCifar()
+        x, y = loadMnist()
     else:
-        x, y = load_proteins("../Data/Proteins/df_master.csv")
+        x, y = loadCifar()
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-    prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{firstClass}_{secondClass}_NN'
+    prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(50, PrioritizerType.Probability)))
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
