@@ -80,3 +80,7 @@ class NNEpochLearnerPyTorch(BaseLearner):
         y_tensor = torch.LongTensor(y).to(self.device)
 
         return x_tensor, y_tensor
+
+    def trainAndTest(self, x, y, probs, xt, yt):
+        model = self.train(x, y, probs)
+        return self.test(model, xt, yt)

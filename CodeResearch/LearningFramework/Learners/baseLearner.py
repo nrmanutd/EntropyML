@@ -13,3 +13,8 @@ class BaseLearner(ABC):
     @abstractmethod
     def test(self, model, x, y):
         pass
+
+    @abstractmethod
+    def trainAndTest(self, x, y, probs, xt, yt):
+        model = self.train(x, y, probs)
+        return self.test(model, xt, yt)

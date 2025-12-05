@@ -146,7 +146,7 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
         os.makedirs(resultsFolder)
 
     # ==== 1. СОЗДАЁМ ГРАФИК С ОШИБКАМИ (mean ± std) ====
-    width_px = 1280
+    width_px = 1920
     height_px = 1024
     dpi = 300
     fig1, ax1 = plt.subplots(figsize=(width_px / dpi, height_px / dpi), dpi=dpi)
@@ -172,8 +172,8 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
             means[idx],
             yerr=stds[idx],
             fmt='o-',
-            capsize=4,
-            markersize=4,
+            capsize=3,
+            markersize=3,
             linewidth=1,
             capthick=1,
             elinewidth=0.8,

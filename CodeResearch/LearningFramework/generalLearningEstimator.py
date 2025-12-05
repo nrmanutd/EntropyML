@@ -23,11 +23,9 @@ class GeneralLearningEstimator:
 
             self.logger.logDebug('Sampling...')
             trainX, trainY, testX, testY, probs = sampler.sample()
-            self.logger.logDebug('Training model...')
-            model = learner.train(trainX, trainY, probs)
-            self.logger.logDebug(f'Testing {len(model)} models...')
-            modelAccuracy = learner.test(model, testX, testY)
-            self.logger.logDebug(f'Tested models.')
+            self.logger.logDebug('Training and testing model...')
+            modelAccuracy = learner.trainAndTest(trainX, trainY, probs, testX, testY)
+            self.logger.logDebug(f'Trained and tested models.')
 
             losses.append(modelAccuracy)
 

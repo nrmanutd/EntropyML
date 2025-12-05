@@ -12,15 +12,15 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
 nIterations = 50
-nAttempts = 400
+nAttempts = 1000
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 40
-repeats = 10
+epochs = 60
+repeats = 20
 nArrays = 8
 
 #x, y = make_random(nSamples)
