@@ -7,12 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
-from CodeResearch.ObjectComplexity.Hardness.HardnessCalculator import HardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
 def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
-    hc = HardnessCalculator(nAttempts, fraction)
+    hc = KSHardnessCalculator(nAttempts, fraction)
     hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
 
     prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)

@@ -8,7 +8,7 @@ from CodeResearch.ObjectComplexity.Factory.ShapValuesComplexityCalculatorFactory
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 
 
-class HardnessCalculator(BaseHardnessCalculator):
+class KSHardnessCalculator(BaseHardnessCalculator):
     def __init__(self, attempts, fraction):
 
         self.fraction = fraction
@@ -21,7 +21,7 @@ class HardnessCalculator(BaseHardnessCalculator):
         complexityCalculator = result[2]
         importance, easiness = complexityCalculator.getShapValues()
 
-        importance = HardnessCalculator.convertToECDF(importance)
+        importance = KSHardnessCalculator.convertToECDF(importance)
 
         return importance, easiness
 

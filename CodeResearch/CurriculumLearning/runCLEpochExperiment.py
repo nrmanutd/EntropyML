@@ -11,16 +11,16 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
-nIterations = 50
-nAttempts = 400
+nIterations = 1
+nAttempts = 50
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 40
-repeats = 10
+epochs = 15
+repeats = 2
 nArrays = 8
 
 #x, y = make_random(nSamples)
@@ -34,12 +34,12 @@ nArrays = 8
 #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
-taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [43, 81, 47, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [88, 62, 52, 87, 91, 10, 33, 6, 5, 8]
+taskNames = ['cifar100_epoch']
+firstClasses = [43, 92, 16, 68, 75, 2, 33, 72, 19, 43]
+secondClasses = [88, 38, 49, 58, 47, 43, 88, 88, 58, 88]
 
-for i in range(0, len(taskNames)):
-    taskName = taskNames[i]
+for i in range(1, len(firstClasses)):
+    taskName = taskNames[0]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
 

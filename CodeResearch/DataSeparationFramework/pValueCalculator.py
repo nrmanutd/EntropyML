@@ -29,8 +29,8 @@ class PValueCalculator:
         nFeatures = dataSet.shape[1]
 
         #if not torch.cuda.is_available():
-        #    print('torch cuda is not available')
-        #    return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
+        #print('torch cuda is not available')
+        return self.calcPValuesCpuNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
 
         if nFeatures < 1000:
             return self.calcPValueFastNumba(currentObjects, dataSet, target, iClass, jClass, self.nAttempts, self.calculateKS, self.randomPermutation, self.calculateModel)
