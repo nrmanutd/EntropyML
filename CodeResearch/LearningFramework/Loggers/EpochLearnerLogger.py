@@ -11,7 +11,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_llmh_probs_added_x'#probs - means, that we are adding
+        self.prefix = f'{prefix}_llmh_probs_added_x_product_01_02'#probs - means, that we are adding
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -38,7 +38,7 @@ class EpochLearnerLogger(BaseLogger):
                 curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        labels = ['l (0.1)', 'l (0.2)', 'i (0.1)', 'i (0.2)', 'h (0.1)', 'h (0.2)', 'h&i (0.1)', 'h&i (0.2)']
+        labels = ['l (0.2)', 'l (0.3)', 'i (0.2)', 'i (0.3)', 'h (0.2)', 'h (0.3)', 'h&i (0.2)', 'h&i (0.3)']
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,

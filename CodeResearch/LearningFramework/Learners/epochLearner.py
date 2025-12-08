@@ -77,3 +77,22 @@ class EpochLearner(BaseLearner):
         self.trainId += 1
         torch.cuda.empty_cache()
         return trainedModels
+
+    def trainAndTest(self, x, y, probs, xt, yt):
+        currentModel = None
+        sampler = self.samplersFactory.createSampler(x, y, probs)
+
+        accuracies = []
+
+        for epoch in range(self.epochs):
+            batches = sampler.sample()
+
+            for xx, yy in batches:
+                currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
+                    currentModel, xx, yy)
+
+            accuracy = self.learner.test(currentModel, xt, yt)
+            accuracies.append(accuracy)
+            torch.cuda.empty_cache()
+
+        return accuracies

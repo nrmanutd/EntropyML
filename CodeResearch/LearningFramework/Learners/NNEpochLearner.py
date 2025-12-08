@@ -53,3 +53,7 @@ class NNEpochLearner(BaseLearner):
 
         model.compile(optimizer="adam", loss='categorical_crossentropy', metrics=['accuracy'])
         return model
+
+    def trainAndTest(self, x, y, probs, xt, yt):
+        model = self.train(x, y, probs)
+        return self.test(model, xt, yt)

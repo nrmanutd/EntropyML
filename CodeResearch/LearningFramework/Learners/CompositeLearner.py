@@ -30,3 +30,12 @@ class CompositeLearner(BaseLearner):
             results.append(r)
 
         return results
+
+    def trainAndTest(self, x, y, probs, xt, yt):
+        results = []
+
+        for i in range(len(x)):
+            accuracy = self.learner.trainAndTest(x[i], y[i], probs[i], xt[i], yt[i])
+            results.append(accuracy)
+
+        return results
