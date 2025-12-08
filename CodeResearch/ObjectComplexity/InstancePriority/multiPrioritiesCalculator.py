@@ -30,7 +30,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         resultPriorities = []
         probs = []
-        betas = [0.1, 0.2]
+        betas = [0.2, 0.3]
 
         for alpha in self.alphas:
             nTrain = math.ceil(alpha * len(target))
@@ -75,7 +75,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
     @staticmethod
     def assign_weights(importance, easiness):
 
-        xy_product =0.5 * (importance + easiness)
+        xy_product = importance * easiness
         sortedIdx = np.argsort(-xy_product)
 
         return sortedIdx, softmax(xy_product[sortedIdx])

@@ -11,7 +11,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
-nIterations = 50
+nIterations = 100
 nAttempts = 1000
 nSamples = 2000
 datasetFraction = 1
@@ -19,7 +19,7 @@ alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 60
+epochs = 40
 repeats = 20
 nArrays = 8
 
@@ -35,8 +35,8 @@ nArrays = 8
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [43, 81, 47, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [88, 62, 52, 87, 91, 10, 33, 6, 5, 8]
+firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [88, 52, 87, 91, 10, 33, 6, 5, 8]
 
 for i in range(0, len(taskNames)):
     taskName = taskNames[i]
