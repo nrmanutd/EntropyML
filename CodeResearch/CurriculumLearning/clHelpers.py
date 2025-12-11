@@ -17,11 +17,11 @@ def createKSHardnessCalculator(nAttempts, fraction):
     hc = KSHardnessCalculator(nAttempts, fraction)
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, fraction):
+def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger):
     hardnessLearner = NNLearner()
     assesor = StandardAssesor()
 
-    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction)
+    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
     return hc
 
 def calculateLosses(x, y, alphas, betas, testAlpha, repeats, generalLearner, learner, hc):

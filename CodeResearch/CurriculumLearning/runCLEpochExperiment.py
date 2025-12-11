@@ -13,8 +13,8 @@ from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCor
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
-nIterations = 100
-nAttempts = 1000
+nIterations = 10
+nAttempts = 10
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -25,7 +25,6 @@ epochs = 40
 repeats = 20
 betas = [0.05, 0.1]
 nArrays = 6 * len(betas)
-
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -67,7 +66,7 @@ for i in range(0, len(taskNames)):
     lossesImportant = []
     lossesHardAndImportant = []
 
-    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction)
+    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger)
     hc = HardnessCorrector(hc)
 
     tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, generalLearner, compositeLearner, hc)

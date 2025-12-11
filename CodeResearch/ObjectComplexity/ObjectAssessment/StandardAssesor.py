@@ -6,7 +6,6 @@ class StandardAssesor(BaseObjectAssesor):
         easyness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
         importance = self.estimateImportance(trainIdxes, testIdxes, testResponds, target)
 
-        importance = self.convertToECDF(importance)
         return easyness, importance
 
     def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
