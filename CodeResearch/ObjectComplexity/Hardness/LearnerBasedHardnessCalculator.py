@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
@@ -16,10 +17,9 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         self.nAttempts = nAttempts
         self.learner = learner
 
-    def calculateHardness(self, dataSet, target):
+        logger.logDebug(f'Alpha = {alpha}')
 
-        n = len(target)
-        trainObjects = math.ceil(n * self.alpha)
+    def calculateHardness(self, dataSet, target):
 
         trainIdxes = []
         testIdxes = []
@@ -31,12 +31,15 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             if i%10 == 0:
                 self.logger.logDebug(f'Attempt #{i}...')
 
-            randomIdx = np.random.permutation(n)
+            trainIdx, testIdx = stratified_split_indices_with_min(target, self.alpha)
 
-            trainIdx = randomIdx[:trainObjects]
-            testIdx = randomIdx[trainObjects:]
+            x = dataSet[trainIdx, :]
+            y = target[trainIdx]
 
-            res = self.learner.trainAndTest(dataSet[trainIdx, :], target[trainIdx], np.full(trainObjects, fill_value=1.0/trainObjects),dataSet[testIdx, :], target[testIdx]) #todo: make res in all learners tuple - accuracy and learner responds
+            xtest = dataSet[testIdx, :]
+            ytest = target[testIdx]
+
+            res = self.learner.trainAndTest(x, y, np.full(len(trainIdx), fill_value=1.0/len(trainIdx)), xtest, ytest)
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)

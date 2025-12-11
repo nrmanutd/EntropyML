@@ -23,19 +23,23 @@ class CompositeLearner(BaseLearner):
 
     def test(self, model, x, y):
         results = []
+        accuracy = []
 
         for i in range(len(model)):
             currentModel = model[i]
-            r = self.learner.test(currentModel, x[i], y[i])
+            r, a = self.learner.test(currentModel, x[i], y[i])
             results.append(r)
+            accuracy.append(a)
 
-        return results
+        return results, accuracy
 
     def trainAndTest(self, x, y, probs, xt, yt):
-        results = []
+        resultsAccuracy = []
+        resultsPredictions = []
 
         for i in range(len(x)):
-            accuracy = self.learner.trainAndTest(x[i], y[i], probs[i], xt[i], yt[i])
-            results.append(accuracy)
+            accuracy, predictions = self.learner.trainAndTest(x[i], y[i], probs[i], xt[i], yt[i])
+            resultsAccuracy.append(accuracy)
+            resultsPredictions.append(predictions)
 
-        return results
+        return resultsAccuracy, resultsPredictions

@@ -21,7 +21,9 @@ class StandardAssesor(BaseObjectAssesor):
         for i in range(totalAttempts):
             curTestIdx = testIdxes[i]
 
-            objectsUsed[curTestIdx] += 1
+            for j in range(len(curTestIdx)):
+                objectsUsed[curTestIdx[j]] += 1
+
             curResponds = testResponds[i][1]  # todo: check how to process testResponds value
 
             for j in range(len(curTestIdx)):

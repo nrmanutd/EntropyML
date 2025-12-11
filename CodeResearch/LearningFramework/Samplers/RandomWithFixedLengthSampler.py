@@ -1,4 +1,6 @@
 import numpy as np
+
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Samplers.baseSampler import BaseSampler
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 
@@ -29,22 +31,10 @@ class RandomWithFixedLengthSampler(BaseSampler):
         if seed is not None:
             np.random.seed(seed)
 
+        test_idx, remaining_idx = stratified_split_indices_with_min(self.target, self.testAlpha)
         n = self.dataset.shape[0]
-
-        # Перемешиваем индексы
-        indices = np.random.permutation(n)
-
-        # Считаем количество для теста и трейна (от общего N)
-        n_test = int(n * self.testAlpha)
         n_train = int(n * self.trainAlpha)
 
-        # 1. Сначала независимо выбираем тест
-        test_idx = indices[:n_test]
-
-        # 2. Оставшиеся
-        remaining_idx = indices[n_test:]
-
-        # 3. Из оставшихся выбираем train (но количество — от общего N)
         if len(remaining_idx) < n_train:
             raise ValueError("Not enough train objects according to desired part.")
 

@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
 
 nIterations = 10
-nAttempts = 10
+nAttempts = 100
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -66,7 +66,7 @@ for i in range(0, len(taskNames)):
     lossesImportant = []
     lossesHardAndImportant = []
 
-    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger)
+    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], len(np.unique(y)))
     hc = HardnessCorrector(hc)
 
     tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, generalLearner, compositeLearner, hc)

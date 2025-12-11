@@ -1,11 +1,11 @@
 import math
-import matplotlib.pyplot as plt
 
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
+from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
@@ -13,22 +13,23 @@ from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator impor
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
 
+
 def createKSHardnessCalculator(nAttempts, fraction):
     hc = KSHardnessCalculator(nAttempts, fraction)
+    hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger):
-    hardnessLearner = NNLearner()
+def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses):
+    hardnessLearner = TorchMLPLearner(input_dim=2 * nFeatures, num_classes=nClasses, hidden_sizes=(16, 16))
     assesor = StandardAssesor()
 
     hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
+    hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
     return hc
 
 def calculateLosses(x, y, alphas, betas, testAlpha, repeats, generalLearner, learner, hc):
 
-    hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-
-    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, betas, repeats, True, True, True, True)
+    prioritizer = MultiPrioritiesCalculator(hc, alphas, betas, repeats, True, True, True, True)
 
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 

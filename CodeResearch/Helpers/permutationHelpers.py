@@ -82,3 +82,61 @@ def getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects):
     newTarget[iObjectsCount: (iObjectsCount + jObjectsCount)] = target[jClassObjects]
 
     return newSet, newTarget
+
+
+def stratified_split_indices_with_min(
+        y: np.ndarray,
+        train_ratio: float = 0.8,
+        min_samples_per_class: int = 1,
+        random_state: int = None
+):
+    """
+    Стратифицированное разбиение с гарантией минимального количества образцов в каждом классе.
+
+    Parameters:
+    -----------
+    y : np.ndarray
+        Вектор меток классов
+    train_ratio : float
+        Доля объектов для обучения
+    min_samples_per_class : int
+        Минимальное количество образцов каждого класса в обучающей выборке
+    random_state : int
+        Seed для воспроизводимости
+
+    Returns:
+    --------
+    train_indices, test_indices : Tuple[np.ndarray, np.ndarray]
+    """
+    if not 0 < train_ratio < 1:
+        raise ValueError(f"train_ratio должен быть между 0 и 1, получено {train_ratio}")
+
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    unique_classes, class_counts = np.unique(y, return_counts=True)
+
+    train_indices_list = []
+    test_indices_list = []
+
+    for cls, count in zip(unique_classes, class_counts):
+        class_indices = np.where(y == cls)[0]
+        shuffled_indices = np.random.permutation(class_indices)
+
+        # Вычисляем количество для train с учетом минимального требования
+        n_train = max(min_samples_per_class, int(np.floor(count * train_ratio)))
+
+        # Если недостаточно данных для разделения
+        if n_train >= count:
+            n_train = max(1, count - 1)  # оставляем хотя бы один в test
+
+        train_class_indices = shuffled_indices[:n_train]
+        test_class_indices = shuffled_indices[n_train:]
+
+        train_indices_list.extend(train_class_indices)
+        test_indices_list.extend(test_class_indices)
+
+    train_indices = np.array(train_indices_list)
+    test_indices = np.array(test_indices_list)
+
+    return train_indices, test_indices
