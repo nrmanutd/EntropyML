@@ -39,12 +39,11 @@ class EpochLearnerLogger(BaseLogger):
                 curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        baseLabels = ['l', 'i', 'h', 'hc', 'h&i', 'hc&i']
+        baseLabels = ['l', 'i', 'h', 'h&i']
         labels = []
         for l in baseLabels:
             labels = labels + [f'{l} ({beta})' for beta in self.betas]
 
-        #labels = ['l (0.2)', 'l (0.3)', 'i (0.2)', 'i (0.3)', 'h (0.2)', 'h (0.3)', 'h&i (0.2)', 'h&i (0.3)']
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,
