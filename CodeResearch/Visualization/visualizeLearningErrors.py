@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
+
 def visualizeLearningErrors(errors_list, alphas, resultsFolder, taskName):
     errors_list = [np.asarray(e) for e in errors_list]
     alphas = np.asarray(alphas)
@@ -155,6 +156,13 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
     colors = []  # Сохраняем цвета для использования во втором графике
     lines = []  # Сохраняем линии для легенды
 
+    bright_colors = [
+        '#FF0000', '#00CC00', '#0000FF', '#FF00FF', '#FFFF00', '#00FFFF',  # RGB основные
+        '#FF8000', '#FF0080', '#80FF00', '#0080FF', '#8000FF', '#00FF80',  # промежуточные
+        '#FF4000', '#FF0040', '#40FF00', '#0040FF', '#4000FF', '#00FF40',  # еще больше
+        '#FFA500', '#FF1493', '#32CD32', '#1E90FF', '#8A2BE2', '#00CED1',  # названия цветов
+    ]
+
     for clf_idx, (clf_errors, label) in enumerate(zip(errors_nested, labels)):
         if len(clf_errors) != len(alphas):
             raise ValueError(
@@ -165,6 +173,8 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
         clf_errors = [np.asarray(e) for e in clf_errors]
         means = np.array([e.mean() for e in clf_errors])
         stds = np.array([e.std(ddof=1) if len(e) > 1 else 0.0 for e in clf_errors])
+
+        color = bright_colors[clf_idx % len(bright_colors)]
 
         # Рисуем график с ошибками и сохраняем цвет
         line = ax1.errorbar(
@@ -177,10 +187,12 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
             linewidth=1,
             capthick=1,
             elinewidth=0.8,
-            label=label
+            label=label,
+            color=color
         )
-        colors.append(line[0].get_color())
-        lines.append(Line2D([0], [0], color=line[0].get_color(), lw=2, label=label))
+        #colors.append(line[0].get_color())
+        colors.append(color)
+        lines.append(Line2D([0], [0], color=color, lw=2, label=label))
 
     # Настройки первого графика
     ax1.legend(handles=lines, loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)

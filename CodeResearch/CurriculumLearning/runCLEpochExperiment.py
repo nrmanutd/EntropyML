@@ -21,7 +21,9 @@ fraction = 0.5
 testAlpha = 0.5
 epochs = 40
 repeats = 20
-nArrays = 8
+betas = [0.05, 0.1]
+nArrays = 6 * len(betas)
+
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -53,7 +55,7 @@ for i in range(0, len(taskNames)):
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(50, PrioritizerType.Probability)))
-    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays)
+    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     logger.logDebug(f'Starting task {prefix}')
@@ -63,5 +65,5 @@ for i in range(0, len(taskNames)):
     lossesImportant = []
     lossesHardAndImportant = []
 
-    tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), testAlpha, nAttempts, fraction, repeats, generalLearner, compositeLearner)
+    tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), betas, testAlpha, nAttempts, fraction, repeats, generalLearner, compositeLearner)
     logger.logDebug(f'Finished task {prefix}')
