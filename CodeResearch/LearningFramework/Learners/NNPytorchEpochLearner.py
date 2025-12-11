@@ -60,7 +60,7 @@ class NNEpochLearnerPyTorch(BaseLearner):
             correct = (predicted == y_tensor).sum().item()
             accuracy = correct / y_tensor.size(0)
 
-        return accuracy
+        return accuracy, predicted
 
     def define_model(self, nFeatures, nClasses):
         """Определение архитектуры модели"""

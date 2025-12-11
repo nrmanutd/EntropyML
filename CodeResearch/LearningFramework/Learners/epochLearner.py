@@ -36,12 +36,14 @@ class EpochLearner(BaseLearner):
     def test(self, models, x, y):
 
         accuracies = []
+        predictions = []
         for model in models:
 
             m = self.loadModel(model)
 
-            accuracy = self.learner.test(m, x, y)
+            accuracy, prediction = self.learner.test(m, x, y)
             accuracies.append(accuracy)
+            predictions.append(prediction)
 
             os.remove(model[0])
             del m
@@ -83,6 +85,7 @@ class EpochLearner(BaseLearner):
         sampler = self.samplersFactory.createSampler(x, y, probs)
 
         accuracies = []
+        predictions = []
 
         for epoch in range(self.epochs):
             batches = sampler.sample()
@@ -91,8 +94,9 @@ class EpochLearner(BaseLearner):
                 currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
                     currentModel, xx, yy)
 
-            accuracy = self.learner.test(currentModel, xt, yt)
+            accuracy, prediction = self.learner.test(currentModel, xt, yt)
             accuracies.append(accuracy)
+            predictions.append(prediction)
             torch.cuda.empty_cache()
 
-        return accuracies
+        return accuracies, predictions

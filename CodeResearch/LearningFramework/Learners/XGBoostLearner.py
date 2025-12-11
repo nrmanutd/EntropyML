@@ -14,4 +14,4 @@ class XGBoostLearner(BaseLearner):
         predict = model.predict(x)
         accuracy = accuracy_score(y, predict)
 
-        return accuracy
+        return accuracy, predict

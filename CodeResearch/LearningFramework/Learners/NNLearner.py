@@ -7,12 +7,20 @@ from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 
 class NNLearner(BaseLearner):
+    def __init__(self, dense=16, nLayers=2):
+        self.nLayers = nLayers
+        self.dense = dense
+
     def test(self, model, x, y):
 
         nClasses = len(np.unique(y))
         y_test = to_categorical(y, nClasses)
         _, acc = model.evaluate(x, y_test, verbose=0)
-        return acc
+
+        y_pred_proba = model.predict(x, verbose=0)
+        y_pred = np.argmax(y_pred_proba, axis=1)
+
+        return acc, y_pred
 
     def train(self, x, y, probs):
         nFeatures = x.shape[1]
@@ -28,10 +36,10 @@ class NNLearner(BaseLearner):
         model = Sequential()
         model.add(Input(shape=(nFeatures,)))
 
-        dense = 512 if nFeatures > 20 else 16
+        for k in range(self.nLayers):
+            model.add(Dense(self.dense, activation='relu', kernel_initializer='he_uniform'))
+            model.add(Dense(self.dense, activation='relu', kernel_initializer='he_uniform'))
 
-        model.add(Dense(dense, activation='relu', kernel_initializer='he_uniform'))
-        model.add(Dense(dense, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(nClasses, activation='softmax'))
         # compile model
 
@@ -40,5 +48,5 @@ class NNLearner(BaseLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
-        accuracy = self.test(model, xt, yt)
-        return accuracy
+        accuracy, prediction = self.test(model, xt, yt)
+        return accuracy, prediction

@@ -9,7 +9,7 @@ class LogitLearner(BaseLearner):
         predict = model.predict(x)
         accuracy = accuracy_score(y, predict)
 
-        return accuracy
+        return accuracy, predict
 
     def train(self, x, y, probs):
         clf = LogisticRegression(

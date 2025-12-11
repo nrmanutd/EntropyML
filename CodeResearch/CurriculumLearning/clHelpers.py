@@ -5,14 +5,31 @@ import numpy as np
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
+from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
 
 
 def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
     hc = KSHardnessCalculator(nAttempts, fraction)
+    hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
+
+    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)
+
+    sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
+
+    result = generalLearner.estimateLearner(sampler, learner)
+    return result
+
+def calculateLossesWithLearnerBasedHardnessCalculator(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
+    hardnessLearner = NNLearner()
+    assesor = StandardAssesor()
+
+    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction)
     hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
 
     prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)

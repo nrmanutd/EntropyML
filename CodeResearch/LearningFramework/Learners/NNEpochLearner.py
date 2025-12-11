@@ -38,7 +38,11 @@ class NNEpochLearner(BaseLearner):
         nClasses = len(np.unique(y))
         y_test = to_categorical(y, nClasses)
         _, acc = model.evaluate(x, y_test, verbose=0)
-        return acc
+
+        y_pred_proba = model.predict(x, verbose=0)
+        y_pred = np.argmax(y_pred_proba, axis=1)
+
+        return acc, y_pred
 
     def define_model(self, nFeatures, nClasses):
         model = Sequential()
