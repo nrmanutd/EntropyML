@@ -23,7 +23,7 @@ testAlpha = 0.5
 epochs = 40
 repeats = 20
 betas = [0.05, 0.1]
-nArrays = 6 * len(betas)
+nArrays = 4 * len(betas)
 batchSize = 50
 
 #x, y = make_random(nSamples)

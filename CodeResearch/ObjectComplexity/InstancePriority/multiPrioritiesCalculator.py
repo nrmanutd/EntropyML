@@ -25,11 +25,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         importance = hardnessResult[0]
         easyness = hardnessResult[1]
 
-        convertedEasyness = MultiPrioritiesCalculator.convertEasiness(easyness)
-
         importanceIdx = np.argsort(importance)[::-1]
         easynessIdx = np.argsort(easyness)[::-1]
-        convertedEasynessIdx = np.argsort(convertedEasyness)[::-1]
 
         resultPriorities = []
         probs = []
@@ -62,24 +59,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         resultPriorities.append(cutIdx)
                         probs.append(softmax(easyness[cutIdx]))
 
-                for beta in self.betas:
-                    curNTrain = math.ceil(beta * nTrain)
-                    cutIdx = convertedEasynessIdx[:curNTrain]
-                    for r in range(self.repeats):
-                        resultPriorities.append(cutIdx)
-                        probs.append(softmax(convertedEasyness[cutIdx]))
-
-
             if self.useBoth:
                 curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, easyness)
-                for beta in self.betas:
-                    curNTrain = math.ceil(nTrain * beta)
-                    idx = curIdx[:curNTrain]
-                    for r in range(self.repeats):
-                        resultPriorities.append(idx)
-                        probs.append(curProbs[:curNTrain] / sum(curProbs[:curNTrain]))
-
-                curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, convertedEasyness)
                 for beta in self.betas:
                     curNTrain = math.ceil(nTrain * beta)
                     idx = curIdx[:curNTrain]
