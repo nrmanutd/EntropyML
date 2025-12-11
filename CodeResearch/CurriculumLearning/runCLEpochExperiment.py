@@ -1,6 +1,6 @@
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clHelpers import calculateLosses, filterDataSet, \
+from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, \
     createLearnerBasedHardnessCalculator, createSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.NNPytorchEpochLearner import NNEpochLearnerPyTorch
@@ -9,9 +9,8 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSamplerFactory import \
     RandomAllsetSamplerFactory
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
-from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
-from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, loadFashionMnist, loadCifar100
+from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 10
 nAttempts = 100
