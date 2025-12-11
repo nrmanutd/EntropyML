@@ -8,11 +8,12 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, repeats, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
                  useBoth):
         self.repeats = repeats
         self.hardnessCalculator = hardnessCalculator
         self.alphas = alphas
+        self.betas = betas
         self.useBoth = useBoth
         self.useHardness = useHardness
         self.useImportance = useImportance
@@ -22,21 +23,22 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         hardnessResult = self.hardnessCalculator.calculateHardness(dataSet, target)
         importance = hardnessResult[0]
-        easiness = hardnessResult[1]
-        easiness = MultiPrioritiesCalculator.convertEasiness(easiness)
+        easyness = hardnessResult[1]
+
+        convertedEasyness = MultiPrioritiesCalculator.convertEasiness(easyness)
 
         importanceIdx = np.argsort(importance)[::-1]
-        hardnessIdx = np.argsort(easiness)[::-1]
+        easynessIdx = np.argsort(easyness)[::-1]
+        convertedEasynessIdx = np.argsort(convertedEasyness)[::-1]
 
         resultPriorities = []
         probs = []
-        betas = [0.2, 0.3]
 
         for alpha in self.alphas:
             nTrain = math.ceil(alpha * len(target))
 
             if self.useBasedPriority:
-                for beta in betas:
+                for beta in self.betas:
                     curNTrain = math.ceil(beta * nTrain)
                     for r in range(self.repeats):
                         rIdx = np.random.permutation(len(target))
@@ -44,26 +46,41 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
-            if self.useImportance:#beta = 0.1
-                for beta in betas:
+            if self.useImportance:
+                for beta in self.betas:
                     curNTrain = math.ceil(beta * nTrain)
                     cutIdx = importanceIdx[:curNTrain]
                     for r in range(self.repeats):
                         resultPriorities.append(cutIdx)
                         probs.append(softmax(importance[cutIdx]))
 
-            if self.useHardness:#beta = 0.5
-                for beta in betas:
+            if self.useHardness:
+                for beta in self.betas:
                     curNTrain = math.ceil(beta * nTrain)
-                    cutIdx = hardnessIdx[:curNTrain]
+                    cutIdx = easynessIdx[:curNTrain]
                     for r in range(self.repeats):
                         resultPriorities.append(cutIdx)
-                        probs.append(softmax(easiness[cutIdx]))
+                        probs.append(softmax(easyness[cutIdx]))
+
+                for beta in self.betas:
+                    curNTrain = math.ceil(beta * nTrain)
+                    cutIdx = convertedEasynessIdx[:curNTrain]
+                    for r in range(self.repeats):
+                        resultPriorities.append(cutIdx)
+                        probs.append(softmax(convertedEasyness[cutIdx]))
+
 
             if self.useBoth:
-                curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, easiness)
+                curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, easyness)
+                for beta in self.betas:
+                    curNTrain = math.ceil(nTrain * beta)
+                    idx = curIdx[:curNTrain]
+                    for r in range(self.repeats):
+                        resultPriorities.append(idx)
+                        probs.append(curProbs[:curNTrain] / sum(curProbs[:curNTrain]))
 
-                for beta in betas:
+                curIdx, curProbs = MultiPrioritiesCalculator.assign_weights(importance, convertedEasyness)
+                for beta in self.betas:
                     curNTrain = math.ceil(nTrain * beta)
                     idx = curIdx[:curNTrain]
                     for r in range(self.repeats):

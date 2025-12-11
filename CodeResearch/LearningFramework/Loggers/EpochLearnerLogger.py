@@ -6,8 +6,9 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 
 
 class EpochLearnerLogger(BaseLogger):
-    def __init__(self, epochs, taskName, prefix, nAttempts, nRepeats, nArrays):
+    def __init__(self, epochs, taskName, prefix, nAttempts, nRepeats, nArrays, betas):
         super().__init__()
+        self.betas = betas
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
@@ -38,7 +39,12 @@ class EpochLearnerLogger(BaseLogger):
                 curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        labels = ['l (0.2)', 'l (0.3)', 'i (0.2)', 'i (0.3)', 'h (0.2)', 'h (0.3)', 'h&i (0.2)', 'h&i (0.3)']
+        baseLabels = ['l', 'i', 'h', 'hc', 'h&i', 'hc&i']
+        labels = []
+        for l in baseLabels:
+            labels = labels + [f'{l} ({beta})' for beta in self.betas]
+
+        #labels = ['l (0.2)', 'l (0.3)', 'i (0.2)', 'i (0.3)', 'h (0.2)', 'h (0.3)', 'h&i (0.2)', 'h&i (0.3)']
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,

@@ -11,11 +11,11 @@ from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardne
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
-def calculateLosses(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
+def calculateLosses(x, y, alphas, betas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
     hc = KSHardnessCalculator(nAttempts, fraction)
     hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
 
-    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)
+    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, betas, repeats, True, True, True, True)
 
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
