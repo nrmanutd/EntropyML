@@ -1,6 +1,6 @@
 import shap
 import numpy as np
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier, XGBRegressor
 
 from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
 
@@ -17,7 +17,7 @@ class XGBoostAssesor(StandardAssesor):
             for j in range(len(trainIdxes[i])):
                 usedObjects[i, trainIdxes[i][j]] = 1
 
-        model = XGBClassifier().fit(usedObjects, accuracy)
+        model = XGBRegressor().fit(usedObjects, accuracy)
         explainer = shap.TreeExplainer(model)
 
         shap_values = explainer.shap_values(usedObjects)

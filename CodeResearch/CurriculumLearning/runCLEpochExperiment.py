@@ -12,7 +12,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
-nIterations = 10
+nIterations = 20
 nAttempts = 100
 nSamples = 2000
 datasetFraction = 1
@@ -20,9 +20,14 @@ alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 40
+epochs = 60
+
+#best - 20 и (16, 16)
+hardnessEpochs = 5
+hidden_sizes = (8, 8)
+
 repeats = 20
-betas = [0.05, 0.1]
+betas = [0.05, 0.1, 0.2, 0.5]
 nArrays = 4 * len(betas)
 batchSize = 50
 
@@ -55,11 +60,11 @@ for i in range(0, len(taskNames)):
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
-    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)))
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
+    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], len(np.unique(y)))
+    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], len(np.unique(y)), hardnessEpochs, hidden_sizes)
     sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hc)
 
     logger.logDebug(f'Starting task {prefix}')

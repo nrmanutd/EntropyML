@@ -13,6 +13,7 @@ from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardne
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoostAssesor
 
 
 def createKSHardnessCalculator(nAttempts, fraction):
@@ -22,9 +23,10 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses):
-    hardnessLearner = TorchMLPLearner(input_dim=2 * nFeatures, num_classes=nClasses, hidden_sizes=(16, 16))
+def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes):
+    hardnessLearner = TorchMLPLearner(input_dim=2 * nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
     assesor = StandardAssesor()
+    #assesor = XGBoostAssesor()
 
     hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
     hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)

@@ -1,10 +1,12 @@
 import numpy as np
 
+from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 
 class CompositeLearner(BaseLearner):
-    def __init__(self, learner: BaseLearner):
+    def __init__(self, learner: BaseLearner, logger: BaseLogger):
+        self.logger = logger
         self.learner = learner
 
     def train(self, x, y, probs):
@@ -38,6 +40,7 @@ class CompositeLearner(BaseLearner):
         resultsPredictions = []
 
         for i in range(len(x)):
+            self.logger.logDebug(f'Training model #{i} of {len(x)}')
             accuracy, predictions = self.learner.trainAndTest(x[i], y[i], probs[i], xt[i], yt[i])
             resultsAccuracy.append(accuracy)
             resultsPredictions.append(predictions)
