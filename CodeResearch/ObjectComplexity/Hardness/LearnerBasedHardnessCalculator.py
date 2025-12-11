@@ -30,7 +30,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             trainIdx = randomIdx[:trainObjects]
             testIdx = randomIdx[trainObjects:]
 
-            res = self.learner.trainAndTest(dataSet[trainIdx, :], target[trainIdx], np.full(trainObjects, fill_value=1.0/trainObjects),dataSet[trainIdx, :], target[testIdx]) #todo: make res in all learners tuple - accuracy and learner responds
+            res = self.learner.trainAndTest(dataSet[trainIdx, :], target[trainIdx], np.full(trainObjects, fill_value=1.0/trainObjects),dataSet[testIdx, :], target[testIdx]) #todo: make res in all learners tuple - accuracy and learner responds
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)

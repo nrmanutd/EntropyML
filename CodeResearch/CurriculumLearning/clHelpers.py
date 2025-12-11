@@ -13,9 +13,19 @@ from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator impor
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
 
-
-def calculateLosses(x, y, alphas, betas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
+def createKSHardnessCalculator(nAttempts, fraction):
     hc = KSHardnessCalculator(nAttempts, fraction)
+    return hc
+
+def createLearnerBasedHardnessCalculator(nAttempts, fraction):
+    hardnessLearner = NNLearner()
+    assesor = StandardAssesor()
+
+    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction)
+    return hc
+
+def calculateLosses(x, y, alphas, betas, testAlpha, repeats, generalLearner, learner, hc):
+
     hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
 
     prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, betas, repeats, True, True, True, True)
@@ -24,21 +34,6 @@ def calculateLosses(x, y, alphas, betas, testAlpha, nAttempts, fraction, repeats
 
     result = generalLearner.estimateLearner(sampler, learner)
     return result
-
-def calculateLossesWithLearnerBasedHardnessCalculator(x, y, alphas, testAlpha, nAttempts, fraction, repeats, generalLearner, learner):
-    hardnessLearner = NNLearner()
-    assesor = StandardAssesor()
-
-    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction)
-    hardnessCalculator = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-
-    prioritizer = MultiPrioritiesCalculator(hardnessCalculator, alphas, repeats, True, True, True, True)
-
-    sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
-
-    result = generalLearner.estimateLearner(sampler, learner)
-    return result
-
 
 def processLosses(result):
     arr = np.array(result)

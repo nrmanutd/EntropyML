@@ -1,5 +1,4 @@
 import math
-import numpy as np
 
 from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
 from CodeResearch.DataSeparationFramework.pValueCalculator import PValueCalculator
@@ -21,19 +20,4 @@ class KSHardnessCalculator(BaseHardnessCalculator):
         complexityCalculator = result[2]
         importance, easiness = complexityCalculator.getShapValues()
 
-        importance = KSHardnessCalculator.convertToECDF(importance)
-
         return importance, easiness
-
-    @staticmethod
-    def convertToECDF(importance):
-        idx = np.argsort(importance)
-
-        result = np.zeros(len(importance))
-        totalElements = len(idx)
-
-        for i in range(len(idx)):
-            originalIdx = idx[i]
-            result[originalIdx] = i / totalElements
-
-        return result

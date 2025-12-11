@@ -1,7 +1,6 @@
 import numpy as np
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
-
 class StandardAssesor(BaseObjectAssesor):
     def estimate(self, trainIdxes, testIdxes, testResponds, target):
         easyness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
@@ -12,7 +11,10 @@ class StandardAssesor(BaseObjectAssesor):
 
     def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)
-        totalAttempts = len(testIdxes)
+        totalAttempts = len(trainIdxes)
+
+        if len(trainIdxes) != len(testIdxes):
+            raise ValueError('Length of train and test attempts should be the same')
 
         objectsCorrect = np.zeros(totalObjects)
         objectsUsed = np.zeros(totalObjects)
@@ -60,22 +62,4 @@ class StandardAssesor(BaseObjectAssesor):
 
             shapValues[i] = np.mean(accuracy[withObjectIdx]) - np.mean(accuracy[noObjectIdx])
 
-        shapValues = self.convertToECDF(shapValues)
         return shapValues
-
-    def convertToECDF(self, importance):
-        idx = np.argsort(importance)
-
-        result = np.zeros(len(importance))
-        totalElements = len(idx)
-
-        for i in range(len(idx)):
-            originalIdx = idx[i]
-            result[originalIdx] = i / totalElements
-
-        return result
-
-
-
-
-
