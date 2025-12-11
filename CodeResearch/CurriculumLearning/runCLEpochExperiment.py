@@ -1,7 +1,7 @@
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import calculateLosses, filterDataSet, \
-    createLearnerBasedHardnessCalculator
+    createLearnerBasedHardnessCalculator, createSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.NNPytorchEpochLearner import NNEpochLearnerPyTorch
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
@@ -25,6 +25,7 @@ epochs = 40
 repeats = 20
 betas = [0.05, 0.1]
 nArrays = 6 * len(betas)
+batchSize = 50
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -55,19 +56,13 @@ for i in range(0, len(taskNames)):
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
-    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(50, PrioritizerType.Probability)))
+    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)))
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    logger.logDebug(f'Starting task {prefix}')
-
-    losses = []
-    lossesHardness = []
-    lossesImportant = []
-    lossesHardAndImportant = []
-
     hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], len(np.unique(y)))
-    hc = HardnessCorrector(hc)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hc)
 
-    tripleLosses = calculateLosses(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, generalLearner, compositeLearner, hc)
+    logger.logDebug(f'Starting task {prefix}')
+    generalLearner.estimateLearner(sampler, compositeLearner)
     logger.logDebug(f'Finished task {prefix}')

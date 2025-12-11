@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
@@ -17,6 +18,8 @@ from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import Stand
 def createKSHardnessCalculator(nAttempts, fraction):
     hc = KSHardnessCalculator(nAttempts, fraction)
     hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
+    hc = HardnessCorrector(hc)
+
     return hc
 
 def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses):
@@ -25,16 +28,14 @@ def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures,
 
     hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
     hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
+    hc = HardnessCorrector(hc)
     return hc
 
-def calculateLosses(x, y, alphas, betas, testAlpha, repeats, generalLearner, learner, hc):
-
+def createSampler(x, y, alphas, betas, testAlpha, repeats, hc):
     prioritizer = MultiPrioritiesCalculator(hc, alphas, betas, repeats, True, True, True, True)
-
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
-    result = generalLearner.estimateLearner(sampler, learner)
-    return result
+    return sampler
 
 def processLosses(result):
     arr = np.array(result)
