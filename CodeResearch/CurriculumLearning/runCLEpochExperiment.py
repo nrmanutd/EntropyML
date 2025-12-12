@@ -46,7 +46,7 @@ taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epo
 firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [88, 52, 87, 91, 10, 33, 6, 5, 8]
 
-for i in range(0, len(taskNames)):
+for i in range(1, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
