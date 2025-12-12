@@ -9,14 +9,14 @@ from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 
 class NNLearner(BaseLearner):
-    def __init__(self, dense=16, nLayers=2):
+    def __init__(self, nClasses:int, dense=16, nLayers=2):
+        self.nClasses = nClasses
         self.nLayers = nLayers
         self.dense = dense
 
     def test(self, model, x, y):
 
-        nClasses = len(np.unique(y))
-        y_test = to_categorical(y, nClasses)
+        y_test = to_categorical(y, self.nClasses)
         _, acc = model.evaluate(x, y_test, verbose=0)
 
         y_pred_proba = model.predict(x, verbose=0)
@@ -26,11 +26,10 @@ class NNLearner(BaseLearner):
 
     def train(self, x, y, probs):
         nFeatures = x.shape[1]
-        nClasses = len(np.unique(y))
 
-        model = self.define_model(nFeatures, nClasses)
+        model = self.define_model(nFeatures, self.nClasses)
         # fit model
-        y_train = to_categorical(y, nClasses)
+        y_train = to_categorical(y, self.nClasses)
         t = time.time()
         model.fit(x, y_train, epochs=10, batch_size=128, validation_split=0.1, verbose=0)#todo: check if validation split is necessary here
         print(f'Fitted in {time.time() - t} s')

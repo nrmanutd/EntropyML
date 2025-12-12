@@ -8,20 +8,21 @@ from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import NeuralNe
 
 
 class NNEpochLearnerPyTorch(BaseLearner):
-    def __init__(self, learning_rate=1e-3):
+    def __init__(self, nClasses: int, learning_rate=1e-3, dense=512):
         super().__init__()
         self.learning_rate = learning_rate
         self.loss_fn = nn.CrossEntropyLoss()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.nClasses = nClasses
+        self.dense = dense
         print(f"Using device: {self.device}")
 
     def train(self, x, y, probs):
         """Обучение модели с нуля"""
         nFeatures = x.shape[1]
-        nClasses = len(np.unique(y))
 
         # Создаем модель
-        model = self.define_model(nFeatures, nClasses).to(self.device)
+        model = self.define_model(nFeatures, self.nClasses).to(self.device)
 
         # Обучение
         model = self.update(model, x, y)
@@ -63,12 +64,8 @@ class NNEpochLearnerPyTorch(BaseLearner):
         return accuracy, predicted
 
     def define_model(self, nFeatures, nClasses):
-        """Определение архитектуры модели"""
-        # Динамический выбор размера скрытого слоя
-        dense = 512 if nFeatures > 20 else 16
-
         # Создаем модель
-        model = NeuralNetwork(nFeatures, nClasses, dense).to(self.device)
+        model = NeuralNetwork(nFeatures, nClasses, self.dense).to(self.device)
 
         # Добавляем оптимизатор как атрибут модели
         model.optimizer = optim.Adam(model.parameters(), lr=self.learning_rate)

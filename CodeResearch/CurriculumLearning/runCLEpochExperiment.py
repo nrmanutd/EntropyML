@@ -60,14 +60,15 @@ for i in range(7, len(taskNames)):
         x, y = loadCifar()
 
     y = normalizeTarget(y)
+    nClasses = len(np.unique(y))
 
     #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
-    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
+    compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], len(np.unique(y)), hardnessEpochs, hidden_sizes)
+    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
     sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hc)
 
     logger.logDebug(f'Starting task {prefix}')
