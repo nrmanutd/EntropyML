@@ -2,6 +2,7 @@ import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, \
     createLearnerBasedHardnessCalculator, createSampler
+from CodeResearch.Helpers.commonHelpers import normalizeTarget
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.NNPytorchEpochLearner import NNEpochLearnerPyTorch
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
@@ -26,8 +27,8 @@ epochs = 60
 hardnessEpochs = 5
 hidden_sizes = (8, 8)
 
-repeats = 20
-betas = [0.05, 0.1, 0.2, 0.5]
+repeats = 10
+betas = [0.05, 0.1]
 nArrays = 4 * len(betas)
 batchSize = 50
 
@@ -46,7 +47,7 @@ taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epo
 firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [88, 52, 87, 91, 10, 33, 6, 5, 8]
 
-for i in range(1, len(taskNames)):
+for i in range(7, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -58,7 +59,9 @@ for i in range(1, len(taskNames)):
     else:
         x, y = loadCifar()
 
-    x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
+    y = normalizeTarget(y)
+
+    #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)

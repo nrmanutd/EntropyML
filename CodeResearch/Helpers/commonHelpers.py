@@ -1,5 +1,6 @@
+import numpy as np
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from scipy import stats
 
 def calculateNormalityTest(x):
@@ -44,3 +45,9 @@ def perform_pca(X, n_components=10, scale=True):
     X_pca = pca.fit_transform(X_scaled)
 
     return X_pca
+
+def normalizeTarget(target):
+    enc = LabelEncoder()
+    normalizedTarget = enc.fit_transform(np.ravel(target))
+
+    return normalizedTarget
