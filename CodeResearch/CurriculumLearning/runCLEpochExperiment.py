@@ -25,7 +25,7 @@ epochs = 60
 
 #best - 20 и (16, 16)
 hardnessEpochs = 60
-hidden_sizes = (16, 16)
+hidden_sizes = (8, 8)
 
 repeats = 20
 betas = [0.05, 0.1, 0.2, 0.5, 1]
@@ -44,8 +44,8 @@ batchSize = 50
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [88, 52, 87, 91, 10, 33, 6, 5, 8]
+firstClasses = [47, 43, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [52, 88, 87, 91, 10, 33, 6, 5, 8]
 
 for i in range(len(taskNames)):
     taskName = taskNames[i]

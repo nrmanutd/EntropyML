@@ -56,7 +56,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         resultPriorities.append(cutIdx)
                         probs.append(curProbs)
 
-            product = importance * easyness
+            product = self.calculateProductBasedPriority(importance, easyness, 0.2)
+
             if self.useBoth:
                 for beta in self.betas:
                     idx = stratified_split_indices_with_min_and_priority(target, product, beta * alpha)
@@ -67,10 +68,13 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         return resultPriorities, probs
 
-    @staticmethod
-    def assign_weights(importance, easiness, target):
-        xy_product = importance * easiness
-        #sortedIdx = np.argsort(-xy_product)
+    def calculateProductBasedPriority(self, importance, easyness, alpha):
+        beta = 1 - alpha
+        epsilon = 1e-12
+        x_safe = np.maximum(importance, epsilon)
+        y_safe = np.maximum(easyness, epsilon)
 
+        min_ie = np.minimum(x_safe, y_safe)
 
-        return sortedIdx, softmax(xy_product[sortedIdx])
+        product = ((x_safe * y_safe) ** alpha) * (min_ie ** beta)
+        return product
