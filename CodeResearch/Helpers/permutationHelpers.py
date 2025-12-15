@@ -108,7 +108,7 @@ def stratified_split_indices_with_min(
     --------
     train_indices, test_indices : Tuple[np.ndarray, np.ndarray]
     """
-    if not 0 < train_ratio < 1:
+    if not 0 < train_ratio <= 1:
         raise ValueError(f"train_ratio должен быть между 0 и 1, получено {train_ratio}")
 
     if random_state is not None:
@@ -140,3 +140,41 @@ def stratified_split_indices_with_min(
     test_indices = np.array(test_indices_list)
 
     return train_indices, test_indices
+
+def stratified_split_indices_with_min_and_priority(
+        y: np.ndarray,
+        priority: np.ndarray,
+        alpha: float = 0.8,
+        min_samples_per_class: int = 1,
+        random_state: int = None
+):
+    if not 0 < alpha <= 1:
+        raise ValueError(f"train_ratio должен быть между 0 и 1, получено {alpha}")
+
+    if random_state is not None:
+        np.random.seed(random_state)
+
+    unique_classes, class_counts = np.unique(y, return_counts=True)
+
+    train_indices_list = []
+
+    for cls, count in zip(unique_classes, class_counts):
+        class_indices = np.where(y == cls)[0]
+        class_priorities = priority[class_indices]
+
+        class_priorities_idx = np.argsort(-class_priorities)
+
+        shuffled_indices = class_indices[class_priorities_idx]
+
+        n_train = max(min_samples_per_class, int(np.floor(count * alpha)))
+
+        # Если недостаточно данных для разделения
+        if n_train >= count:
+            n_train = max(1, count - 1)  # оставляем хотя бы один в test
+
+        train_class_indices = shuffled_indices[:n_train]
+        train_indices_list.extend(train_class_indices)
+
+    train_indices = np.array(train_indices_list)
+
+    return train_indices
