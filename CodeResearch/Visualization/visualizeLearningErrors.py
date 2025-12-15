@@ -116,7 +116,7 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     plt.close(fig)
 
 
-def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder, taskName, startIdx=0):
+def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder, taskName, markersCount, startIdx=0):
     """
     Plot learning curves for multiple classifiers on the same figure.
     Also creates a separate plot for standard deviations.
@@ -163,6 +163,10 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
         '#FFA500', '#FF1493', '#32CD32', '#1E90FF', '#8A2BE2', '#00CED1',  # названия цветов
     ]
 
+    markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h', 'H', '+', 'x', 'd']
+
+    markersCount = min(len(markers), markersCount)
+
     for clf_idx, (clf_errors, label) in enumerate(zip(errors_nested, labels)):
         if len(clf_errors) != len(alphas):
             raise ValueError(
@@ -175,15 +179,16 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
         stds = np.array([e.std(ddof=1) if len(e) > 1 else 0.0 for e in clf_errors])
 
         color = bright_colors[clf_idx % len(bright_colors)]
+        marker = markers[clf_idx%markersCount]
 
         # Рисуем график с ошибками и сохраняем цвет
         line = ax1.errorbar(
             alphas[idx],
             means[idx],
             yerr=stds[idx],
-            fmt='o-',
-            capsize=3,
-            markersize=3,
+            fmt= f'{marker}-',
+            capsize=2,
+            markersize=2,
             linewidth=1,
             capthick=1,
             elinewidth=0.8,
@@ -192,7 +197,7 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
         )
         #colors.append(line[0].get_color())
         colors.append(color)
-        lines.append(Line2D([0], [0], color=color, lw=2, label=label))
+        lines.append(Line2D([0], [0], color=color, lw=1, label=label, marker=marker))
 
     # Настройки первого графика
     ax1.legend(handles=lines, loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)

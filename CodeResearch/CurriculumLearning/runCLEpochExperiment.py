@@ -21,11 +21,11 @@ alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 60
+epochs = 20
 
 #best - 20 и (16, 16)
-hardnessEpochs = 5
-hidden_sizes = (8, 8)
+hardnessEpochs = 10
+hidden_sizes = (64, 64)
 
 repeats = 10
 betas = [0.05, 0.1]
