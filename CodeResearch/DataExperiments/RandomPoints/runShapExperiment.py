@@ -1,33 +1,31 @@
-from sklearn import datasets
-import numpy as np
-
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
 from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
-from CodeResearch.dataSets import make_random, make_xor, loadMnist, make_spirals
+from CodeResearch.dataSets import generate_lin_reg_dataset
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
 
-nSamples = 10000
+nSamples = 1000
 #x, y = make_random(nSamples)
-x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
+#x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
+x, y = generate_lin_reg_dataset(n_samples=nSamples)
 #x, y = make_xor(nSamples)
 #x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
 #x, y = make_spirals(nSamples)
 #x, y = loadMnist()
 
 #xx = np.hstack((x, -x))
-xx = x
-alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 6)))
+
+#alphas = np.concatenate((0.001 * np.arange(1, 10), 0.01 * np.arange(1, 10), 0.1 * np.arange(1, 6)))
 #alphas = [0.3]
-#alphas= [0.5]
+alphas= [0.5]
 
 #allowedClasses=["8_5", "5_3", "9_6", "8_1"]
-allowedClasses=[]
-taskName = "blobs_shap"
-iterations = 1000
+allowedClasses=["1_0"]
+taskName = "lin_reg"
+iterations = 100
 
 for alpha in alphas:
-    estimatePValuesForClassesSeparation(xx, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\\..\\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
+    estimatePValuesForClassesSeparation(x, y, taskName, ksAttempts=iterations, pAttempts=0, mlAttempts=0, folder='..\\..\\PValuesFigures', alpha=alpha, shapCalculation=True, allowedClasses=allowedClasses)
 
 visualizeAndSaveKSSI("..\\..\\PValuesFigures\\PValueLogs", f"{taskName}KSSI", alphas, taskName, iterations)
 visualizeAndSaveComplexObjects("..\\..\\PValuesFigures\\PValueLogs", f"{taskName}_ComplexObjects", taskName, iterations, x, y)

@@ -181,6 +181,16 @@ def make_spirals(n_samples=1000, noise=0.005, random_state=42):
     X += noise * np.random.randn(*X.shape)
     return X, y
 
+def generate_lin_reg_dataset(
+        k: float = 1.0, n_samples: int = 1000, noise: float = 0.05
+    ) -> tuple[np.ndarray, np.ndarray]:
+
+        x1 = np.random.uniform(0, 1, n_samples)
+        x2 = k * x1 + np.random.normal(0, noise**0.5, n_samples)
+        X = np.column_stack([x1, x2])
+        y = (X[:, 0] > X[:, 1]).astype(int)
+        return X, y
+
 def make_random(n_samples=1000):
     # Генерация random
     np.random.seed(42)
