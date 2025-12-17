@@ -12,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_all_classes_60_epoch_xy_prod'
+        self.prefix = f'{prefix}_ks_based_hardness'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -40,6 +40,7 @@ class EpochLearnerLogger(BaseLogger):
 
         xAxis = range(self.epochs)
         baseLabels = ['l', 'i', 'h', 'h&i']
+
         labels = []
         for l in baseLabels:
             labels = labels + [f'{l} ({beta})' for beta in self.betas]

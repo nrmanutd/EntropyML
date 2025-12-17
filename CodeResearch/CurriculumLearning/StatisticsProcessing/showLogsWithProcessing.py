@@ -3,15 +3,17 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 epochs = 60
-counter = 19
+counter = 5
+prefix = 'mnist_epoch_20_100_0.5_1_20_20_60_3_5_NN_all_classes_60_epoch_xy_prod'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_43_87_NN_all_classes_60_epoch_xy_prod'
-prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_43_88_NN_all_classes_60_epoch_xy_prod'
+#prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_43_88_NN_all_classes_60_epoch_xy_prod'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_47_52_NN_all_classes_60_epoch_xy_prod'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_5_6_NN_all_classes_60_epoch'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_47_52_NN_all_classes_60_epoch'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_43_87_NN_all_classes_60_epoch'
 #prefix = 'cifar100_epoch_20_100_0.5_1_20_20_60_43_88_NN_all_classes_60_epoch'
-folder = '..\\results_1512\\cifar100_epoch'
+#folder = '..\\results_1512\\cifar100_epoch'
+folder = '..\\mnist_epoch'
 xAxis = range(epochs)
 baseLabels = ['l', 'i', 'h', 'h&i']
 labels = []

@@ -77,4 +77,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         min_ie = np.minimum(x_safe, y_safe)
 
         product = ((x_safe * y_safe) ** alpha) * (min_ie ** beta)
-        return product
+        #return product
+
+        return importance * easyness
+        #return 0.5 * (importance + easyness)

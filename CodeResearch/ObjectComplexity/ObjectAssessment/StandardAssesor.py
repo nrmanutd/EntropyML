@@ -6,7 +6,7 @@ class StandardAssesor(BaseObjectAssesor):
         easyness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
         importance = self.estimateImportance(trainIdxes, testIdxes, testResponds, target)
 
-        return easyness, importance
+        return importance, easyness
 
     def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)

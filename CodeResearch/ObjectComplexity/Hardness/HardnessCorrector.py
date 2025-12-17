@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.special import softmax
+
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 
 
@@ -11,6 +13,8 @@ class HardnessCorrector(BaseHardnessCalculator):
         importance, easyness = self.hardnessCalculator.calculateHardness(dataSet, target)
 
         importance = self.convertToECDF(importance)
+        #importance = softmax(importance)
+        #easyness = softmax(easyness)
         return importance, easyness
 
 
