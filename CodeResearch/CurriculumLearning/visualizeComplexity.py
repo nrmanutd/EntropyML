@@ -12,7 +12,9 @@ from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.ObjectComplexity.Factory.ShapValuesComplexityCalculatorFactory import \
     ShapValuesComplexityCalculatorFactory
-from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, make_spirals
+from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
+from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
+from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins, make_spirals, loadCifar100
 
 nAttempts = 50
 nSamples = 2000
@@ -21,31 +23,30 @@ nSamples = 2000
 #x, y = make_xor(nSamples)
 #x, y = datasets.make_circles(n_samples=nSamples, factor=0.5, noise=0.1, random_state=42)
 #x, y = make_spirals(nSamples)
-x, y = loadMnist()
+#x, y = loadMnist()
+x, y = loadCifar100()
 #x, y = loadCifar()
-x, y = filterDataSet(x, y, 1, 3, 5)
+
+firstClass = 23
+secondClass = 33
+x, y = filterDataSet(x, y, 0.5, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 x = np.hstack((x, -x))
 
-taskName = 'mnist'
+taskName = 'cifar100'
 fractions = [0.5]
 
-targetProduct = 0.2 * 100 * 5
+currentAttempts = 100
 
 t = time.time()
 for fraction in fractions:
-    currentAttempts = math.ceil(targetProduct / fraction)
-
     print(f'Calculating for fraction {fraction}, attempts: {currentAttempts}')
 
-    hardnessCalculator = PValueCalculator(ShapValuesComplexityCalculatorFactory(), KSMetric(), currentAttempts, True, False,
-                                          False)
-    result = hardnessCalculator.calcPValueFastPro(math.ceil(len(y) * fraction), x, y, 0, 1)
-    complexityCalculator = result[2]
-    importance, easiness = complexityCalculator.getShapValues()
+    hc = HardnessCorrector(KSHardnessCalculator(currentAttempts, 0.5))
+    importance, easiness = hc.calculateHardness(x, y)
 
-    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{fraction}'
+    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{fraction}_{firstClass}_{secondClass}'
     plot_distributions_kde_with_metrics(easiness, importance, f'{prefix}_distribution.png')
 
     easyThresholds = [0.5, 0.6, 0.7, 0.8, 0.9]
@@ -54,9 +55,10 @@ for fraction in fractions:
         easyIdx = np.where(easiness > easy)[0]
         plot_distributions_kde_with_metrics(easiness[easyIdx], importance[easyIdx], f'{prefix}_distribution_conditioned_easy_{easy}.png')
 
-    importantIdx = np.where(importance > 0)[0]
-    plot_distributions_kde_with_metrics(easiness[importantIdx], importance[importantIdx], f'{prefix}_distribution_conditioned_important.png')
+    for important in easyThresholds:
+        importantIdx = np.where(importance > important)[0]
+        plot_distributions_kde_with_metrics(easiness[importantIdx], importance[importantIdx], f'{prefix}_distribution_conditioned_important_{important}.png')
 
-    visualizeAndSaveComplexity(easiness, importance, f'{prefix}_complexity.png')
+    visualizeAndSaveComplexity(easiness, importance, -(3 - easiness) * (2 - importance),  f'{prefix}_complexity.png')
 
     print(f'Visualization for {fraction}, time: {time.time() - t} s')

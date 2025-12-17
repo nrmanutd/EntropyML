@@ -70,7 +70,7 @@ def filterDataSet(x, y, alpha, firstClass, secondClass):
     return x[idx, :], tt
 
 
-def visualizeAndSaveComplexity(easiness, importance, filename):
+def visualizeAndSaveComplexity(easiness, importance, scores, filename):
     """
     Создает график точек по координатам и сохраняет в файл
 
@@ -85,7 +85,17 @@ def visualizeAndSaveComplexity(easiness, importance, filename):
 
     # Создаем график
     plt.figure(figsize=(10, 8))
-    plt.scatter(easiness, importance, alpha=0.7, s=50)
+    scatter = plt.scatter(easiness, importance,
+                          c=scores,  # массив скоров для цвета
+                          cmap='viridis',  # цветовая карта
+                          alpha=0.7,
+                          s=50,
+                          edgecolor='k',  # черная обводка точек
+                          linewidth=0.5)
+
+    # Добавляем colorbar
+    cbar = plt.colorbar(scatter)
+    cbar.set_label('Scores', fontsize=12)
 
     # Настраиваем оси и заголовок
     plt.xlabel('Easiness', fontsize=12)
@@ -186,6 +196,8 @@ def plot_distributions_kde_with_metrics(easiness, importance, filename):
     x_easiness = np.linspace(min(easiness), max(easiness), 100)
     ax1.plot(x_easiness, kde_easiness(x_easiness),
              color='blue', linewidth=2, label='KDE')
+
+
     ax1.fill_between(x_easiness, kde_easiness(x_easiness),
                      alpha=0.3, color='skyblue')
     ax1.set_xlabel('Easiness', fontsize=12)

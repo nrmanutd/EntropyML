@@ -22,10 +22,8 @@ for l in baseLabels:
 errors = []
 for i in range(len(labels)):
     fileName = f'{folder}\\{prefix}_{labels[i]}_{counter}_data.txt'
-
     r = deserialize_labeles_list_of_arrays(fileName)
     errors.append(r[0])
-
 
 plot_multi_errors_vs_alpha_std(errors, xAxis, labels, f'{folder}\\Processed', f'{prefix}_{counter}_processed', len(betas))
 plot_multi_errors_vs_alpha_std(errors, xAxis, labels, f'{folder}\\Processed', f'{prefix}_5_{counter}_processed', len(betas), 5)
