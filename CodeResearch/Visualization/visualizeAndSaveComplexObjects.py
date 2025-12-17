@@ -139,7 +139,7 @@ def extractAndSaveEdgeObjects(entropies, frequencies, x, target, firstClass, sec
             idx = f2idx[c2len - i]
             file.write("{0}:{1};{2};{3}\n".format(jObjects[idx], xx2[idx], f2[idx], secondClass))
 
-def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Brightness Visualization"):
+def plot_with_custom_brightness(X, y, complexity, resultFolder=None, title="Custom Brightness Visualization"):
     X_vis = X
     x_label, y_label = 'Feature 1', 'Feature 2'
 
@@ -150,7 +150,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        return (comp - 0.5)**10*1024
+        return 1# (comp - 0.5)**10*1024
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -192,8 +192,8 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder, title="Custom Br
     ax.legend()
     ax.grid(True, alpha=0.2)
 
-    plt.savefig('{:}\\{:}.png'.format(resultFolder, title),
-                dpi=300, bbox_inches='tight')
+    fileName = f'{title}.png' if resultFolder is None else f'{resultFolder}\\{title}.png'
+    plt.savefig(fileName, dpi=300, bbox_inches='tight')
     plt.close(fig)
 
 def extractData(x, target, firstClass, secondClass):

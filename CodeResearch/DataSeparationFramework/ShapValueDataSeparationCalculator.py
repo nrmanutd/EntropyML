@@ -21,6 +21,7 @@ class ShapValueDataSeparationCalculator(SimpleDataSeparationCalculator):
     def processCalculatedMetric(self, data):
         complexityCalculator = data[2]
         instanceImportance, instanceHardness = complexityCalculator.getShapValues()
+
         self.commonImportance.append(instanceImportance)
         self.commonHardness.append(instanceHardness)
         self.commonIndexes.append(complexityCalculator.getObjectsIndex())

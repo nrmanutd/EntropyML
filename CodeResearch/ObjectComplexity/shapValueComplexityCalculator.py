@@ -107,7 +107,6 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
             shapValues[i] = np.mean(accuracy[withObjectIdx]) - np.mean(accuracy[noObjectIdx])
 
         instanceHardness = self.getInstanceHardness()
-
         return shapValues, instanceHardness
 
     def getObjectsIndex(self):
