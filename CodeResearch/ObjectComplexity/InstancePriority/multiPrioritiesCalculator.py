@@ -69,6 +69,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         return resultPriorities, probs
 
     def calculateProductBasedPriority(self, importance, easyness, alpha):
+        return (3 - easyness) * (importance - 2)
+
         beta = 1 - alpha
         epsilon = 1e-12
         x_safe = np.maximum(importance, epsilon)
