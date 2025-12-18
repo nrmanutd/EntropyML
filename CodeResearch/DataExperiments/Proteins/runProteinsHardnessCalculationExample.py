@@ -16,19 +16,17 @@ from CodeResearch.dataSets import load_proteins, generate_lin_reg_dataset
 np.random.seed(42)
 
 #x, y = load_proteins("../../Data/Proteins/df_master.csv")
-x, y = generate_lin_reg_dataset(n_samples=2000)
+x, y = generate_lin_reg_dataset(n_samples=1000, noise=0.1)
 logger = SimpleLogger()
 
-nAttempts = 10000
+nAttempts = 1000
 alpha = 0.5
-
-hc = KSHardnessCalculator(nAttempts, alpha)
-assesor = XGBoostAssesor()
-#assesor = StandardAssesor()
+#assesor = XGBoostAssesor()
+assesor = StandardAssesor()
 hc = LearnerBasedHardnessCalculator(KSLearner(KSMetric(), logger), assesor, nAttempts, alpha, logger)
 hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-hc = HardnessCorrector(hc)
-
+#hc = HardnessCorrector(hc)
+#hc = KSHardnessCalculator(nAttempts, alpha)
 importance, easiness = hc.calculateHardness(x, y)
 
 plot_with_custom_brightness(x, y, (1 - easiness) * importance, title='EasinessxImportance')

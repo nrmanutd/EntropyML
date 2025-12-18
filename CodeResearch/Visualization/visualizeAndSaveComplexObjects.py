@@ -166,18 +166,18 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder=None, title="Cust
         class_mask = (labels == class_label)
         comp_values = non_nan_complexity[class_mask]
 
-        min_v = np.min(comp_values)
-        max_v = np.max(comp_values)
+        #min_v = np.min(comp_values)
+        #max_v = np.max(comp_values)
 
-        if max_v == min_v:
-            comp_values = np.zeros(len(comp_values))
-        else:
-            comp_values = (comp_values - min_v) / (max_v - min_v)
+        #if max_v == min_v:
+        #    comp_values = np.zeros(len(comp_values))
+        #else:
+        #    comp_values = (comp_values - min_v) / (max_v - min_v)
 
         alpha_values = [calculate_alpha(c) for c in comp_values]
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],
                              c=comp_values,
-                             cmap=cmap, vmin=0, vmax=1,
+                             cmap=cmap, vmin=min(comp_values), vmax=max(comp_values),
                              marker=markers[i],
                              alpha=alpha_values, s=60,
                              label=f'Class {class_label}',

@@ -30,7 +30,7 @@ def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures,
 
     hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
     #hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-    hc = HardnessCorrector(hc)
+    #hc = HardnessCorrector(hc)
     return hc
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hc):
