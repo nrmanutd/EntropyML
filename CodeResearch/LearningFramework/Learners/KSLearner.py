@@ -16,7 +16,7 @@ class KSLearner(BaseLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
-        return self.test(model, x, y)
+        return self.test(model, xt, yt)
 
     def test(self, model, x, y):
         predictions = np.zeros(len(y))
@@ -24,15 +24,16 @@ class KSLearner(BaseLearner):
         totalObjects = len(y)
 
         for i in range(len(y)):
-            predictions[i] = self.testSingleObject(model, x[i, :], y[i])
+            predictions[i] = self.testSingleObject(model, x[i, :])
             accuracy += (1.0 if predictions[i] == y[i] else 0.0) / totalObjects
 
+        print(accuracy)
         return accuracy, predictions
 
     def update(self, model, x, y):
         raise AssertionError('KS Learner is not supposed to be updated')
 
-    def testSingleObject(self, model, object, param1):
+    def testSingleObject(self, model, object):
         diviser = model[0]
         classUnder = model[1]
 
@@ -45,12 +46,13 @@ class KSLearner(BaseLearner):
         if isObjectUnderDiviser:
             return classUnder
 
-        return (classUnder + 1) % 2
+        oppositeClass = 1 if classUnder == 0 else 0
+        return oppositeClass
 
     def train(self, x, y, probs):
 
         if not torch.cuda.is_available():
-            self.logger.LogDebut('torch cuda is not available')
+            #self.logger.logDebug('torch cuda is not available')
             return self.calcPValuesCpuNumba(x, y)
 
         nFeatures = x.shape[1]

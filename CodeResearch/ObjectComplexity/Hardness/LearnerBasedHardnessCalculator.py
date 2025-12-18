@@ -46,8 +46,8 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             testResponds.append(res)
 
         self.logger.logDebug('Assesing results...')
-        importance, easyness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, target)
+        importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, target)
 
         self.logger.logDebug('Finished calculating hardness')
 
-        return importance, easyness
+        return importance, easiness

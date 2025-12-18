@@ -3,10 +3,10 @@ from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import Bas
 
 class StandardAssesor(BaseObjectAssesor):
     def estimate(self, trainIdxes, testIdxes, testResponds, target):
-        easyness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
+        easiness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
         importance = self.estimateImportance(trainIdxes, testIdxes, testResponds, target)
 
-        return easyness, importance
+        return importance, easiness
 
     def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)
@@ -35,7 +35,6 @@ class StandardAssesor(BaseObjectAssesor):
                     objectsCorrect[curObjectIdxOriginal] += 1
 
         easyness = np.array([objectsCorrect[i] / objectsUsed[i] for i in range(len(target))])
-
         return easyness
 
     def estimateImportance(self, trainIdxes, testIdxes, testResponds, target):
