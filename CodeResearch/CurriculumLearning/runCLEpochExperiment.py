@@ -21,14 +21,14 @@ alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 20
+epochs = 60
 
 #best - 20 и (16, 16)
-hardnessEpochs = 10
-hidden_sizes = (64, 64)
+hardnessEpochs = 20
+hidden_sizes = (16, 16)
 
 repeats = 10
-betas = [0.05, 0.1]
+betas = [0.05, 0.1, 0.2, 0.5, 1]
 nArrays = 4 * len(betas)
 batchSize = 50
 
@@ -44,10 +44,10 @@ batchSize = 50
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [88, 52, 87, 91, 10, 33, 6, 5, 8]
+firstClasses = [47, 43, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [52, 88, 87, 91, 10, 33, 6, 5, 8]
 
-for i in range(7, len(taskNames)):
+for i in range(1, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -62,7 +62,7 @@ for i in range(7, len(taskNames)):
     y = normalizeTarget(y)
     nClasses = len(np.unique(y))
 
-    #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
+    x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
