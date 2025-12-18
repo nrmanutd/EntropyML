@@ -15,6 +15,6 @@ hardnessCalculator = KSHardnessCalculator(nAttempts, 0.5)
 
 importance, easiness = hardnessCalculator.calculateHardness(x, y)
 
-plot_with_custom_brightness(x, y, -(3 - easiness) * (2 - importance), title='EasinessxImportance')
-plot_with_custom_brightness(x, y, easiness, title='Easiness')
+plot_with_custom_brightness(x, y, (1 - easiness) * importance, title='EasinessxImportance')
+plot_with_custom_brightness(x, y, 1 - easiness, title='Easiness')
 plot_with_custom_brightness(x, y, importance, title='Importance')
