@@ -27,7 +27,6 @@ class KSLearner(BaseLearner):
             predictions[i] = self.testSingleObject(model, x[i, :])
             accuracy += (1.0 if predictions[i] == y[i] else 0.0) / totalObjects
 
-        print(accuracy)
         return accuracy, predictions
 
     def update(self, model, x, y):
