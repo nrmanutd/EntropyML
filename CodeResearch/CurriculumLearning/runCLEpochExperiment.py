@@ -68,8 +68,8 @@ for i in range(len(taskNames)):
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    hc = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hc)
+    hcs = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, betas)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hcs)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

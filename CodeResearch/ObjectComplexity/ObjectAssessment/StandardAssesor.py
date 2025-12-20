@@ -34,8 +34,8 @@ class StandardAssesor(BaseObjectAssesor):
                 if curObjectRespond == trueObjectRespond:
                     objectsCorrect[curObjectIdxOriginal] += 1
 
-        easyness = np.array([objectsCorrect[i] / objectsUsed[i] for i in range(len(target))])
-        return easyness
+        easiness = np.array([objectsCorrect[i] / objectsUsed[i] for i in range(len(target))])
+        return easiness
 
     def estimateImportance(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)

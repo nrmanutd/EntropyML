@@ -84,6 +84,28 @@ def getDataSetOfTwoClassesCore(dataSet, target, iClassObjects, jClassObjects):
     return newSet, newTarget
 
 
+def stratified_split_indices_from_ks_native(y: np.ndarray, train_ratio: float):
+    iClass = 0
+    jClass = 1
+
+    iObjects = list(np.where(y == iClass)[0])
+    jObjects = list(np.where(y == jClass)[0])
+    objectsIdx = iObjects + jObjects
+
+    t = y[objectsIdx]
+
+    currentObjects = math.ceil(len(y) * train_ratio)
+
+    iClassIdx, jClassIdx = getDataSetIndexesOfTwoClasses(currentObjects, t, iClass, jClass)
+    idx = np.concatenate((iClassIdx, jClassIdx))
+
+    mask = np.zeros(len(y))
+    mask[idx] = 1
+
+    testIdx = np.array(np.where(mask == 0)[0])
+
+    return idx, testIdx
+
 def stratified_split_indices_with_min(
         y: np.ndarray,
         train_ratio: float = 0.8,

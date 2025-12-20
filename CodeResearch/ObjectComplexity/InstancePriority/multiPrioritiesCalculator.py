@@ -9,10 +9,10 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hardnessCalculator: BaseHardnessCalculator, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hcs, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
                  useBoth):
         self.repeats = repeats
-        self.hardnessCalculator = hardnessCalculator
+        self.hcs = hcs
         self.alphas = alphas
         self.betas = betas
         self.useBoth = useBoth
@@ -22,9 +22,16 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
     def calculatePriority(self, dataSet, target):
 
-        hardnessResult = self.hardnessCalculator.calculateHardness(dataSet, target)
-        importance = hardnessResult[0]
-        easiness = hardnessResult[1]
+        importances = []
+        easinesses = []
+
+        for hc in self.hcs:
+            hardnessResult = hc.calculateHardness(dataSet, target)
+            importance = hardnessResult[0]
+            easiness = hardnessResult[1]
+
+            importances.append(importance)
+            easinesses.append(easiness)
 
         resultPriorities = []
         probs = []
@@ -41,7 +48,10 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
-                for beta in self.betas:
+                for k in range(len(self.betas)):
+                    beta = self.betas[k]
+                    importance = importances[k]
+
                     cutIdx = stratified_split_indices_with_min_and_priority(target, importance, beta*alpha)
                     curProbs = softmax(importance[cutIdx])
                     for r in range(self.repeats):
@@ -49,24 +59,56 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         probs.append(curProbs)
 
             if self.useHardness:
-                for beta in self.betas:
+                for k in range(len(self.betas)):
+                    beta = self.betas[k]
+                    easiness = easinesses[k]
                     cutIdx = stratified_split_indices_with_min_and_priority(target, easiness, beta * alpha)
                     curProbs = softmax(easiness[cutIdx])
                     for r in range(self.repeats):
                         resultPriorities.append(cutIdx)
                         probs.append(curProbs)
 
-            product = self.calculateProductBasedPriority(importance, easiness)
-
             if self.useBoth:
-                for beta in self.betas:
+                for k in range(len(self.betas)):
+                    beta = self.betas[k]
+                    easiness = easinesses[k]
+                    importance = importances[k]
+
+                    product = self.calculateProductBasedPriority(importance, easiness, beta)
+
                     idx = stratified_split_indices_with_min_and_priority(target, product, beta * alpha)
-                    curProbs = softmax(product[idx])
+                    curProbs = np.full(product[idx], 1.0 / len(idx))
+
                     for r in range(self.repeats):
                         resultPriorities.append(idx)
                         probs.append(curProbs)
 
         return resultPriorities, probs
 
-    def calculateProductBasedPriority(self, importance, easiness):
-        return (1 - easiness) * importance
+    def calculateProductBasedPriority(self, importance, easiness, beta):
+        totalObjects = len(importance)
+
+        easinessIdx = np.argsort(-easiness)
+        topEasiestCount = math.ceil(beta / 2 * totalObjects)
+
+        topEasiestIdx = easinessIdx[:topEasiestCount]
+        topEasiestIdxSet = set(topEasiestIdx)
+
+        importanceIdx = np.argsort(-importance)
+
+        resultPriority = np.zeros(totalObjects)
+
+        for k in range(topEasiestCount):
+            originalIdx = topEasiestIdx[k]
+            resultPriority[originalIdx] = totalObjects - k
+
+        counter = topEasiestCount
+        for k in range(len(importance)):
+            originalIdx = importanceIdx[k]
+            if originalIdx in topEasiestIdxSet:
+                continue
+
+            resultPriority[originalIdx] = totalObjects - counter
+            counter += 1
+
+        return resultPriority

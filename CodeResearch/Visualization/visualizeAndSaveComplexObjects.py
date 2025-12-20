@@ -150,7 +150,7 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder=None, title="Cust
 
     # Нелинейная функция яркости - более резкий переход
     def calculate_alpha(comp):
-        return 1# (comp - 0.5)**10*1024
+        return comp**2 # (comp - 0.5)**10*1024
 
     fig, ax = plt.subplots(figsize=(12, 8))
 
@@ -166,13 +166,13 @@ def plot_with_custom_brightness(X, y, complexity, resultFolder=None, title="Cust
         class_mask = (labels == class_label)
         comp_values = non_nan_complexity[class_mask]
 
-        #min_v = np.min(comp_values)
-        #max_v = np.max(comp_values)
+        min_v = np.min(comp_values)
+        max_v = np.max(comp_values)
 
-        #if max_v == min_v:
-        #    comp_values = np.zeros(len(comp_values))
-        #else:
-        #    comp_values = (comp_values - min_v) / (max_v - min_v)
+        if max_v == min_v:
+            comp_values = np.zeros(len(comp_values))
+        else:
+            comp_values = (comp_values - min_v) / (max_v - min_v)
 
         alpha_values = [calculate_alpha(c) for c in comp_values]
         scatter = ax.scatter(X_vis[class_mask, 0], X_vis[class_mask, 1],

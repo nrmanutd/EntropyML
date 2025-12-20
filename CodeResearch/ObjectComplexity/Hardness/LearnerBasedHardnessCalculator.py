@@ -2,7 +2,8 @@ import math
 
 import numpy as np
 
-from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min, \
+    stratified_split_indices_from_ks_native
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
@@ -25,6 +26,9 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         testIdxes = []
         testResponds = []
 
+        ds = dataSet
+        t = target
+
         self.logger.logDebug('Start hardness calculation...')
 
         for i in range(self.nAttempts):
@@ -33,11 +37,11 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
             trainIdx, testIdx = stratified_split_indices_with_min(target, self.alpha)
 
-            x = dataSet[trainIdx, :]
-            y = target[trainIdx]
+            x = ds[trainIdx, :]
+            y = t[trainIdx]
 
-            xtest = dataSet[testIdx, :]
-            ytest = target[testIdx]
+            xtest = ds[testIdx, :]
+            ytest = t[testIdx]
 
             res = self.learner.trainAndTest(x, y, np.full(len(trainIdx), fill_value=1.0/len(trainIdx)), xtest, ytest)
 
@@ -46,7 +50,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             testResponds.append(res)
 
         self.logger.logDebug('Assesing results...')
-        importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, target)
+        importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, t)
 
         self.logger.logDebug('Finished calculating hardness')
 

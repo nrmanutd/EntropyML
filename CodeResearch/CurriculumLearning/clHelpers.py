@@ -23,15 +23,20 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes):
+def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes, betas):
     hardnessLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
     #assesor = StandardAssesor()
     assesor = XGBoostAssesor()
 
-    hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, fraction, logger)
-    #hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-    #hc = HardnessCorrector(hc)
-    return hc
+    hcs = []
+
+    for beta in betas:
+        hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, beta, logger)
+        #hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
+        #hc = HardnessCorrector(hc)
+        hcs.append(hc)
+
+    return hcs
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hc):
     prioritizer = MultiPrioritiesCalculator(hc, alphas, betas, repeats, True, True, True, True)

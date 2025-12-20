@@ -69,6 +69,7 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
                 self.goodObject[i] += 1
 
             self.objectAttempts[i] += 1
+
         pass
 
     def getInstanceHardness(self):
@@ -82,6 +83,7 @@ class ShapValueComplexityCalculator(BaseComplexityCalculator):
         self.usedObjects.append(currentUsedObjects)
 
         aggregateAccuracy = ShapValueComplexityCalculator.calculateAggregateScore(classUnderDivisier, currentUsedObjects, diviser, totalObjects, self.dataSet, self.target)
+
         self.accuracy.append(aggregateAccuracy)
 
         self.updateInstanceGoodness(diviser, classUnderDivisier, idx)

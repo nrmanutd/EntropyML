@@ -113,6 +113,7 @@ class PValueCalculator:
                 preparationTime += (time.time() - t2)
                 t2 = time.time()
                 #v, d = getMaximumDiviserFastNumbaCore(dsClasses, tClasses, vt1, sds1, vt2, sds2)
+
                 v, d, c = self.metricCalculator.calculateMetricPro(dsClasses, tClasses, vt1, sds1, vt2, sds2)
                 values[iAttempt] = v
                 ksTime += (time.time() - t2)

@@ -16,7 +16,8 @@ class KSLearner(BaseLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
-        return self.test(model, xt, yt)
+        a, p = self.test(model, xt, yt)
+        return (a, p)
 
     def test(self, model, x, y):
         predictions = np.zeros(len(y))
@@ -34,11 +35,11 @@ class KSLearner(BaseLearner):
             newObject = x[i, :]
 
             isObjectUnderDiviser = self.ifObjectIsUnder(diviser, newObject)
-            objectClass = y[i]
+            trueObjectClass = y[i]
 
             predictions[i] = classUnderDiviser if isObjectUnderDiviser else oppositeClassUnderDiviser
 
-            if objectClass == classUnderDiviser:
+            if trueObjectClass == classUnderDiviser:
                 positiveObjectsCount += 1
                 positiveObjects += (1 if isObjectUnderDiviser else 0)
             else:
