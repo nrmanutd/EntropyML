@@ -50,9 +50,12 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if self.useImportance:
                 for k in range(len(self.betas)):
                     beta = self.betas[k]
-                    importance = importances[k]
+                    importanceIdx = k - 1 if k > 0 else 0
+                    importance = importances[importanceIdx]
 
-                    cutIdx = stratified_split_indices_with_min_and_priority(target, importance, beta*alpha)
+                    product = self.calculateProductBasedPriority(importance, np.random.permutation(len(importance)), beta)
+
+                    cutIdx = stratified_split_indices_with_min_and_priority(target, product, beta*alpha)
                     curProbs = softmax(importance[cutIdx])
                     for r in range(self.repeats):
                         resultPriorities.append(cutIdx)
@@ -71,8 +74,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if self.useBoth:
                 for k in range(len(self.betas)):
                     beta = self.betas[k]
-                    easiness = easinesses[k]
-                    importance = importances[k]
+                    easiness = easinesses[-1]
+                    importanceIdx = k - 1 if k > 0 else 0
+                    importance = importances[importanceIdx]
 
                     product = self.calculateProductBasedPriority(importance, easiness, beta)
 
