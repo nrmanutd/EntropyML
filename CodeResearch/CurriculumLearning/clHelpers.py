@@ -5,17 +5,14 @@ import numpy as np
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
-from CodeResearch.LearningFramework.Learners.KSLearner import KSLearner
-from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
+from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
+from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
-from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
-from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
-from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoostAssesor
 
 
 def createKSHardnessCalculator(nAttempts, fraction):
@@ -27,19 +24,16 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
 def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes, betas):
     #hardnessLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
-    hardnessLearner = KSLearner(KSMetric(), logger)
-    #assesor = StandardAssesor()
-    assesor = XGBoostAssesor()
 
     hcs = []
 
-    targetExpected = 100
+    targetExpectedAttempts = nAttempts
 
     for k in range(len(betas) - 1):
         beta = betas[k]
-        attempts = math.ceil(targetExpected / beta)
-        hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, attempts, beta, logger)
-        #hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
+        attempts = math.ceil(targetExpectedAttempts / beta)
+        hc = HardnessFactory.createHardnessCalculatorWithLogger(LearnerEnum.KS, AssesorEnum.ShapXGBoost, attempts, beta, logger)
+
         hc = HardnessCorrector(hc)
         hcs.append(hc)
 

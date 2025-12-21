@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 200
+nAttempts = 100
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
