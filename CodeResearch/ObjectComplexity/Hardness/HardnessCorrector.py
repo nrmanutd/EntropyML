@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.stats import rankdata
+
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 
 
@@ -12,7 +14,10 @@ class HardnessCorrector(BaseHardnessCalculator):
 
         #importance = self.convertToPositive(importance)
         #importance = self.convertToECDF(importance)
-        importance = self.convertToUniform(importance)
+        #importance = self.convertToUniform(importance)
+        importance = self.convertToECDF(importance)
+        easyness = self.convertToECDF(easyness)
+
         return importance, easyness
 
     def convertToPositive(self, importance):
@@ -36,3 +41,7 @@ class HardnessCorrector(BaseHardnessCalculator):
             result[originalIdx] = i / totalElements
 
         return result
+
+    def convertToECDFMidRank(self, vector):
+        r = rankdata(vector, method="average")
+        return (r - 0.5) / len(vector)

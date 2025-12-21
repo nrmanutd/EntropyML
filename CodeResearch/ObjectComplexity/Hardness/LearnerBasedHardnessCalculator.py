@@ -33,7 +33,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
         for i in range(self.nAttempts):
             if i%10 == 0:
-                self.logger.logDebug(f'Attempt #{i}...')
+                self.logger.logDebug(f'Attempt #{i} of {self.nAttempts}...')
 
             trainIdx, testIdx = stratified_split_indices_with_min(target, self.alpha)
 

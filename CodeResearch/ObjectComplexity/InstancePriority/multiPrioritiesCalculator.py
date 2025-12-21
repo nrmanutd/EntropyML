@@ -78,7 +78,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     easiness = easinesses[curIdx]
                     importance = importances[curIdx]
 
-                    product = self.calculateProductBasedPriority(importance, easiness, beta)
+                    product = self.calculateProductBasedPriority(importance, easiness, 0.5)
                     idx = stratified_split_indices_with_min_and_priority(target, product, beta * alpha)
                     curProbs = softmax(product[idx])
 
@@ -88,33 +88,10 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         return resultPriorities, probs
 
-    def calculateProductBasedPriority(self, importance, easiness, beta):
-        return (2 - importance) * (easiness - 2)
-        #return (importance**0.5 + easiness**0.5)**2/4
+    def calculateProductBasedPriority(self, importance, easiness, alpha = 0.5):
+        n = len(importance)
+        eps = 1 / (2 * n)
 
-        totalObjects = len(importance)
+        score = np.exp(alpha * np.log(eps + importance) + (1 - alpha) * np.log(eps + easiness))
 
-        easinessIdx = np.argsort(-easiness)
-        topEasiestCount = math.ceil(beta / 2 * totalObjects)
-
-        topEasiestIdx = easinessIdx[:topEasiestCount]
-        topEasiestIdxSet = set(topEasiestIdx)
-
-        importanceIdx = np.argsort(-importance)
-
-        resultPriority = np.zeros(totalObjects)
-
-        for k in range(topEasiestCount):
-            originalIdx = topEasiestIdx[k]
-            resultPriority[originalIdx] = totalObjects - k
-
-        counter = topEasiestCount
-        for k in range(len(importance)):
-            originalIdx = importanceIdx[k]
-            if originalIdx in topEasiestIdxSet:
-                continue
-
-            resultPriority[originalIdx] = totalObjects - counter
-            counter += 1
-
-        return resultPriority
+        return score
