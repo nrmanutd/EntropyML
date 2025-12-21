@@ -9,6 +9,8 @@ class RandomComplexityBasedPrioritizer(BasePriorityCalculator):
         self.probs = probs
 
         if not np.isclose(np.asarray(probs).sum(), 1.0):
+            print(probs)
+            print(np.asarray(probs).sum())
             raise ValueError('Probs should be in sum = 1.0')
 
     def calculatePriority(self, dataSet, target):

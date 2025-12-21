@@ -22,5 +22,6 @@ class XGBoostAssesor(StandardAssesor):
 
         shap_values = explainer.shap_values(usedObjects)
 
-        return np.abs(shap_values).mean(axis=0)
+        #return np.abs(shap_values).mean(axis=0)
+        return shap_values.mean(axis=0)
 

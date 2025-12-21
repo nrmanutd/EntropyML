@@ -5,6 +5,8 @@ import numpy as np
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
+from CodeResearch.LearningFramework.Learners.KSLearner import KSLearner
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
@@ -24,16 +26,21 @@ def createKSHardnessCalculator(nAttempts, fraction):
     return hc
 
 def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes, betas):
-    hardnessLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+    #hardnessLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+    hardnessLearner = KSLearner(KSMetric(), logger)
     #assesor = StandardAssesor()
     assesor = XGBoostAssesor()
 
     hcs = []
 
-    for beta in betas:
-        hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, nAttempts, beta, logger)
+    targetExpected = 100
+
+    for k in range(len(betas) - 1):
+        beta = betas[k]
+        attempts = math.ceil(targetExpected / beta)
+        hc = LearnerBasedHardnessCalculator(hardnessLearner, assesor, attempts, beta, logger)
         #hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-        #hc = HardnessCorrector(hc)
+        hc = HardnessCorrector(hc)
         hcs.append(hc)
 
     return hcs
