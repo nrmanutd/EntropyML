@@ -15,8 +15,8 @@ class HardnessCorrector(BaseHardnessCalculator):
         #importance = self.convertToPositive(importance)
         #importance = self.convertToECDF(importance)
         #importance = self.convertToUniform(importance)
-        importance = self.convertToECDF(importance)
-        easyness = self.convertToECDF(easyness)
+        importance = self.convertToECDFMidRank(importance)
+        easyness = self.convertToECDFMidRank(easyness)
 
         return importance, easyness
 
