@@ -44,8 +44,8 @@ batchSize = 50
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [47, 43, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [52, 88, 87, 91, 10, 33, 6, 5, 8]
+firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [87, 52, 88, 91, 10, 33, 6, 5, 8]
 
 for i in range(len(taskNames)):
     taskName = taskNames[i]
