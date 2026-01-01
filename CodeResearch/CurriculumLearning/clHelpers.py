@@ -1,10 +1,13 @@
 import math
 
 import matplotlib.pyplot as plt
+from matplotlib.cm import get_cmap
 import numpy as np
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import mutual_info_regression
+from scipy import optimize, interpolate
+
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
@@ -46,8 +49,8 @@ def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures,
 
     return hcs
 
-def createSampler(x, y, alphas, betas, testAlpha, repeats, hc):
-    prioritizer = MultiPrioritiesCalculator(hc, alphas, betas, repeats, True, True, True, True)
+def createSampler(x, y, alphas, betas, testAlpha, repeats, hc, logger):
+    prioritizer = MultiPrioritiesCalculator(hc, logger, alphas, betas, repeats, True, True, True, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler
@@ -477,3 +480,158 @@ def plot_distributions_kde(metric_arrays, fileName,
     plt.close()
 
     return fig, ax
+
+
+def plot_multiple_ecdfs(ecdfs_list, intersections = None, labels=None, title="Multiple ECDFs",
+                        fileName="multiple_ecdfs.png", figsize=(12, 8)):
+    """
+    Строит несколько ECDF на одном графике
+
+    Parameters:
+    -----------
+    ecdfs_list : list of tuples
+        Список из (x, y) пар для каждой ECDF
+        x - отсортированные значения выборки
+        y - соответствующие значения вероятностей (от 0 до 1)
+
+    labels : list of str, optional
+        Подписи для каждой кривой ECDF
+
+    title : str
+        Заголовок графика
+
+    filename : str
+        Имя файла для сохранения
+
+    figsize : tuple
+        Размер фигуры (ширина, высота)
+    """
+    # Проверка входных данных
+    if not ecdfs_list:
+        raise ValueError("Список ECDF не должен быть пустым")
+
+    n_ecdfs = len(ecdfs_list)
+
+    # Автоматические подписи, если не заданы
+    if labels is None:
+        labels = [f"Выборка {i + 1}" for i in range(n_ecdfs)]
+    elif len(labels) != n_ecdfs:
+        raise ValueError(f"Количество подписей ({len(labels)}) должно совпадать "
+                         f"с количеством ECDF ({n_ecdfs})")
+
+    # Создаем цветовую карту
+    cmap = get_cmap('tab10') if n_ecdfs <= 10 else get_cmap('tab20')
+    colors = [cmap(i % cmap.N) for i in range(n_ecdfs)]
+
+    # Создаем график
+    plt.figure(figsize=figsize)
+
+    if intersections is not None and len(intersections) > 0:
+        intersections = np.asarray(intersections)
+        x_intersections = intersections[:]
+
+        # Рисуем точки пересечения
+        plt.scatter(x_intersections, x_intersections,
+                    marker='X', s=150, c='red',
+                    edgecolors='black', linewidths=2, zorder=10)
+
+    # Рисуем все ECDF
+    all_x_min = []
+    all_x_max = []
+
+    for i, (x, y) in enumerate(ecdfs_list):
+        # Преобразуем в numpy массивы
+
+        x = np.asarray(x)
+        y = np.asarray(y)
+
+        plt.step(x, y, where='post',
+                 label=labels[i],
+                 color=colors[i],
+                 linewidth=2,
+                 alpha=0.8)
+
+        # Запоминаем min и max для установки границ
+        all_x_min.append(x.min())
+        all_x_max.append(x.max())
+
+    # Настраиваем график
+    plt.xlabel('Значение', fontsize=12)
+    plt.ylabel('F(x) - Эмпирическая функция распределения', fontsize=12)
+    plt.title(title, fontsize=14, fontweight='bold')
+
+    # Устанавливаем границы по X с небольшим запасом
+    x_min = min(all_x_min) - 0.1 * (max(all_x_max) - min(all_x_min))
+    x_max = max(all_x_max) + 0.1 * (max(all_x_max) - min(all_x_min))
+    plt.xlim(x_min, x_max)
+
+    # Y всегда от 0 до 1
+    plt.ylim(-0.05, 1.05)
+
+    # Легенда
+    plt.legend(loc='lower right', fontsize=10, framealpha=0.9)
+
+    # Сетка
+    plt.grid(True, alpha=0.3, linestyle='--')
+
+    # Сохраняем с высоким качеством
+    plt.tight_layout()
+    plt.savefig(fileName, dpi=300, bbox_inches='tight')
+    plt.close()
+
+def ecdf_advanced(data):
+    """
+    ECDF с правильной обработкой повторяющихся значений
+    """
+    data = np.asarray(data)
+    n = len(data)
+
+    # Сортируем
+    x = np.sort(data)
+
+    # Для повторяющихся значений нужно корректно считать
+    # Используем cumcount
+    y = np.arange(1, n + 1) / n
+
+    # Если есть NaN, удаляем их
+    if np.any(np.isnan(data)):
+        valid = ~np.isnan(data)
+        x = x[valid]
+        n = len(x)
+        y = np.arange(1, n + 1) / n
+
+    return x, y
+
+
+def find_ecdf_intersection_optimize(x1, y1, x2, y2):
+    """
+    Использование оптимизации для поиска пересечения.
+    """
+    # Создаем интерполяционные функции
+    f1 = interpolate.interp1d(x1, y1, kind='linear',
+                              bounds_error=False, fill_value=(0, 1))
+    f2 = interpolate.interp1d(x2, y2, kind='linear',
+                              bounds_error=False, fill_value=(0, 1))
+
+    # Функция разности
+    def diff_func(x):
+        return f1(x) - f2(x)
+
+    # Диапазон поиска (минимальный и максимальный x из обоих наборов)
+    x_min = min(x1.min(), x2.min())
+    x_max = max(x1.max(), x2.max())
+
+    # Ищем корни разности функций
+    intersections = []
+
+    # Разбиваем на интервалы для поиска
+    search_points = np.linspace(x_min, x_max, 100)
+
+    for i in range(len(search_points) - 1):
+        a, b = search_points[i], search_points[i + 1]
+
+        # Проверяем, меняет ли функция знак на интервале
+        if diff_func(a) * diff_func(b) < 0:
+            intersections.append(a)
+
+    return intersections

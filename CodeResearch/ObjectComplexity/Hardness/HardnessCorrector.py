@@ -14,8 +14,8 @@ class HardnessCorrector(BaseHardnessCalculator):
 
         importance = self.convertToECDFMidRank(importance)
 
-        easiness = 1 - 2 * np.abs(easiness - 0.5)
-        easiness = self.convertToECDFMidRank(easiness)
+        #easiness = 1 - 2 * np.abs(easiness - 0.5)
+        #easiness = self.convertToECDFMidRank(easiness)
 
         return importance, easiness
 

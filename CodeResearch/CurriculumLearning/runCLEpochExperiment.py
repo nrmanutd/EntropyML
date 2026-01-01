@@ -29,7 +29,7 @@ hidden_sizes = (16, 16)
 
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
-nArrays = 4 * len(betas)
+nArrays = 3 * len(betas)
 batchSize = 50
 
 #x, y = make_random(nSamples)
@@ -69,7 +69,7 @@ for i in range(len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     hcs = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, betas)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hcs)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hcs, logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
