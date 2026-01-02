@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 100
+nAttempts = 200
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -29,7 +29,7 @@ hidden_sizes = (16, 16)
 
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
-nArrays = 3 * len(betas)
+nArrays = 4 * len(betas)
 batchSize = 50
 
 #x, y = make_random(nSamples)
@@ -44,10 +44,10 @@ batchSize = 50
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [87, 52, 88, 91, 10, 33, 6, 5, 8]
+firstClasses = [47, 43, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [52, 87, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(len(taskNames)):
+for i in range(2, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -68,8 +68,8 @@ for i in range(len(taskNames)):
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    hcs = createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, betas)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, hcs, logger)
+    #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

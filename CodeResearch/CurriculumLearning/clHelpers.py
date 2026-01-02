@@ -28,29 +28,17 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, fraction, logger, nFeatures, nClasses, epochs, hidden_sizes, betas):
-    #hardnessLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes):
+    l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+    a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
-    hcs = []
+    hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
+    hc = HardnessCorrector(hc)
 
-    targetExpectedAttempts = nAttempts
+    return hc
 
-    for k in range(len(betas) - 1):
-        beta = betas[k]
-        attempts = math.ceil(targetExpectedAttempts / beta)
-        l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
-        a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
-
-        hc = LearnerBasedHardnessCalculator(l, a, attempts, beta, logger)
-        #hc = HardnessFactory.createHardnessCalculatorWithLogger(LearnerEnum.KS, AssesorEnum.ShapXGBoost, attempts, beta, logger)
-
-        hc = HardnessCorrector(hc)
-        hcs.append(hc)
-
-    return hcs
-
-def createSampler(x, y, alphas, betas, testAlpha, repeats, hc, logger):
-    prioritizer = MultiPrioritiesCalculator(hc, logger, alphas, betas, repeats, True, True, True, False)
+def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, True)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler

@@ -12,10 +12,10 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hcs, logger: BaseLogger, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hcBuilder, logger: BaseLogger, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
                  useBoth):
         self.repeats = repeats
-        self.hcs = hcs
+        self.hcBuilder = hcBuilder
         self.logger = logger
         self.alphas = alphas
         self.betas = betas
@@ -26,19 +26,6 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         self.usefullObjectsCalculator = UsefulObjectsCalculator()
 
     def calculatePriority(self, dataSet, target):
-
-        importances = []
-        easinesses = []
-
-        for hc in self.hcs:
-            hardnessResult = hc.calculateHardness(dataSet, target)
-            importance = hardnessResult[0]
-            easiness = hardnessResult[1]
-
-            importances.append(importance)
-            easinesses.append(easiness)
-
-        easinessThreshold = self.usefullObjectsCalculator.evaluate(easinesses[0], easinesses[-1])
 
         resultPriorities = []
         probs = []
@@ -55,54 +42,121 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
-                for k in range(len(self.betas)):
-                    beta = self.betas[k]
-                    currentMetrices = easinesses
-                    currentMetricIdx = min(k, len(currentMetrices) - 1)
-                    currentMetric = currentMetrices[currentMetricIdx]
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness')
 
-                    for r in range(self.repeats):
-                        cutIdx = stratified_split_indices_with_min_and_priority(target, currentMetric, beta * alpha)
-                        curProbs = softmax(currentMetric[cutIdx])
-
-                        resultPriorities.append(cutIdx)
-                        probs.append(curProbs)
+                for i in range(len(resIdxes)):
+                    resultPriorities.append(resIdxes[i])
+                    probs.append(resProbs[i])
 
             if self.useHardness:
-                for k in range(len(self.betas)):
-                    beta = self.betas[k]
-                    easiness = easinesses[min(k, len(easinesses) - 1)]
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness_delta')
 
-                    subIdx = np.where(easiness >= easinessThreshold)[0]
-
-                    #cutIdx = stratified_split_indices_with_min_and_priority(target[subIdx], easiness[subIdx], beta * alpha * len(easiness) / len(subIdx))
-                    part = beta * alpha * len(easiness) / len(subIdx)
-                    if part > 1:
-                        self.logger.logDebug(f'Part = {part}, beta = {beta}, alpha = {alpha}')
-                        part = 1
-
-                    cutIdx, testIdx = stratified_split_indices_with_min(target[subIdx], part)
-                    cutIdx = subIdx[cutIdx]
-                    curProbs = softmax(easiness[cutIdx])
-
-                    for r in range(self.repeats):
-                        resultPriorities.append(cutIdx)
-                        probs.append(curProbs)
+                for i in range(len(resIdxes)):
+                    resultPriorities.append(resIdxes[i])
+                    probs.append(resProbs[i])
 
             if self.useBoth:
-                for k in range(len(self.betas)):
-                    beta = self.betas[k]
-                    curIdx = min(k, len(easinesses) - 1)
-                    easiness = easinesses[curIdx]
-                    importance = importances[curIdx]
+                resIdxes, resProbs = self.calculateChainNoState(dataSet, target, alpha, 'easiness')
 
-                    product = self.calculateProductBasedPriority(importance, easiness, 0.5)
-                    idx = stratified_split_indices_with_min_and_priority(target, product, beta * alpha)
-                    curProbs = softmax(product[idx])
+                for i in range(len(resIdxes)):
+                    resultPriorities.append(resIdxes[i])
+                    probs.append(resProbs[i])
 
-                    for r in range(self.repeats):
-                        resultPriorities.append(idx)
-                        probs.append(curProbs)
+        return resultPriorities, probs
+
+    def calculateChain(self, dataSet, target, alpha, priorityType: str):
+        self.logger.logDebug(f'Calculating chain for {priorityType}...')
+
+        resultPriorities = []
+        probs = []
+
+        nObjects = len(target)
+
+        currentDataSetIdx = []
+        prevBeta = 0
+        prevEasiness = np.zeros(nObjects)
+
+        for k in range(len(self.betas)):
+            beta = self.betas[k]
+
+            if abs(beta - 1) < 0.001:
+                for r in range(self.repeats):
+                    resultPriorities.append(np.arange(nObjects))
+                    probs.append(np.full(nObjects, 1.0 / nObjects))
+
+                break
+
+            deltaBeta = beta - prevBeta
+            prevBeta = beta
+
+            currentIdx = np.array(currentDataSetIdx, dtype=np.int64)
+            ci = set(currentDataSetIdx)
+            restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
+            fraction = deltaBeta * alpha * nObjects / len(restIdx)
+            hc = self.hcBuilder()
+            importance, easiness = hc.calculateHardness(dataSet[restIdx, :], target[restIdx],
+                                                             dataSet[currentIdx, :], target[currentIdx], fraction)
+
+            easinessDelta = easiness - prevEasiness
+
+            if priorityType == 'importance':
+                priority = importance
+            elif priorityType == 'easiness':
+                priority = easiness
+            elif priorityType == 'easiness_delta':
+                priority = easinessDelta
+            else:
+                priority = self.calculateProductBasedPriority(importance, easinessDelta, 0.5)
+
+            cutIdx = stratified_split_indices_with_min_and_priority(target[restIdx], priority, fraction)
+            currentDataSetIdx.extend(restIdx[cutIdx])
+
+            ci = set(cutIdx)
+            prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
+
+            #curProbs = softmax(np.arange(len(currentDataSetIdx), 0, -1))
+            curProbs = (np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx)))
+
+            for r in range(self.repeats):
+                resultPriorities.append(np.array(currentDataSetIdx))
+                probs.append(curProbs)
+
+        return resultPriorities, probs
+
+    def calculateChainNoState(self, dataSet, target, alpha, priorityType: str):
+        self.logger.logDebug(f'Calculating chain for {priorityType}...')
+
+        nObjects = len(target)
+        resultPriorities = []
+        probs = []
+
+        for k in range(len(self.betas)):
+            beta = self.betas[k]
+
+            if abs(beta - 1) < 0.001:
+                for r in range(self.repeats):
+                    resultPriorities.append(np.arange(nObjects))
+                    probs.append(np.full(nObjects, 1.0 / nObjects))
+
+                break
+
+            fraction = beta * alpha
+            hc = self.hcBuilder()
+            importance, easiness = hc.calculateHardness(dataSet, target, None, None, fraction)
+
+            if priorityType == 'importance':
+                priority = importance
+            elif priorityType == 'easiness':
+                priority = easiness
+            else:
+                priority = self.calculateProductBasedPriority(importance, easiness, 0.5)
+
+            cutIdx = stratified_split_indices_with_min_and_priority(target, priority, fraction)
+            curProbs = easiness[cutIdx] / sum(easiness[cutIdx])
+
+            for r in range(self.repeats):
+                resultPriorities.append(np.array(cutIdx))
+                probs.append(curProbs)
 
         return resultPriorities, probs
 
@@ -113,3 +167,4 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         score = np.exp(alpha * np.log(eps + importance) + (1 - alpha) * np.log(eps + easiness))
 
         return score
+
