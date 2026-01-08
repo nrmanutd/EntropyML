@@ -55,7 +55,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
 
                 g_list.append(G_batch.detach())
 
-            g_delta = self.calculateDelta(g_list)
+            g_delta = self.calculateDelta(g_list, mode='grad_norm')
             all_epochs_scores.append(g_delta)
 
         final_scores = np.mean(np.stack(all_epochs_scores, axis=0), axis=0)
@@ -115,6 +115,10 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
             scores = torch.empty(N, device=G_epoch.device)
             scores[0] = 0.0
             scores[1:] = diffs
+            return scores.detach().cpu().numpy()
+
+        elif mode == "grad_norm":
+            scores = G_epoch.norm(p=2, dim=1)
             return scores.detach().cpu().numpy()
 
         # --- НОВОЕ: вклад как изменение направления running mean ---

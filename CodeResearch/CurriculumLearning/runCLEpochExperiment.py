@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 100
+nAttempts = 200
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -33,7 +33,7 @@ nArrays = 2 * len(betas)
 batchSize = 50
 
 dBatchSize = 50
-dEpochs = 10
+dEpochs = 20
 dHidden_sizes = (16, 16)
 
 #x, y = make_random(nSamples)
