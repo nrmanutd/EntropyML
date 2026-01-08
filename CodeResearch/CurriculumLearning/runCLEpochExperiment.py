@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 200
+nAttempts = 1000
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -29,7 +29,7 @@ hidden_sizes = (16, 16)
 
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
-nArrays = 4 * len(betas)
+nArrays = 2 * len(betas)
 batchSize = 50
 
 #x, y = make_random(nSamples)
@@ -44,10 +44,10 @@ batchSize = 50
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
 taskNames = ['cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
-firstClasses = [47, 43, 43, 70, 9, 23, 5, 3, 0]
-secondClasses = [52, 87, 88, 91, 10, 33, 6, 5, 8]
+firstClasses = [43, 47, 43, 70, 9, 23, 5, 3, 0]
+secondClasses = [87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(2, len(taskNames)):
+for i in range(len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
