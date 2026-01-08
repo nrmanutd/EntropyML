@@ -1,20 +1,20 @@
 import math
 
 import matplotlib.pyplot as plt
-from matplotlib.cm import get_cmap
 import numpy as np
+from scipy import interpolate
 from scipy import stats
-from sklearn.preprocessing import LabelEncoder
 from sklearn.feature_selection import mutual_info_regression
-from scipy import optimize, interpolate
-
+from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Samplers.Batches.priorityBasedSampler import PriorityBasedSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
+from CodeResearch.ObjectComplexity.Diversity.NNBasedObjectDiversifier import NNBasedObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
-from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
@@ -28,11 +28,14 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes):
+def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, batchSize, dEpochs, dHidden_sizes):
     l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
+
+    dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=1)
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
     hc = HardnessCorrector(hc)
 
     return hc
@@ -508,7 +511,7 @@ def plot_multiple_ecdfs(ecdfs_list, intersections = None, labels=None, title="Mu
                          f"с количеством ECDF ({n_ecdfs})")
 
     # Создаем цветовую карту
-    cmap = get_cmap('tab10') if n_ecdfs <= 10 else get_cmap('tab20')
+    cmap = plt.get_cmap('tab10') if n_ecdfs <= 10 else plt.get_cmap('tab20')
     colors = [cmap(i % cmap.N) for i in range(n_ecdfs)]
 
     # Создаем график

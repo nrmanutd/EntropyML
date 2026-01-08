@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 1000
+nAttempts = 100
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -31,6 +31,10 @@ repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 nArrays = 2 * len(betas)
 batchSize = 50
+
+dBatchSize = 50
+dEpochs = 10
+dHidden_sizes = (16, 16)
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -69,7 +73,7 @@ for i in range(len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes), logger)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dBatchSize, dEpochs, dHidden_sizes), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
