@@ -47,7 +47,7 @@ for fraction in fractions:
     hc = HardnessFactory.HardnessFactory.createHardnessCalculator(learner, assesor, currentAttempts, fraction)
     importance, easiness = hc.calculateHardness(x, y)
 
-    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_CDF'
+    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_MCDF'
     plot_distributions_kde_with_metrics(easiness, importance, f'{prefix}_distribution.png')
 
     hc1 = HardnessCorrector(hc)
