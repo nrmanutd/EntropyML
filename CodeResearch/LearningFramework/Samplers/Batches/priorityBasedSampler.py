@@ -12,13 +12,15 @@ class PriorityBasedSampler(BaseSampler):
         self.currentIndex = 0
 
     def sample(self, seed=None):
-        finishIndex = min(len(self.target), self.currentIndex + self.batchsize)
-        idx = range(self.currentIndex, finishIndex)
+        batches = []
+        n = len(self.target)
 
-        idx = self.originalIdx[idx]
-        xBatch = self.dataset[idx]
-        yBatch = self.target[idx]
+        for i in range(0, n, self.batchsize):
+            subIdx = self.originalIdx[i:i + self.batchsize]
 
-        self.currentIndex = finishIndex
+            x_batch = self.dataset[subIdx]
+            y_batch = self.target[subIdx]
 
-        return [(xBatch, yBatch)]
+            batches.append((x_batch, y_batch))
+
+        return batches

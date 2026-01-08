@@ -9,6 +9,7 @@ class SequentialSampler(BaseSampler):
         self.currentIndex = 0
 
     def sample(self, seed=None):
+
         finishIndex = min(len(self.target), self.currentIndex + self.batchsize)
 
         idx = range(self.currentIndex, finishIndex)
