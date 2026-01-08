@@ -5,6 +5,7 @@ from CodeResearch.LearningFramework.Learners.KSLearner import KSLearner
 from CodeResearch.LearningFramework.Learners.XGBoostLearner import XGBoostLearner
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness import BaseHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.ExpandingDatasetHardnessCalculator import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory import LearnerEnum, AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment import BaseObjectAssesor
@@ -15,13 +16,27 @@ from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoos
 class HardnessFactory:
 
     @staticmethod
-    def createHardnessCalculator(learner: LearnerEnum.LearnerEnum, assesor: AssesorEnum.AssesorEnum,  nAttempts, fraction) -> BaseHardnessCalculator:
-        logger = SimpleLogger()
+    def createHardnessCalculatorWithLogger(learner: LearnerEnum.LearnerEnum, assesor: AssesorEnum.AssesorEnum, nAttempts,
+                                 fraction, logger: BaseLogger) -> BaseHardnessCalculator:
         l = HardnessFactory.createLearner(learner, logger)
         a = HardnessFactory.createAssesor(assesor)
 
         hc = LearnerBasedHardnessCalculator(l, a, nAttempts, fraction, logger)
+        hc = HardnessFactory.updateForKS(learner, hc)
         return hc
+
+    @staticmethod
+    def updateForKS(learner: LearnerEnum.LearnerEnum, hc: BaseHardnessCalculator) -> BaseHardnessCalculator:
+        if learner == LearnerEnum.LearnerEnum.KS:
+            hc = ExpandingDatasetHardnessCalculator(hc)
+
+        return hc
+
+    @staticmethod
+    def createHardnessCalculator(learner: LearnerEnum.LearnerEnum, assesor: AssesorEnum.AssesorEnum,  nAttempts, fraction) -> BaseHardnessCalculator:
+        logger = SimpleLogger()
+
+        return HardnessFactory.createHardnessCalculatorWithLogger(learner, assesor, nAttempts, fraction, logger)
 
     @staticmethod
     def createLearner(learner: LearnerEnum.LearnerEnum, logger: BaseLogger.BaseLogger) -> BaseLearner:

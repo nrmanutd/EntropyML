@@ -15,7 +15,10 @@ class KSHardnessCalculator(BaseHardnessCalculator):
         self.pValueCalculator = PValueCalculator(ShapValuesComplexityCalculatorFactory(), KSMetric(), attempts, True,
                                                  False, False)
 
-    def calculateHardness(self, dataSet, target):
+    def calculateHardness(self, dataSet, target, baseDataSet = None, baseTarget = None, alpha = None):
+        if baseDataSet is not None or baseTarget is not None or alpha is not None:
+            raise ValueError('Using extended parameters for KSHardnessCalculator is not implemented yet')
+
         firstClass = 0
         secondClass = 1
 

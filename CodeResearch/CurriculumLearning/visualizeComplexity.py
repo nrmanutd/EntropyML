@@ -5,10 +5,13 @@ import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
     plot_distributions_kde_with_metrics
+from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
+from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Hardness.Factory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
+from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.dataSets import loadCifar100
 
 nAttempts = 50
@@ -22,32 +25,39 @@ nSamples = 2000
 x, y = loadCifar100()
 #x, y = loadCifar()
 
-firstClass = 47
-secondClass = 52
+firstClass = 5
+secondClass = 6
 alpha = 0.5
+epochs = 20
+hidden_sizes = (16, 16)
 
 x, y = filterDataSet(x, y, 1, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
-x = np.hstack((x, -x))
-
 taskName = 'cifar100'
 fractions = [0.05, 0.1, 0.2, 0.5]
 
-learner = LearnerEnum.KS
+learner = LearnerEnum.XGBoost
 assesor = AssesorEnum.ShapXGBoost
 
 targetPrecedents = 100
+
+logger = SimpleLogger()
+nClasses = len(np.unique(y))
 
 t = time.time()
 for fraction in fractions:
     currentAttempts = math.ceil(targetPrecedents / fraction)
     print(f'Calculating for fraction {fraction}, attempts: {currentAttempts}')
 
-    hc = HardnessFactory.HardnessFactory.createHardnessCalculator(learner, assesor, currentAttempts, fraction)
+    l = TorchMLPLearner(input_dim=x.shape[1], num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+    a = HardnessFactory.HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
+
+    hc = LearnerBasedHardnessCalculator(l, a, currentAttempts, fraction, logger)
+
     importance, easiness = hc.calculateHardness(x, y)
 
-    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_MCDF'
+    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{targetPrecedents}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_CDF'
     plot_distributions_kde_with_metrics(easiness, importance, f'{prefix}_distribution.png')
 
     hc1 = HardnessCorrector(hc)

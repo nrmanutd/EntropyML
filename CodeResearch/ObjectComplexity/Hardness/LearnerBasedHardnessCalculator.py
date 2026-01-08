@@ -11,16 +11,15 @@ from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 
 
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
-    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, alpha, logger: BaseLogger):
+    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger):
         self.logger = logger
         self.assesor = assesor
-        self.alpha = alpha
         self.nAttempts = nAttempts
         self.learner = learner
 
-        logger.logDebug(f'Alpha = {alpha}')
+        logger.logDebug(f'nAttempts = {nAttempts}')
 
-    def calculateHardness(self, dataSet, target):
+    def calculateHardness(self, dataSet, target, baseDataSet, baseTarget, alpha):
 
         trainIdxes = []
         testIdxes = []
@@ -29,13 +28,13 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         ds = dataSet
         t = target
 
-        self.logger.logDebug('Start hardness calculation...')
+        self.logger.logDebug(f'Start hardness calculation for alpha = {alpha}...')
 
         for i in range(self.nAttempts):
             if i%10 == 0:
                 self.logger.logDebug(f'Attempt #{i} of {self.nAttempts}...')
 
-            trainIdx, testIdx = stratified_split_indices_with_min(target, self.alpha)
+            trainIdx, testIdx = stratified_split_indices_with_min(target, alpha)
 
             x = ds[trainIdx, :]
             y = t[trainIdx]
@@ -43,7 +42,10 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             xtest = ds[testIdx, :]
             ytest = t[testIdx]
 
-            res = self.learner.trainAndTest(x, y, np.full(len(trainIdx), fill_value=1.0/len(trainIdx)), xtest, ytest)
+            extended_x = np.concatenate([x, baseDataSet], axis = 0) if baseDataSet is not None else x
+            extended_y = np.concatenate([y, baseTarget]) if baseDataSet is not None else y
+
+            res = self.learner.trainAndTest(extended_x, extended_y, np.full(len(extended_y), fill_value=1.0/len(extended_y)), xtest, ytest)
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)

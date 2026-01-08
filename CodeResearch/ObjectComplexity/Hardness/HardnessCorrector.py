@@ -9,16 +9,15 @@ class HardnessCorrector(BaseHardnessCalculator):
     def __init__(self, hardnessCalculator: BaseHardnessCalculator):
         self.hardnessCalculator = hardnessCalculator
 
-    def calculateHardness(self, dataSet, target):
-        importance, easyness = self.hardnessCalculator.calculateHardness(dataSet, target)
+    def calculateHardness(self, dataSet, target, baseDataSet, baseTarget, alpha):
+        importance, easiness = self.hardnessCalculator.calculateHardness(dataSet, target, baseDataSet, baseTarget, alpha)
 
-        #importance = self.convertToPositive(importance)
-        #importance = self.convertToECDF(importance)
-        #importance = self.convertToUniform(importance)
         importance = self.convertToECDFMidRank(importance)
-        easyness = self.convertToECDFMidRank(easyness)
+        #easiness = self.convertToECDFMidRank(easiness)
 
-        return importance, easyness
+        #easiness = 1 - 2 * np.abs(easiness - 0.5)
+
+        return importance, easiness
 
     def convertToPositive(self, importance):
         minimum = min(importance)
