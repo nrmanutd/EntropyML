@@ -65,31 +65,79 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         return final_scores
 
     def calculateDelta(self, g_list, mode="cosine"):
-        G_epoch = torch.cat(g_list, dim=0)  # [N, D] на GPU
+        """
+        g_list: list[Tensor[B,D]] (батчи) ИЛИ Tensor[N,D]
+        Возвращает np.ndarray [N]
+        """
+        # 1) склейка в эпоху
+        if isinstance(g_list, torch.Tensor):
+            G_epoch = g_list
+        else:
+            G_epoch = torch.cat(g_list, dim=0)  # [N, D] на GPU/CPU
 
-        # --- 2) средний вектор за эпоху ---
-        g_mean = G_epoch.mean(dim=0, keepdim=True)  # [1, D]
+        # 2) direction-only (нормируем строки)
+        G_norm = F.normalize(G_epoch, p=2, dim=1)
 
-        # --- 3) diversity относительно среднего (на GPU) ---
+        # --- к среднему по эпохе (как было) ---
         if mode == "l2_relative":
-            # diversity_i = ||g_i - mean|| / ||mean||
+            g_mean = G_epoch.mean(dim=0, keepdim=True)  # [1, D]
             diff = G_epoch - g_mean
             eps = 1e-8
             denom = g_mean.norm(p=2, dim=1).clamp_min(eps)  # [1]
             scores = diff.norm(p=2, dim=1) / denom  # [N]
+            return scores.detach().cpu().numpy()
 
         elif mode == "cosine":
-            # diversity_i = 1 - cos(g_i, mean_dir)
+            g_mean = G_norm.mean(dim=0, keepdim=True)  # [1, D]
             mean_dir = F.normalize(g_mean, p=2, dim=1)  # [1, D]
-            # если G_epoch уже нормирован (как у тебя), то это просто dot
-            cos = (G_epoch * mean_dir).sum(dim=1).clamp(-1.0, 1.0)  # [N]
+            cos = (G_norm * mean_dir).sum(dim=1).clamp(-1.0, 1.0)  # [N]
             scores = 1.0 - cos
+            return scores.detach().cpu().numpy()
+
+        # --- отличие от предыдущего объекта ---
+        elif mode == "prev_cosine":
+            N = G_norm.size(0)
+            if N == 0:
+                return torch.empty(0).cpu().numpy()
+
+            cos_prev = (G_norm[1:] * G_norm[:-1]).sum(dim=1).clamp(-1.0, 1.0)  # [N-1]
+            scores = torch.empty(N, device=G_norm.device)
+            scores[0] = 0.0
+            scores[1:] = 1.0 - cos_prev
+            return scores.detach().cpu().numpy()
+
+        elif mode == "prev_l2":
+            N = G_epoch.size(0)
+            if N == 0:
+                return torch.empty(0).cpu().numpy()
+
+            diffs = (G_epoch[1:] - G_epoch[:-1]).norm(p=2, dim=1)  # [N-1]
+            scores = torch.empty(N, device=G_epoch.device)
+            scores[0] = 0.0
+            scores[1:] = diffs
+            return scores.detach().cpu().numpy()
+
+        # --- НОВОЕ: вклад как изменение направления running mean ---
+        elif mode == "running_mean_cosine":
+            N = G_norm.size(0)
+            if N == 0:
+                return torch.empty(0).cpu().numpy()
+
+            # cumulative mean direction mu_i
+            cumsum = torch.cumsum(G_norm, dim=0)  # [N, D]
+            denom = torch.arange(1, N + 1, device=G_norm.device, dtype=G_norm.dtype).unsqueeze(1)  # [N,1]
+            mu = F.normalize(cumsum / denom, p=2, dim=1)  # [N, D]
+
+            cos_prev = (mu[1:] * mu[:-1]).sum(dim=1).clamp(-1.0, 1.0)  # [N-1]
+            scores = torch.empty(N, device=G_norm.device)
+            scores[0] = 0.0
+            scores[1:] = 1.0 - cos_prev
+            return scores.detach().cpu().numpy()
 
         else:
-            raise ValueError("mode must be 'cosine' or 'l2_relative'")
-
-        # --- 4) вернуть numpy ---
-        return scores.detach().cpu().numpy()
+            raise ValueError(
+                "mode must be 'cosine', 'l2_relative', 'prev_cosine', 'prev_l2', or 'running_mean_cosine'"
+            )
 
     def per_sample_grads_vmap(self, model, xb, yb):
         params = dict(model.named_parameters())
