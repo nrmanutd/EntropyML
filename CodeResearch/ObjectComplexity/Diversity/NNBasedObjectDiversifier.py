@@ -53,7 +53,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
                 # ---- 4) Вернуть режим как было ----
                 currentModel.train(was_training)
 
-                g_list.append(G_batch.detach())
+                g_list.extend(G_batch.detach())
 
             g_delta = self.calculateDelta(g_list)
             all_epochs_scores.append(g_delta)
