@@ -24,11 +24,15 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         device = self.learner.device
         all_epochs_scores = []
 
-        if baseDataSet is not None and len(baseTarget) != 0:
-            currentModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
-
         for epoch in range(self.epochs):
             self.logger.logDebug(f'Estimating diversity for epoch #{epoch} of {self.epochs}...')
+
+            if baseDataSet is not None and len(baseTarget) != 0:
+                if currentModel is None:
+                    currentModel = self.learner.train(baseDataSet, baseTarget,
+                                                  np.full(len(baseTarget), 1.0 / len(baseTarget)))
+                else:
+                    self.learner.update(currentModel, baseDataSet, baseTarget)
 
             batches = sampler.sample()
             g_list = []
@@ -69,6 +73,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
 
         final_scores = np.mean(np.stack(all_epochs_scores, axis=0), axis=0)
 
+        self.logger.logDebug(f'Final scores: {final_scores}')
         self.logger.logDebug('Object diversity estimated.')
 
         return final_scores

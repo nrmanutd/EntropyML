@@ -12,6 +12,7 @@ class HardnessCorrector(BaseHardnessCalculator):
     def calculateHardness(self, dataSet, target, baseDataSet, baseTarget, alpha):
         importance, easiness = self.hardnessCalculator.calculateHardness(dataSet, target, baseDataSet, baseTarget, alpha)
         importance = self.convertToECDFMidRank(importance)
+        #importance = self.convertToUniform(importance)
 
         return importance, easiness
 

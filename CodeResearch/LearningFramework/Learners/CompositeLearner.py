@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner

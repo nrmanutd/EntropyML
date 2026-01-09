@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+import torch
 from scipy.special import softmax
 
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
@@ -82,6 +83,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         prevBeta = 0
         prevEasiness = np.zeros(nObjects)
 
+        np.random.seed(42)
+
         for k in range(len(self.betas)):
             beta = self.betas[k]
 
@@ -100,6 +103,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
             fraction = deltaBeta * alpha * nObjects / len(restIdx)
             hc = self.hcBuilder()
+
             importance, easiness = hc.calculateHardness(dataSet[restIdx, :], target[restIdx],
                                                              dataSet[currentIdx, :], target[currentIdx], fraction)
 

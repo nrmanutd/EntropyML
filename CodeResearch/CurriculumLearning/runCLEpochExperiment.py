@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, \
@@ -12,6 +14,8 @@ from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSampl
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
+
+#os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
 
 nIterations = 20
 nAttempts = 200
@@ -29,11 +33,12 @@ hidden_sizes = (16, 16)
 
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
-nArrays = 4 * len(betas)
+#betas = [0.05]
+nArrays = 3 * len(betas)
 batchSize = 50
 
-dBatchSize = 50
-dEpochs = 10
+dBatchSize = 10
+dEpochs = 20
 dHidden_sizes = (16, 16)
 
 #x, y = make_random(nSamples)
