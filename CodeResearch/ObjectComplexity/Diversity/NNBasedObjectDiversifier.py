@@ -147,7 +147,25 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
             scores[0] = 0.0
             scores[1:] = 1.0 - cos_prev
             return scores.detach().cpu().numpy()
+        elif mode == "centered_grad_norm":
+            # score_i = ||g_i - mean||_2
+            g_mean = G_epoch.mean(dim=0, keepdim=True)  # [1, D]
+            diff = G_epoch - g_mean  # [N, D]
+            scores = diff.norm(p=2, dim=1)  # [N]
+            return scores.detach().cpu().numpy()
 
+        elif mode == "orth_to_mean_norm":
+            # score_i = ||g_i - proj_{mean_dir}(g_i)||_2
+            # где mean_dir = mean / ||mean||
+            eps = 1e-8
+            g_mean = G_epoch.mean(dim=0, keepdim=True)  # [1, D]
+            mean_dir = g_mean / g_mean.norm(p=2, dim=1, keepdim=True).clamp_min(eps)  # [1, D]
+
+            # proj scalar: [N,1] = <g_i, mean_dir>
+            proj = (G_epoch * mean_dir).sum(dim=1, keepdim=True)  # [N, 1]
+            residual = G_epoch - proj * mean_dir  # [N, D]
+            scores = residual.norm(p=2, dim=1)  # [N]
+            return scores.detach().cpu().numpy()
         else:
             raise ValueError(
                 "mode must be 'cosine', 'l2_relative', 'prev_cosine', 'prev_l2', or 'running_mean_cosine'"
