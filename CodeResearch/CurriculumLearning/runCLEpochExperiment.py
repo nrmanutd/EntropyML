@@ -33,7 +33,7 @@ nArrays = 4 * len(betas)
 batchSize = 50
 
 dBatchSize = 50
-dEpochs = 40
+dEpochs = 10
 dHidden_sizes = (16, 16)
 
 #x, y = make_random(nSamples)

@@ -10,7 +10,6 @@ from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseOb
 
 class NNBasedObjectDiversifier(BaseObjectDiversifier):
     def __init__(self, learner: TorchMLPLearner, samplerFactory, epochs, logger: BaseLogger):
-
         self.logger = logger
         self.learner = learner
         self.epochs = epochs
@@ -65,7 +64,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
                 currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
                     currentModel, xx, yy)
 
-            g_delta = self.calculateDelta(g_list, mode='grad_norm')
+            g_delta = self.calculateDelta(g_list, mode='centered_grad_norm')
             all_epochs_scores.append(g_delta)
 
         final_scores = np.mean(np.stack(all_epochs_scores, axis=0), axis=0)
