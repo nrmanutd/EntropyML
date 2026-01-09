@@ -15,7 +15,7 @@ class DiversityBasedHardnessCalculator(BaseHardnessCalculator):
         importance, easiness = self.hc.calculateHardness(dataSet, target, baseDataSet, baseTarget, alpha)
 
         dc = self.dcCreator(easiness)
-        importance = dc.calculateObjectDiversity(dataSet, target)
+        importance = dc.calculateObjectDiversity(dataSet, target, baseDataSet, baseTarget)
         idx = np.argsort(-easiness)
 
         resImportance = np.zeros(len(idx))

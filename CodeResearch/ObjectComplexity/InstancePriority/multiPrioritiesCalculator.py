@@ -56,7 +56,13 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     probs.append(resProbs[i])
 
             if self.useBoth:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'both')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness_delta&importance')
+
+                for i in range(len(resIdxes)):
+                    resultPriorities.append(resIdxes[i])
+                    probs.append(resProbs[i])
+
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
@@ -105,8 +111,12 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 priority = easiness
             elif priorityType == 'easiness_delta':
                 priority = easinessDelta
-            else:
+            elif priorityType == 'easiness_delta&importance':
                 priority = self.calculateProductBasedPriority(importance, easinessDelta, 0.5)
+            elif priorityType == 'easiness&importance':
+                priority = self.calculateProductBasedPriority(importance, easiness, 0.5)
+            else:
+                raise ValueError(f'Unknown priorityType: {priorityType}')
 
             cutIdx = stratified_split_indices_with_min_and_priority(target[restIdx], priority, fraction)
             currentDataSetIdx.extend(restIdx[cutIdx])
@@ -124,7 +134,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         return resultPriorities, probs
 
     def calculateChainNoState(self, dataSet, target, alpha, priorityType: str):
-        self.logger.logDebug(f'Calculating chain for {priorityType}...')
+        self.logger.logDebug(f'Calculating chain no state for {priorityType}...')
 
         nObjects = len(target)
         resultPriorities = []

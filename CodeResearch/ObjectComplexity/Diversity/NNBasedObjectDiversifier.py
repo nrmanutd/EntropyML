@@ -16,8 +16,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         self.epochs = epochs
         self.samplerFactory = samplerFactory
 
-    def calculateObjectDiversity(self, dataSet, target):
-
+    def calculateObjectDiversity(self, dataSet, target, baseDataSet, baseTarget):
         self.logger.logDebug('Estimating object diversity...')
 
         sampler = self.samplerFactory(dataSet, target)
@@ -26,6 +25,9 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         device = self.learner.device
         all_epochs_scores = []
 
+        if baseDataSet is not None and len(baseTarget) != 0:
+            currentModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
+
         for epoch in range(self.epochs):
             self.logger.logDebug(f'Estimating diversity for epoch #{epoch} of {self.epochs}...')
 
@@ -33,27 +35,35 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
             g_list = []
 
             for xx, yy in batches:
-                probs = np.full(len(yy), 1.0 / len(yy))
-
-                currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
-                    currentModel, xx, yy)
-
                 # ---- 2) Перевод данных в torch на нужный device ----
                 xb = torch.as_tensor(xx, dtype=torch.float32, device=device)
                 yb = torch.as_tensor(yy, dtype=torch.int64, device=device)
 
-                # ---- 3) Временно переключаем режим на eval() для стабильного измерения ----
-                was_training = currentModel.training
-                currentModel.eval()
+                if currentModel is not None:
+                    # ---- 3) Временно переключаем режим на eval() для стабильного измерения ----
+                    was_training = currentModel.training
+                    currentModel.eval()
 
-                # важно: НЕ оборачивай это в torch.no_grad(), т.к. градиенты нужны
-                G_batch = self.per_sample_grads_last_layer_loop(currentModel, xb, yb)
-                # или: G_batch = self.per_sample_grads_vmap(currentModel, xb, yb)
+                    # важно: НЕ оборачивай это в torch.no_grad(), т.к. градиенты нужны
+                    #G_batch = self.per_sample_grads_last_layer_loop(currentModel, xb, yb)
+                    G_batch = self.per_sample_grads_vmap(currentModel, xb, yb)
 
-                # ---- 4) Вернуть режим как было ----
-                currentModel.train(was_training)
+                    # ---- 4) Вернуть режим как было ----
+                    currentModel.train(was_training)
+                else:
+                    tempModel = self.learner.build_model()
+                    tempModel = tempModel.to(device)
+                    tempModel.eval()
+
+                    #G_batch = self.per_sample_grads_last_layer_loop(tempModel, xb, yb)
+                    G_batch = self.per_sample_grads_vmap(tempModel, xb, yb)
 
                 g_list.append(G_batch.detach())
+
+                probs = np.full(len(yy), 1.0 / len(yy))
+
+                currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
+                    currentModel, xx, yy)
 
             g_delta = self.calculateDelta(g_list, mode='grad_norm')
             all_epochs_scores.append(g_delta)
@@ -64,7 +74,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
 
         return final_scores
 
-    def calculateDelta(self, g_list, mode="cosine"):
+    def calculateDelta(self, g_list, mode):
         """
         g_list: list[Tensor[B,D]] (батчи) ИЛИ Tensor[N,D]
         Возвращает np.ndarray [N]
@@ -161,7 +171,7 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         for name, g in grads_pytree.items():
             grads_list.append(g.reshape(g.size(0), -1))  # [B, ...] -> [B, d_name]
         G = torch.cat(grads_list, dim=1)  # [B, D]
-        G = F.normalize(G, dim=1)  # direction-only (опционально)
+        #G = F.normalize(G, dim=1)  # direction-only (опционально)
         return G
 
     def per_sample_grads_last_layer_loop(self, model, xb, yb):
@@ -176,6 +186,6 @@ class NNBasedObjectDiversifier(BaseObjectDiversifier):
         for i in range(losses.size(0)):
             gi = torch.autograd.grad(losses[i], params, retain_graph=True)
             gi_vec = torch.cat([g.flatten() for g in gi])
-            gi_vec = F.normalize(gi_vec, dim=0)
+            #gi_vec = F.normalize(gi_vec, dim=0)
             grads.append(gi_vec)
         return torch.stack(grads, dim=0)

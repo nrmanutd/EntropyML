@@ -72,7 +72,7 @@ class TorchMLPLearner(BaseLearner):
             return nn.GELU()
         raise ValueError(f"Unknown activation: {self.activation_name}")
 
-    def _build_model(self) -> nn.Module:
+    def build_model(self) -> nn.Module:
         layers = []
         in_features = self.input_dim
 
@@ -178,7 +178,7 @@ class TorchMLPLearner(BaseLearner):
         x, y, probs — np.array или torch.Tensor.
         Возвращает обученную модель (nn.Module).
         """
-        model = self._build_model().to(self.device)
+        model = self.build_model().to(self.device)
         criterion = nn.CrossEntropyLoss(reduction="none")
         optimizer = self._make_optimizer(model)
 
