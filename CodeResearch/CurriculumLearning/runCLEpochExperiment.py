@@ -31,7 +31,7 @@ repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #betas = [0.05]
 
-baseLabels = ['l', 'h_first&i&h']
+baseLabels = ['l', 'h&i_inc']
 nArrays = len(baseLabels) * len(betas)
 
 batchSize = 50

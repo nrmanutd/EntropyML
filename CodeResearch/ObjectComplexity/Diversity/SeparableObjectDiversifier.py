@@ -7,7 +7,7 @@ from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap_full, proj_and_orth_norm, \
     snapshot_all_named_params, \
-    direction_from_two_models_after_snapshots
+    direction_from_two_models_after_snapshots, per_sample_grads_vmap, calculateDelta
 
 
 class SeparableObjectDiversifier(BaseObjectDiversifier):
@@ -50,14 +50,13 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
 
             model_after.eval()
 
-            G_attempt, _ = per_sample_grads_vmap_full(model_after, xb, yb, names=names)
-            proj, orth = proj_and_orth_norm(G_attempt, m)
+            G_attempt = per_sample_grads_vmap(model_after, xb, yb)
+            G_attempt = G_attempt.detach()
 
-            info = orth * torch.sign(proj)
-            info_np = info.detach().cpu().numpy()
+            g_delta = calculateDelta(G_attempt, mode='centered_grad_norm')
 
             for i in range(len(testIdx)):
-                result[testIdx[i]] += info_np[i]
+                result[testIdx[i]] += g_delta[i]
                 objectsCounter[testIdx[i]] += 1
 
         self.logger.logDebug(f'Finished calculating {self.nAttempts} diversification for alpha = {alpha}')

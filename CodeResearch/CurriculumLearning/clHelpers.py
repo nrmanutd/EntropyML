@@ -12,11 +12,10 @@ from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import
 from CodeResearch.ObjectComplexity.Diversity.SeparableObjectDiversifier import SeparableObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
-from CodeResearch.ObjectComplexity.Hardness.EasinessInvertor import EasinessInvertor
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
-from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
+from CodeResearch.ObjectComplexity.Diversity.IncrementalObjectDiversifier import IncrementalObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.StubHardnessCalculator import StubHardnessCalculator
@@ -34,13 +33,13 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
     l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs, update_epochs=dEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
-    hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger) if isLearnerBased else IncrementalHardnessCalculator(l, dAttempts, logger)
+    hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
 
     dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=dEpochs, epochs=dEpochs, batch_size=dbatchSize)
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
-    #hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalDiversifier(dcLearner, logger))
-    hc = HardnessCorrector(hc)
+    #hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, dAttempts, logger))
+    #hc = HardnessCorrector(hc)
     #hc = EasinessInvertor(hc)
 
     return hc
