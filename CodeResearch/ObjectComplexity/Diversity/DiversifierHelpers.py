@@ -121,6 +121,35 @@ def per_sample_grads_vmap(model, xb, yb):
     # G = F.normalize(G, dim=1)  # direction-only (опционально)
     return G
 
+def per_sample_grads_vmap_full(model, xb, yb, names=None):
+    """
+    Возвращает:
+      G: Tensor[B, D] — per-sample grads для ВСЕЙ модели
+      names: list[str] — порядок параметров
+    """
+    items = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
+    default_names = [n for n, _ in items]
+    if names is None:
+        names = default_names
+    else:
+        assert names == default_names, "names не совпали с текущим порядком model.named_parameters()"
+
+    params = {n: p for n, p in items}
+    buffers = dict(model.named_buffers())
+
+    def single_loss(params, buffers, x, y):
+        logits = functional_call(model, (params, buffers), (x.unsqueeze(0),))
+        return F.cross_entropy(logits, y.unsqueeze(0), reduction="mean")
+
+    grad_fn = grad(single_loss)
+    grads_pytree = vmap(grad_fn, in_dims=(None, None, 0, 0))(params, buffers, xb, yb)
+
+    grads_list = []
+    for n in names:
+        g = grads_pytree[n]                    # [B, ...]
+        grads_list.append(g.reshape(g.size(0), -1))
+    G = torch.cat(grads_list, dim=1)           # [B, D]
+    return G, names
 
 def per_sample_grads_last_layer_loop(model, xb, yb):
     # forward
@@ -137,3 +166,45 @@ def per_sample_grads_last_layer_loop(model, xb, yb):
         # gi_vec = F.normalize(gi_vec, dim=0)
         grads.append(gi_vec)
     return torch.stack(grads, dim=0)
+
+@torch.no_grad()
+def snapshot_all_named_params(model: torch.nn.Module):
+    """
+    Возвращает:
+      w: Tensor[D] — все trainable параметры в одном векторе
+      names: list[str] — порядок параметров (важно для согласования с градиентами)
+    """
+    items = [(n, p) for n, p in model.named_parameters() if p.requires_grad]
+    names = [n for n, _ in items]
+    w = torch.cat([p.detach().flatten().clone() for _, p in items], dim=0)
+    return w, names
+
+@torch.no_grad()
+def direction_from_two_models(model_before, model_after, eps=1e-12):
+    """
+    m = normalize(theta_after - theta_before)
+    Возвращает:
+      m: Tensor[D] (unit direction)
+      names: list[str] (порядок параметров)
+    """
+    w0, names0 = snapshot_all_named_params(model_before)
+    w1, names1 = snapshot_all_named_params(model_after)
+    assert names0 == names1, "Порядок параметров изменился — так быть не должно."
+    delta = w1 - w0
+    m = F.normalize(delta, dim=0, eps=eps)
+    return m, names0
+
+def proj_and_orth_norm(G, m, eps=1e-12):
+    """
+    G: [B, D] per-sample gradients
+    m: [D] unit direction (delta-weights normalized)
+    Возвращает:
+      proj: [B]  <g_i, m>
+      orth: [B]  ||g_i - proj_i * m|| = sqrt(||g||^2 - proj^2)
+    """
+    m = m.to(G.device)
+    proj = (G * m.unsqueeze(0)).sum(dim=1)                  # [B]
+    norm2 = (G * G).sum(dim=1)                              # [B]
+    orth2 = (norm2 - proj * proj).clamp_min(0.0)
+    orth = torch.sqrt(orth2 + eps)
+    return proj, orth

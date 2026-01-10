@@ -5,7 +5,8 @@ from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta, \
+    direction_from_two_models, per_sample_grads_vmap_full, proj_and_orth_norm
 
 
 class SeparableObjectDiversifier(BaseObjectDiversifier):
@@ -34,21 +35,24 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
             extended_x = np.concatenate([x, baseDataSet], axis=0) if baseDataSet is not None else x
             extended_y = np.concatenate([y, baseTarget]) if baseDataSet is not None else y
 
-            model = self.learner.train(extended_x, extended_y,
-                                            np.full(len(extended_y), fill_value=1.0 / len(extended_y)))
+            model_before = self.learner.build_model()
+            model_after = self.learner.update(model_before, extended_x, extended_y)
+
+            m, names = direction_from_two_models(model_before, model_after)
 
             xb = torch.as_tensor(xtest, dtype=torch.float32, device=device)
             yb = torch.as_tensor(ytest, dtype=torch.int64, device=device)
 
-            model.eval()
+            model_after.eval()
 
-            G_attempt = per_sample_grads_vmap(model, xb, yb)
-            G_attempt = G_attempt.detach()
+            G_attempt, _ = per_sample_grads_vmap_full(model_after, xb, yb, names=names)
+            proj, orth = proj_and_orth_norm(G_attempt, m)
 
-            g_delta = calculateDelta(G_attempt, mode='centered_grad_norm')
+            info = orth * torch.relu(proj)
+            info_np = info.detach().cpu().numpy()
 
             for i in range(len(testIdx)):
-                result[testIdx[i]] += g_delta[i]
+                result[testIdx[i]] += info_np[i]
 
         self.logger.logDebug(f'Finished calculating {self.nAttempts} diversification for alpha = {alpha}')
 
