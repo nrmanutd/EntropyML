@@ -41,7 +41,7 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalDiversifier(dcLearner, logger))
     hc = HardnessCorrector(hc)
-    hc = EasinessInvertor(hc)
+    #hc = EasinessInvertor(hc)
 
     return hc
 

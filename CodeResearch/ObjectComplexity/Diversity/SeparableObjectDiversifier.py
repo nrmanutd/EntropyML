@@ -5,8 +5,9 @@ from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta, \
-    direction_from_two_models, per_sample_grads_vmap_full, proj_and_orth_norm
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap_full, proj_and_orth_norm, \
+    snapshot_all_named_params, \
+    direction_from_two_models_after_snapshots
 
 
 class SeparableObjectDiversifier(BaseObjectDiversifier):
@@ -16,7 +17,6 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
         self.learner = learner
 
     def calculateObjectDiversity(self, ds, t, baseDataSet, baseTarget, alpha):
-
         result = np.zeros(len(t))
         device = self.learner.device
 
@@ -37,10 +37,13 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
             extended_x = np.concatenate([x, baseDataSet], axis=0) if baseDataSet is not None else x
             extended_y = np.concatenate([y, baseTarget]) if baseDataSet is not None else y
 
-            model_before = self.learner.build_model()
-            model_after = self.learner.update(model_before, extended_x, extended_y)
+            model_before = self.learner.build_model().to(device)
+            w_before, names_before = snapshot_all_named_params(model_before)
 
-            m, names = direction_from_two_models(model_before, model_after)
+            model_after = self.learner.update(model_before, extended_x, extended_y)
+            w_after, names_after = snapshot_all_named_params(model_after)
+
+            m, names = direction_from_two_models_after_snapshots(w_before, names_before, w_after, names_after)
 
             xb = torch.as_tensor(xtest, dtype=torch.float32, device=device)
             yb = torch.as_tensor(ytest, dtype=torch.int64, device=device)

@@ -194,6 +194,14 @@ def direction_from_two_models(model_before, model_after, eps=1e-12):
     m = F.normalize(delta, dim=0, eps=eps)
     return m, names0
 
+@torch.no_grad()
+def direction_from_two_models_after_snapshots(w0, names0, w1, names1, eps=1e-12):
+
+    assert names0 == names1, "Порядок параметров изменился — так быть не должно."
+    delta = w1 - w0
+    m = F.normalize(delta, dim=0, eps=eps)
+    return m, names0
+
 def proj_and_orth_norm(G, m, eps=1e-12):
     """
     G: [B, D] per-sample gradients

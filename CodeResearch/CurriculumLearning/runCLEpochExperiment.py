@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 100
+nAttempts = 200
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -39,7 +39,7 @@ batchSize = 50
 dBatchSize = 10
 dEpochs = 20
 dHidden_sizes = (16, 16)
-dAttempts = 100
+dAttempts = 200
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -69,9 +69,11 @@ for i in range(len(taskNames)):
         x, y = loadCifar()
 
     y = normalizeTarget(y)
-    nClasses = len(np.unique(y))
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
+    y = normalizeTarget(y)
+    nClasses = len(np.unique(y))
+
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas, baseLabels)
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
