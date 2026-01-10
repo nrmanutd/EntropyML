@@ -186,7 +186,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 continue
 
             fraction = beta * alpha
-            hc = self.hcBuilder()
+            hc = self.hcBuilder(True)
             importance, easiness = hc.calculateHardness(dataSet, target, None, None, fraction)
 
             easinesses[beta] = easiness

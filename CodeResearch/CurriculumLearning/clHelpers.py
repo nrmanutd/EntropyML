@@ -38,7 +38,7 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
 
     dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=dEpochs, epochs=dEpochs, batch_size=dbatchSize)
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
-    #hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalDiversifier(dcLearner, logger))
     hc = HardnessCorrector(hc)
     #hc = EasinessInvertor(hc)
