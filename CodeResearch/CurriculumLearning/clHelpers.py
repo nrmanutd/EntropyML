@@ -11,6 +11,7 @@ from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.Batches.priorityBasedSampler import PriorityBasedSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.ObjectComplexity.Diversity.NNBasedObjectDiversifier import NNBasedObjectDiversifier
+from CodeResearch.ObjectComplexity.Diversity.SeparableObjectDiversifier import SeparableObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
@@ -28,20 +29,21 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, batchSize, dEpochs, dHidden_sizes):
+def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, dbatchSize, dEpochs, dHidden_sizes):
     l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
 
-    dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=1)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
-    hc = HardnessCorrector(hc)
+    dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=1, epochs=dEpochs, batch_size=dbatchSize)
+    #hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, nAttempts, logger))
+    #hc = HardnessCorrector(hc)
 
     return hc
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, False, False, True, True)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, True)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler

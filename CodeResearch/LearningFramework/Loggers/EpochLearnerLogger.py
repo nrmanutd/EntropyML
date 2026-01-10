@@ -12,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_diversity_mean_norm'
+        self.prefix = f'{prefix}_diversity_nAttempts_no_hc_correctness'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -39,7 +39,7 @@ class EpochLearnerLogger(BaseLogger):
                 curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        baseLabels = ['i_inc', 'h_delta_inc&i_inc', 'h_inc&i_inc']
+        baseLabels = ['l', 'i', 'h', 'h&i']
 
         if len(baseLabels) != int(self.nArrays / len(self.betas)):
             raise ValueError('Incorrect number of labels in baseLabels array')

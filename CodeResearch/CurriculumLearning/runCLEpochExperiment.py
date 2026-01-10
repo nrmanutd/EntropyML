@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, \
@@ -15,10 +13,8 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
-#os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
-
 nIterations = 20
-nAttempts = 200
+nAttempts = 100
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -34,7 +30,7 @@ hidden_sizes = (16, 16)
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #betas = [0.05]
-nArrays = 3 * len(betas)
+nArrays = 4 * len(betas)
 batchSize = 50
 
 dBatchSize = 10

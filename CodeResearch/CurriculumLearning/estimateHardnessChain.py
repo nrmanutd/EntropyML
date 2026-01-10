@@ -4,14 +4,13 @@ import time
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
-    plot_distributions_kde_with_metrics, plot_object_metrics, plot_distributions_kde, plot_multiple_ecdfs, \
-    ecdf_advanced, find_ecdf_intersection_optimize
+    plot_object_metrics, plot_distributions_kde, plot_multiple_ecdfs, \
+    ecdf_advanced
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Hardness.Factory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
-from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.UsefulObjectsCalculator import UsefulObjectsCalculator
 from CodeResearch.dataSets import loadCifar100

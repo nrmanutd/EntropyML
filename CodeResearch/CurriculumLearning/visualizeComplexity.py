@@ -7,6 +7,10 @@ from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAn
     plot_distributions_kde_with_metrics
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Samplers.Batches.priorityBasedSampler import PriorityBasedSampler
+from CodeResearch.ObjectComplexity.Diversity.NNBasedObjectDiversifier import NNBasedObjectDiversifier
+from CodeResearch.ObjectComplexity.Diversity.SeparableObjectDiversifier import SeparableObjectDiversifier
+from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
@@ -25,11 +29,15 @@ nSamples = 2000
 x, y = loadCifar100()
 #x, y = loadCifar()
 
-firstClass = 5
-secondClass = 6
+firstClass = 43
+secondClass = 87
 alpha = 0.5
 epochs = 20
 hidden_sizes = (16, 16)
+
+dHidden_sizes = (16, 16)
+dbatchSize = 10
+dEpochs = 20
 
 x, y = filterDataSet(x, y, 1, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
@@ -44,36 +52,44 @@ targetPrecedents = 100
 
 logger = SimpleLogger()
 nClasses = len(np.unique(y))
+nFeatures = x.shape[1]
 
 t = time.time()
 for fraction in fractions:
-    currentAttempts = math.ceil(targetPrecedents / fraction)
+    #currentAttempts = math.ceil(targetPrecedents / fraction)
+    currentAttempts = targetPrecedents
     print(f'Calculating for fraction {fraction}, attempts: {currentAttempts}')
 
-    l = TorchMLPLearner(input_dim=x.shape[1], num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+    l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
     a = HardnessFactory.HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
-    hc = LearnerBasedHardnessCalculator(l, a, currentAttempts, fraction, logger)
+    hc = LearnerBasedHardnessCalculator(l, a, currentAttempts, logger)
+    #dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=1)
+    #hc = DiversityBasedHardnessCalculator(hc, lambda p: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, dbatchSize,p), dEpochs, logger))
 
-    importance, easiness = hc.calculateHardness(x, y)
+    dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=1,
+                                epochs=dEpochs, batch_size=dbatchSize)
+    # hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, nAttempts, logger))
 
-    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{targetPrecedents}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_CDF'
+    #hc = HardnessCorrector(hc)
+
+
+    importance, easiness = hc.calculateHardness(x, y, None, None, fraction)
+
+    prefix = f'{taskName}\\{taskName}_{fraction}_{currentAttempts}_{targetPrecedents}_{fraction}_{firstClass}_{secondClass}_{learner}_{assesor}_hc_sep'
     plot_distributions_kde_with_metrics(easiness, importance, f'{prefix}_distribution.png')
 
-    hc1 = HardnessCorrector(hc)
-    cdfEasiness = hc1.convertToECDF(easiness)
-    cdfImportance = hc1.convertToECDF(importance)
 
-    plot_distributions_kde_with_metrics(cdfEasiness, cdfImportance, f'{prefix}_cdf_distribution.png')
+    plot_distributions_kde_with_metrics(easiness, importance, f'{prefix}_cdf_distribution.png')
 
-    visualizeAndSaveComplexity(easiness, importance, easiness * importance, f'{prefix}_simple_prod_complexity.png')
-    visualizeAndSaveComplexity(easiness, importance, cdfEasiness * cdfImportance, f'{prefix}_simple_prod_complexity_marked_cdf.png')
+    visualizeAndSaveComplexity(easiness, importance, easiness * importance, 'easiness', 'importance', f'{prefix}_easiness_times_importance',  f'{prefix}_simple_prod_complexity.png')
 
     n = len(importance)
     eps = 1 / (2 * n)
 
-    score = np.exp(alpha * np.log(eps + cdfImportance) + (1 - alpha) * np.log(eps + cdfEasiness))
-    visualizeAndSaveComplexity(easiness, importance, score, f'{prefix}_score_complexity_marked_cdf.png')
+    score = np.exp(alpha * np.log(eps + importance) + (1 - alpha) * np.log(eps + easiness))
+    visualizeAndSaveComplexity(easiness, importance, score, 'easiness', 'importance', f'{prefix}_easiness_importance_score', f'{prefix}_score_complexity_marked_cdf.png')
 
     easyThresholds = [0.5, 0.6, 0.7, 0.8, 0.9]
     #for easy in easyThresholds:
