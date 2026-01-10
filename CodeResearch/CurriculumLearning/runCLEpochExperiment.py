@@ -30,7 +30,10 @@ hidden_sizes = (16, 16)
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #betas = [0.05]
-nArrays = 4 * len(betas)
+
+baseLabels = ['l', 'h_first&i&h']
+nArrays = len(baseLabels) * len(betas)
+
 batchSize = 50
 
 dBatchSize = 10
@@ -70,12 +73,12 @@ for i in range(len(taskNames)):
 
     x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
     prefix = f'{taskName}_{nIterations}_{nAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{epochs}_{firstClass}_{secondClass}_NN'
-    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas)
+    logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas, baseLabels)
     compositeLearner = CompositeLearner(EpochLearner(epochs, NNEpochLearnerPyTorch(nClasses),  RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes), logger)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

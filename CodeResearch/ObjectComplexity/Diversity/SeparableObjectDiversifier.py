@@ -20,6 +20,8 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
         result = np.zeros(len(t))
         device = self.learner.device
 
+        objectsCounter = np.zeros(len(t))
+
         for iAttempt in range(self.nAttempts):
             if iAttempt%10 == 0:
                 self.logger.logDebug(f'Calculating object diversity for attempt #{iAttempt} of {self.nAttempts}')
@@ -48,12 +50,13 @@ class SeparableObjectDiversifier(BaseObjectDiversifier):
             G_attempt, _ = per_sample_grads_vmap_full(model_after, xb, yb, names=names)
             proj, orth = proj_and_orth_norm(G_attempt, m)
 
-            info = orth * torch.relu(proj)
+            info = orth * torch.sign(proj)
             info_np = info.detach().cpu().numpy()
 
             for i in range(len(testIdx)):
                 result[testIdx[i]] += info_np[i]
+                objectsCounter[testIdx[i]] += 1
 
         self.logger.logDebug(f'Finished calculating {self.nAttempts} diversification for alpha = {alpha}')
 
-        return result / len(result)
+        return result / objectsCounter

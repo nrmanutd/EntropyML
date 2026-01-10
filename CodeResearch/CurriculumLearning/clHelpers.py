@@ -8,17 +8,18 @@ from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
-from CodeResearch.LearningFramework.Samplers.Batches.priorityBasedSampler import PriorityBasedSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
-from CodeResearch.ObjectComplexity.Diversity.NNBasedObjectDiversifier import NNBasedObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.SeparableObjectDiversifier import SeparableObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.EasinessInvertor import EasinessInvertor
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
+from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.StubHardnessCalculator import StubHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
@@ -29,21 +30,23 @@ def createKSHardnessCalculator(nAttempts, fraction):
 
     return hc
 
-def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, dAttempts, dbatchSize, dEpochs, dHidden_sizes):
-    l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs)
+def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, dAttempts, dbatchSize, dEpochs, dHidden_sizes, isLearnerBased: bool):
+    l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs, update_epochs=dEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
-    hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
+    hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger) if isLearnerBased else IncrementalHardnessCalculator(l, dAttempts, logger)
 
     dcLearner = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=dHidden_sizes, update_epochs=dEpochs, epochs=dEpochs, batch_size=dbatchSize)
     #hc = DiversityBasedHardnessCalculator(hc, lambda x: NNBasedObjectDiversifier(dcLearner, lambda ds, t: PriorityBasedSampler(ds, t, batchSize, x), dEpochs, logger))
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
-    #hc = HardnessCorrector(hc)
+    #hc = DiversityBasedHardnessCalculator(hc, lambda x: SeparableObjectDiversifier(dcLearner, dAttempts, logger))
+    #hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalDiversifier(dcLearner, logger))
+    hc = HardnessCorrector(hc)
+    hc = EasinessInvertor(hc)
 
     return hc
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, True)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, False, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler

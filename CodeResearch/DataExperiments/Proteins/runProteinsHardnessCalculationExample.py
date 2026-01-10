@@ -14,8 +14,6 @@ from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoos
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import plot_with_custom_brightness, extractData
 from CodeResearch.dataSets import load_proteins, generate_lin_reg_dataset
 
-np.random.seed(42)
-
 #x, y = load_proteins("../../Data/Proteins/df_master.csv")
 x, y = generate_lin_reg_dataset(n_samples=1000, noise=0.1)
 logger = SimpleLogger()

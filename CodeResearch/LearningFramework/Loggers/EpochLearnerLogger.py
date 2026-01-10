@@ -6,13 +6,14 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 
 
 class EpochLearnerLogger(BaseLogger):
-    def __init__(self, epochs, taskName, prefix, nAttempts, nRepeats, nArrays, betas):
+    def __init__(self, epochs, taskName, prefix, nAttempts, nRepeats, nArrays, betas, baseLabels):
         super().__init__()
+        self.baseLabels = baseLabels
         self.betas = betas
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_diversity_nAttempts_no_hc_correctness_correct_order'
+        self.prefix = f'{prefix}_diversity_easiness_start_incremental_hardness_and_easiness'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -39,13 +40,12 @@ class EpochLearnerLogger(BaseLogger):
                 curShift += self.epochs * self.nRepeats
 
         xAxis = range(self.epochs)
-        baseLabels = ['l', 'i', 'h', 'h&i']
 
-        if len(baseLabels) != int(self.nArrays / len(self.betas)):
+        if len(self.baseLabels) != int(self.nArrays / len(self.betas)):
             raise ValueError('Incorrect number of labels in baseLabels array')
 
         labels = []
-        for l in baseLabels:
+        for l in self.baseLabels:
             labels = labels + [f'{l} ({beta})' for beta in self.betas]
 
         for i in range(len(errors)):

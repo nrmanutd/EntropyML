@@ -24,8 +24,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         self.usefullObjectsCalculator = UsefulObjectsCalculator()
 
     def calculatePriority(self, dataSet, target):
-        return self.calculatePriorityNoChain(dataSet, target)
-        #return self.calculateChainPriority(dataSet, target)
+        #return self.calculatePriorityNoChain(dataSet, target)
+        return self.calculateChainPriority(dataSet, target)
 
     def calculateChainPriority(self, dataSet, target):
         resultPriorities = []
@@ -43,7 +43,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'importance')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance', 'easiness')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
@@ -104,8 +104,11 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
         return resultPriorities, probs
 
-    def calculateChain(self, dataSet, target, alpha, priorityType: str):
+    def calculateChain(self, dataSet, target, alpha, priorityType: str, firstBetaPriorityType: str = None):
         self.logger.logDebug(f'Calculating chain for {priorityType}...')
+
+        if firstBetaPriorityType is None:
+            firstBetaPriorityType = priorityType
 
         resultPriorities = []
         probs = []
@@ -115,8 +118,6 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         currentDataSetIdx = []
         prevBeta = 0
         prevEasiness = np.zeros(nObjects)
-
-        np.random.seed(42)
 
         for k in range(len(self.betas)):
             beta = self.betas[k]
@@ -135,22 +136,26 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             ci = set(currentDataSetIdx)
             restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
             fraction = deltaBeta * alpha * nObjects / len(restIdx)
-            hc = self.hcBuilder()
+
+            shouldUseLearnerBased = True if k == 0 else False
+            hc = self.hcBuilder(shouldUseLearnerBased)
 
             importance, easiness = hc.calculateHardness(dataSet[restIdx, :], target[restIdx],
                                                              dataSet[currentIdx, :], target[currentIdx], fraction)
 
             easinessDelta = easiness - prevEasiness
 
-            if priorityType == 'importance':
+            currentPriorityType = firstBetaPriorityType if k == 0 else priorityType
+
+            if currentPriorityType == 'importance':
                 priority = importance
-            elif priorityType == 'easiness':
+            elif currentPriorityType == 'easiness':
                 priority = easiness
-            elif priorityType == 'easiness_delta':
+            elif currentPriorityType == 'easiness_delta':
                 priority = easinessDelta
-            elif priorityType == 'easiness_delta&importance':
+            elif currentPriorityType == 'easiness_delta&importance':
                 priority = self.calculateProductBasedPriority(importance, easinessDelta, 0.5)
-            elif priorityType == 'easiness&importance':
+            elif currentPriorityType == 'easiness&importance':
                 priority = self.calculateProductBasedPriority(importance, easiness, 0.5)
             else:
                 raise ValueError(f'Unknown priorityType: {priorityType}')
