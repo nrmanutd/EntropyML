@@ -12,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_diversity_nAttempts_no_hc_correctness'
+        self.prefix = f'{prefix}_diversity_nAttempts_no_hc_correctness_correct_order'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0

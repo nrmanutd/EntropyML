@@ -36,6 +36,7 @@ batchSize = 50
 dBatchSize = 10
 dEpochs = 20
 dHidden_sizes = (16, 16)
+dAttempts = 100
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -74,7 +75,7 @@ for i in range(len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dBatchSize, dEpochs, dHidden_sizes), logger)
+    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
