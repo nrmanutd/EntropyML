@@ -16,7 +16,7 @@ from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100, loadMnist_
 nIterations = 20
 nAttempts = 50
 nSamples = 2000
-datasetFraction = 0.1
+datasetFraction = 1
 alphas = np.array([0.5])
 
 fraction = 0.5
@@ -28,10 +28,10 @@ hardnessEpochs = 10
 hidden_sizes = (16, 16)
 
 repeats = 10
-betas = [0.05, 0.1, 0.2, 0.5, 1]
+betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [0.05]
 
-baseLabels = ['l', 'h&i_inc']
+baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
 
 batchSize = 128
