@@ -1,18 +1,17 @@
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
+from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import NeuralNetwork
 
 
-class NNEpochLearnerPyTorch(BaseLearner):
-    def __init__(self, nClasses: int, learning_rate=1e-3, dense=512):
+class NNEpochLearnerPyTorch(TorchLearner):
+    def __init__(self, nClasses: int, nFeatures: int, learning_rate=1e-3, dense=512):
         super().__init__()
+        self.nFeatures = nFeatures
         self.learning_rate = learning_rate
         self.loss_fn = nn.CrossEntropyLoss()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.nClasses = nClasses
         self.dense = dense
         print(f"Using device: {self.device}")
@@ -22,7 +21,7 @@ class NNEpochLearnerPyTorch(BaseLearner):
         nFeatures = x.shape[1]
 
         # Создаем модель
-        model = self.define_model(nFeatures, self.nClasses).to(self.device)
+        model = self.build_model().to(self.device)
 
         # Обучение
         model = self.update(model, x, y)
@@ -63,9 +62,9 @@ class NNEpochLearnerPyTorch(BaseLearner):
 
         return accuracy, predicted
 
-    def define_model(self, nFeatures, nClasses):
+    def build_model(self):
         # Создаем модель
-        model = NeuralNetwork(nFeatures, nClasses, self.dense).to(self.device)
+        model = NeuralNetwork(self.nFeatures, self.nClasses, self.dense).to(self.device)
 
         # Добавляем оптимизатор как атрибут модели
         model.optimizer = optim.Adam(model.parameters(), lr=self.learning_rate)

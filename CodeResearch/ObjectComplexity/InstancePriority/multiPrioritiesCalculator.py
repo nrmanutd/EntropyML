@@ -140,8 +140,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             shouldUseLearnerBased = True if k == 0 else False
             hc = self.hcBuilder(shouldUseLearnerBased)
 
-            importance, easiness = hc.calculateHardness(dataSet[restIdx, :], target[restIdx],
-                                                             dataSet[currentIdx, :], target[currentIdx], fraction)
+            importance, easiness = hc.calculateHardness(dataSet[restIdx], target[restIdx],
+                                                             dataSet[currentIdx], target[currentIdx], fraction)
 
             easinessDelta = easiness - prevEasiness
 

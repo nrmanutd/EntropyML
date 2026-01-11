@@ -7,7 +7,7 @@ from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAn
     plot_object_metrics, plot_distributions_kde, plot_multiple_ecdfs, \
     ecdf_advanced
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
-from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Hardness.Factory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum

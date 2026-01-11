@@ -24,7 +24,7 @@ class StandardAssesor(BaseObjectAssesor):
             for j in range(len(curTestIdx)):
                 objectsUsed[curTestIdx[j]] += 1
 
-            curResponds = testResponds[i][1]  # todo: check how to process testResponds value
+            curResponds = testResponds[i][1]
 
             for j in range(len(curTestIdx)):
                 curObjectRespond = curResponds[j]

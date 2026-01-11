@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
-from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta
 

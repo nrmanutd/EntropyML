@@ -2,13 +2,15 @@ import numpy as np
 import torch
 
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
-from CodeResearch.LearningFramework.Learners.TorchLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
+from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchMLPLearner, nAttempts: int, logger: BaseLogger):
+    def __init__(self, learner: TorchLearner, nAttempts: int, logger: BaseLogger):
         self.logger = logger
         self.nAttempts = nAttempts
         self.learner = learner

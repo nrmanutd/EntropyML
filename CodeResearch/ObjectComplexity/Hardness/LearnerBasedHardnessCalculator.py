@@ -1,13 +1,10 @@
-import math
-
 import numpy as np
 
-from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min, \
-    stratified_split_indices_from_ks_native
+from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
-from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 
 
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
@@ -36,15 +33,13 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
             trainIdx, testIdx = stratified_split_indices_with_min(target, alpha)
 
-            x = ds[trainIdx, :]
+            x = ds[trainIdx]
             y = t[trainIdx]
 
-            xtest = ds[testIdx, :]
+            xtest = ds[testIdx]
             ytest = t[testIdx]
 
-            extended_x = np.concatenate([x, baseDataSet], axis = 0) if baseDataSet is not None else x
-            extended_y = np.concatenate([y, baseTarget]) if baseDataSet is not None else y
-
+            extended_x, extended_y = self.learner.extendSet([x, baseDataSet], [y, baseTarget])
             res = self.learner.trainAndTest(extended_x, extended_y, np.full(len(extended_y), fill_value=1.0/len(extended_y)), xtest, ytest)
 
             trainIdxes.append(trainIdx)

@@ -28,6 +28,19 @@ def loadMnist():
 
     return trainX, trainY
 
+def loadMnist_cnn():
+    (trainX, trainY), (testX, testY) = mnist.load_data()  # trainX: [60000,28,28]
+
+    # float32 + нормализация
+    trainX = trainX.astype(np.float32) / 255.0
+    testX  = testX.astype(np.float32) / 255.0
+
+    # добавить канал: [N, 1, 28, 28] (PyTorch-формат NCHW)
+    trainX = np.expand_dims(trainX, axis=1)
+    testX  = np.expand_dims(testX, axis=1)
+
+    return trainX, trainY
+
 def loadFashionMnist():
     num_train = 60000  # there are 60000 training examples in MNIST
     num_test = 10000  # there are 10000 test examples in MNIST

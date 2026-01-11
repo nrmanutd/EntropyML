@@ -3,8 +3,6 @@ import os
 
 import numpy as np
 import torch.cuda
-from tensorflow.python.keras.models import clone_model
-import copy
 
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import NeuralNetwork
