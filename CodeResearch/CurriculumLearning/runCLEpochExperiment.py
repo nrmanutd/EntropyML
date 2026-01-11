@@ -14,7 +14,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import Prior
 from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100
 
 nIterations = 20
-nAttempts = 100
+nAttempts = 50
 nSamples = 2000
 datasetFraction = 1
 alphas = np.array([0.5])
@@ -24,7 +24,7 @@ testAlpha = 0.5
 epochs = 60
 
 #best - 20 и (16, 16)
-hardnessEpochs = 20
+hardnessEpochs = 30
 hidden_sizes = (16, 16)
 
 repeats = 10
@@ -36,8 +36,8 @@ nArrays = len(baseLabels) * len(betas)
 
 batchSize = 50
 
-dBatchSize = 10
-dEpochs = 20
+dBatchSize = 50
+dEpochs = 30
 dHidden_sizes = (16, 16)
 dAttempts = 100
 
