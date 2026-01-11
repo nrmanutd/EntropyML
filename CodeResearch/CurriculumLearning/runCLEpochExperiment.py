@@ -24,7 +24,7 @@ testAlpha = 0.5
 epochs = 60
 
 #best - 20 и (16, 16)
-hardnessEpochs = 30
+hardnessEpochs = 20
 hidden_sizes = (16, 16)
 
 repeats = 10
