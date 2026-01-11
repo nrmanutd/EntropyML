@@ -170,6 +170,43 @@ def per_sample_grads_last_layer_loop(model, xb, yb):
     return torch.stack(grads, dim=0)
 
 @torch.no_grad()
+def per_sample_grads_head_linear_closed_form(model, xb, yb):
+    """
+    Per-sample градиенты ТОЛЬКО для головы, если голова = nn.Linear(H, C).
+    Возвращает матрицу G: [B, D_head], где D_head = C*H (+ C если bias).
+    Никакого autograd, никакого retain_graph -> память стабильна.
+    """
+    head = model.head
+    if not isinstance(head, torch.nn.Linear):
+        raise TypeError("This closed-form works only when model.head is nn.Linear(H, C).")
+
+    # 1) признаки (backbone) без графа
+    feat = model.features(xb)
+    feat = model.pool(feat).flatten(1)          # [B, H]
+
+    # 2) logits и softmax
+    logits = head(feat)                         # [B, C]
+    p = torch.softmax(logits, dim=1)            # [B, C]
+
+    # 3) one-hot и g = p - y_onehot
+    C = logits.size(1)
+    y_onehot = F.one_hot(yb, num_classes=C).to(p.dtype)  # [B, C]
+    g = p - y_onehot                                     # [B, C]
+
+    # 4) per-sample grad по W: outer(g_i, feat_i) => [B, C, H]
+    grad_W = g.unsqueeze(2) * feat.unsqueeze(1)          # [B, C, H]
+    grad_W = grad_W.reshape(grad_W.size(0), -1)          # [B, C*H]
+
+    # 5) per-sample grad по bias: [B, C]
+    if head.bias is not None:
+        grad_b = g                                       # [B, C]
+        G = torch.cat([grad_W, grad_b], dim=1)           # [B, C*H + C]
+    else:
+        G = grad_W                                       # [B, C*H]
+
+    return G
+
+@torch.no_grad()
 def snapshot_all_named_params(model: torch.nn.Module):
     """
     Возвращает:
