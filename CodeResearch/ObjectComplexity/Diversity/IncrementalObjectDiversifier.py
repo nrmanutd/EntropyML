@@ -7,7 +7,7 @@ from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLear
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta, \
-    per_sample_grads_last_layer_loop
+    per_sample_grads_last_layer_loop, per_sample_grads_head_linear_closed_form
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
@@ -36,7 +36,8 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             model.eval()
 
             #G_attempt = per_sample_grads_vmap(model, xb, yb)
-            G_attempt = per_sample_grads_last_layer_loop(model, xb, yb)
+            #G_attempt = per_sample_grads_last_layer_loop(model, xb, yb)
+            G_attempt = per_sample_grads_head_linear_closed_form(model, xb, yb)
             g_delta = calculateDelta(G_attempt, mode='centered_grad_norm')
 
             importance += g_delta
