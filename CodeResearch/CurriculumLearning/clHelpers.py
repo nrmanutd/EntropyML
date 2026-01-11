@@ -45,7 +45,7 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
     return hc
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, False, False)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler

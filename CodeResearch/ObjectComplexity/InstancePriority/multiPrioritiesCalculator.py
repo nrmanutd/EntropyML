@@ -50,7 +50,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     probs.append(resProbs[i])
 
             if self.useHardness:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness', 'easiness')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
