@@ -42,7 +42,7 @@ class TorchModelLearner (TorchLearner):
         self.gamma = float(gamma)
 
         self.use_amp = bool(use_amp) and (self.device.type == "cuda")
-        self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
+        self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
 
         self.label_smoothing = float(label_smoothing)
 
@@ -106,7 +106,7 @@ class TorchModelLearner (TorchLearner):
         return x, y, probs
 
     def _make_loader(self, x: torch.Tensor, y: torch.Tensor, probs=None, shuffle=True) -> DataLoader:
-        ds = TensorDataset(x, y) if probs is None else TensorDataset(x, y, probs)
+        ds = TensorDataset(x, y) #if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
         return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
 
     # ----------------- train helpers -----------------
@@ -129,7 +129,7 @@ class TorchModelLearner (TorchLearner):
             optimizer.zero_grad(set_to_none=True)
 
             if self.use_amp:
-                with torch.cuda.amp.autocast():
+                with torch.amp.autocast('cuda'):
                     logits = model(xb)
                     losses = criterion(logits, yb)
                     if pb is not None:

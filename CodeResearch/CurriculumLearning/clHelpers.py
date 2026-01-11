@@ -7,6 +7,7 @@ from scipy import stats
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import LabelEncoder
 
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import MNISTScoringNet, MNISTTargetNet
@@ -46,8 +47,8 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
 
     return hc
 
-def createMnistHC(nAttempts, logger, nClasses, epochs, batch_size, dAttempts, dbatchSize, dEpochs):
-    l = createMnistScoring(nClasses, epochs, batch_size)
+def createMnistHC(nAttempts, logger, nClasses, epochs, dAttempts, dbatchSize, dEpochs):
+    l = createMnistScoring(nClasses, epochs, dbatchSize)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, nAttempts, logger)
@@ -57,14 +58,15 @@ def createMnistHC(nAttempts, logger, nClasses, epochs, batch_size, dAttempts, db
 
     return hc
 
-def createMnistTarget(num_classes, epochs, batch_size):
+def createMnistTarget(num_classes, batch_size):
     mnist_target_learner = TorchModelLearner(
         model_factory=lambda: MNISTTargetNet(num_classes=num_classes),
         optimizer_name="adam",
         lr=1e-3,
         weight_decay=1e-4,
         batch_size=batch_size,
-        epochs=epochs,
+        update_epochs=1,
+        epochs=1,
         scheduler_name="none"
     )
 
@@ -86,7 +88,7 @@ def createMnistScoring(num_classes, epochs, batch_size):
     return mnist_scoring_learner
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, False, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler
@@ -120,6 +122,16 @@ def filterDataSet(x, y, alpha, firstClass, secondClass):
     tt = enc.fit_transform(np.ravel(target[idx]))
 
     return x[idx, :], tt
+
+def filterDataSetByFraction(x, y, alpha):
+    enc = LabelEncoder()
+    target = enc.fit_transform(np.ravel(y))
+
+    idx, restIdx = stratified_split_indices_with_min(target, alpha)
+
+    tt = enc.fit_transform(np.ravel(target[idx]))
+
+    return x[idx], tt
 
 
 def visualizeAndSaveComplexity(easiness, importance, scores, xLabel, yLabel, title, filename):

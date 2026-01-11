@@ -153,11 +153,13 @@ def per_sample_grads_vmap_full(model, xb, yb, names=None):
 
 def per_sample_grads_last_layer_loop(model, xb, yb):
     # forward
-    feat = model[:-1](xb)  # [B, H]
-    logits = model[-1](feat)  # [B, C]
+    feat = model.features(xb)
+    feat = model.pool(feat).flatten(1) # [B, H]
+
+    logits = model.head(feat)  # [B, C]
     losses = F.cross_entropy(logits, yb, reduction="none")
 
-    params = [p for p in model[-1].parameters() if p.requires_grad]  # только last layer
+    params = [p for p in model.head.parameters() if p.requires_grad]  # только last layer
 
     grads = []
     for i in range(losses.size(0)):

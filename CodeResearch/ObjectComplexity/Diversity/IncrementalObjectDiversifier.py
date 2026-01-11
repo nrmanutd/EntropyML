@@ -6,7 +6,8 @@ from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta, \
+    per_sample_grads_last_layer_loop
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
@@ -31,16 +32,18 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
-            model_before = self.learner.build_model().to(device)
-            model_after = self.learner.update(model_before, baseDataSet, baseTarget)
+            model = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
+            model.eval()
 
-            model_after.eval()
-
-            G_attempt = per_sample_grads_vmap(model_after, xb, yb)
-            G_attempt = G_attempt.detach()
-
+            #G_attempt = per_sample_grads_vmap(model, xb, yb)
+            G_attempt = per_sample_grads_last_layer_loop(model, xb, yb)
             g_delta = calculateDelta(G_attempt, mode='centered_grad_norm')
+
             importance += g_delta
+
+            del G_attempt
+            del model
+            torch.cuda.empty_cache()
 
         importance /= self.nAttempts
 

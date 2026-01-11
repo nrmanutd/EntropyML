@@ -202,8 +202,8 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
     # Настройки первого графика
     ax1.legend(handles=lines, loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)
     ax1.set_xlabel("Epoch number")
-    ax1.set_ylabel("Test Error")
-    ax1.set_title("Test Error vs Epoch (Mean ± Std)")
+    ax1.set_ylabel("Test Accuracy")
+    ax1.set_title("Test Accuracy vs Epoch (Mean ± Std)")
     ax1.grid(True)
 
     # Сохраняем первый график
@@ -234,7 +234,7 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
     ax2.legend(handles=lines, loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)
     ax2.set_xlabel("Epoch number")
     ax2.set_ylabel("Standard Deviation (Std)")
-    ax2.set_title("Standard Deviation of Test Error vs Epoch")
+    ax2.set_title("Standard Deviation of Test Accuracy vs Epoch")
     ax2.grid(True)
 
     # Сохраняем второй график

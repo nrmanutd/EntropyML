@@ -1,7 +1,7 @@
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, \
-    createLearnerBasedHardnessCalculator, createSampler, createMnistHC, createMnistTarget
+    createLearnerBasedHardnessCalculator, createSampler, createMnistHC, createMnistTarget, filterDataSetByFraction
 from CodeResearch.Helpers.commonHelpers import normalizeTarget
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.NNPytorchEpochLearner import NNEpochLearnerPyTorch
@@ -16,30 +16,30 @@ from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100, loadMnist_
 nIterations = 20
 nAttempts = 50
 nSamples = 2000
-datasetFraction = 1
+datasetFraction = 0.1
 alphas = np.array([0.5])
 
 fraction = 0.5
 testAlpha = 0.5
-epochs = 60
+epochs = 20
 
 #best - 20 и (16, 16)
-hardnessEpochs = 30
+hardnessEpochs = 10
 hidden_sizes = (16, 16)
 
 repeats = 10
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #betas = [0.05]
 
-baseLabels = ['l', 'h&i_inc', 'h&h_inc']
+baseLabels = ['l', 'h&i_inc']
 nArrays = len(baseLabels) * len(betas)
 
-batchSize = 50
+batchSize = 128
 
-dBatchSize = 50
-dEpochs = 30
+dBatchSize = 64
+dEpochs = 10
 dHidden_sizes = (16, 16)
-dAttempts = 100
+dAttempts = 50
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
@@ -63,7 +63,7 @@ for i in range(len(taskNames)):
 
     if taskName == taskNames[0]:
         x, y = loadMnist_cnn()
-        y = normalizeTarget(y)
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
     elif taskName == taskNames[1]:
         x, y = loadCifar100()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
@@ -84,14 +84,14 @@ for i in range(len(taskNames)):
     logger = EpochLearnerLogger(epochs, taskName, prefix, nAttempts, repeats, nArrays, betas, baseLabels)
 
     #targetLearner = NNEpochLearnerPyTorch(nClasses, nFeatures)
-    targetLearner = createMnistTarget(nClasses, epochs, batchSize)
+    targetLearner = createMnistTarget(nClasses, batchSize)
     compositeLearner = CompositeLearner(EpochLearner(epochs, targetLearner, RandomAllsetSamplerFactory(batchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
     #sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
     sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats,
-                            lambda shouldUseLearner: createMnistHC(nAttempts, logger, nClasses, hardnessEpochs, batchSize, dAttempts,
+                            lambda shouldUseLearner: createMnistHC(nAttempts, logger, nClasses, hardnessEpochs, dAttempts,
                                                                                           dBatchSize, dEpochs), logger)
 
     logger.logDebug(f'Starting task {prefix}')
