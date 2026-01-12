@@ -80,17 +80,13 @@ class EpochLearner(BaseLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         currentModel = None
-        sampler = self.samplersFactory.createSampler(x, y, probs)
 
         accuracies = []
         predictions = []
 
         for epoch in range(self.epochs):
-            batches = sampler.sample()
-
-            for xx, yy in batches:
-                currentModel = self.learner.train(xx, yy, probs) if currentModel is None else self.learner.update(
-                    currentModel, xx, yy)
+            currentModel = self.learner.train(x, y, probs) if currentModel is None else self.learner.update(
+                currentModel, x, y)
 
             accuracy, prediction = self.learner.test(currentModel, xt, yt)
             accuracies.append(accuracy)

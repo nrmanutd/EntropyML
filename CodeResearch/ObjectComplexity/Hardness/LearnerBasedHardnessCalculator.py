@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
@@ -31,6 +33,8 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         allEasiness = np.zeros(len(target))
         allCounts = np.zeros(len(target))
 
+        baseModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None else None
+
         for i in range(self.nAttempts):
             if i%10 == 0:
                 self.logger.logDebug(f'Attempt #{i} of {self.nAttempts}...')
@@ -43,10 +47,13 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             xtest = ds[testIdx]
             ytest = t[testIdx]
 
-            extended_x = np.concatenate([x, baseDataSet], axis=0) if baseDataSet is not None else x
-            extended_y = np.concatenate([y, baseTarget]) if baseTarget is not None else y
+            if baseModel is not None:
+                baseModelCopy = copy.deepcopy(baseModel)
+                baseModelCopy = self.learner.update(baseModelCopy, x, y)
+            else:
+                baseModelCopy = self.learner.train(x, y, np.full(len(y), 1.0/len(y)))
 
-            res = self.learner.trainAndTest(extended_x, extended_y, np.full(len(extended_y), fill_value=1.0/len(extended_y)), xtest, ytest)
+            res = self.learner.test(baseModelCopy, xtest, ytest)
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)
@@ -64,8 +71,13 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 
+            del baseModelCopy
+
         self.logger.logDebug('Assesing results...')
         importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, t)
+
+        if baseModel is not None:
+            del baseModel
 
         self.logger.logDebug('Finished calculating hardness')
 
