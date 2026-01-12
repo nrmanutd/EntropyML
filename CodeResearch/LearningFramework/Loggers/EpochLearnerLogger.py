@@ -1,8 +1,7 @@
-from CodeResearch.CurriculumLearning.clHelpers import processEpochLosses, processLosses
+from CodeResearch.CurriculumLearning.clServices.clHelpers import processEpochLosses, processLosses
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Visualization.saveDataForVisualization import serialize_labeled_list_of_arrays
-from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha, \
-    plot_multi_errors_vs_alpha_std
+from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha_std
 
 
 class EpochLearnerLogger(BaseLogger):
@@ -13,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_diversity_easiness_importance_hardness_chain_full'
+        self.prefix = f'{prefix}_adaptive_spearman'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0

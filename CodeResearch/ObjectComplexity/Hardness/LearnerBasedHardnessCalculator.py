@@ -3,6 +3,7 @@ import numpy as np
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import stability_report
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
@@ -26,6 +27,9 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         t = target
 
         self.logger.logDebug(f'Start hardness calculation for alpha = {alpha}...')
+        easinessList = []
+        allEasiness = np.zeros(len(target))
+        allCounts = np.zeros(len(target))
 
         for i in range(self.nAttempts):
             if i%10 == 0:
@@ -39,12 +43,26 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             xtest = ds[testIdx]
             ytest = t[testIdx]
 
-            extended_x, extended_y = self.learner.extendSet([x, baseDataSet], [y, baseTarget])
+            extended_x = np.concatenate([x, baseDataSet], axis=0) if baseDataSet is not None else x
+            extended_y = np.concatenate([y, baseTarget]) if baseTarget is not None else y
+
             res = self.learner.trainAndTest(extended_x, extended_y, np.full(len(extended_y), fill_value=1.0/len(extended_y)), xtest, ytest)
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)
             testResponds.append(res)
+
+            curEasiness, curCounts = self.estimateEasiness(testIdx, t, res)
+            allEasiness += curEasiness
+            allCounts += curCounts
+
+            uptodateEasiness = self.calculateEasiness(allEasiness, allCounts)
+            easinessList.append(uptodateEasiness)
+
+            shouldStop = self.checkIfShouldStop(easinessList)
+            if shouldStop and i > 20:#todo magic number
+                self.logger.logDebug(f'Stopping after {i} attempts of {self.nAttempts}')
+                break
 
         self.logger.logDebug('Assesing results...')
         importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, t)
@@ -52,3 +70,36 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         self.logger.logDebug('Finished calculating hardness')
 
         return importance, easiness
+
+    def estimateEasiness(self, testIdx, t, res):
+        result = np.zeros(len(t))
+        objectCounts = np.zeros(len(t))
+
+        for j in range(len(testIdx)):
+            originalIdx = testIdx[j]
+            objectCounts[originalIdx] = 1
+
+            if res[1][j] == t[originalIdx]:
+                result[originalIdx] += 1
+
+        return result, objectCounts
+
+    def calculateEasiness(self, easiness, counts):
+        for j in range(len(easiness)):
+            if counts[j] == 0:
+                if easiness[j] != 0:
+                    raise ValueError('Incorrect match between easiness and counts!')
+                continue
+
+            easiness[j] /= counts[j]
+
+        return easiness
+
+    def checkIfShouldStop(self, scores_list, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
+        if len(scores_list) < window + 1:
+            return False
+
+        reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
+        shouldStop = all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)
+
+        return shouldStop

@@ -3,6 +3,9 @@ import os
 
 import pandas as pd
 import numpy as np
+import torch
+from torchvision import datasets, transforms
+
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.datasets import mnist
@@ -82,6 +85,19 @@ def loadCifar():
 
     return trainX, trainY
 
+def loadCifar_cnn():
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = cifar10.load_data()
+    # reshape dataset to have a single channel
+
+    trainX = trainX.astype('float32')
+    testX = testX.astype('float32')
+    trainX /= 255  # Normalise data to [0, 1] range
+    testX /= 255  # Normalise data to [0, 1] range
+
+    return trainX, trainY
+
 def loadCifar100():
     num_train = 50000  # there are 60000 training examples in CIFAR
     num_test = 10000  # there are 10000 test examples in CIFAR
@@ -98,6 +114,38 @@ def loadCifar100():
     testX = testX.astype('float32')/255
 
     return trainX, trainY
+
+def loadCifar100_cnn():
+
+    # load dataset
+    (trainX, trainY), (testX, testY) = cifar100.load_data(label_mode='fine')
+    # reshape dataset to have a single channel
+
+    trainX = trainX.astype('float32')/255
+    testX = testX.astype('float32')/255
+
+    return trainX, trainY
+
+def loadCifar10_torch(root="./data", train=True, normalize_to_01=True):
+    tfms = [transforms.ToTensor()]  # uint8 -> float32, CHW, в [0,1]
+    # Если normalize_to_01=False, можешь потом сам делить на 255 — но ToTensor уже делает это.
+    transform = transforms.Compose(tfms)
+
+    ds = datasets.CIFAR10(root=root, train=train, download=True, transform=transform)
+
+    # Собираем всё в один тензор (для CIFAR это ок по памяти)
+    X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
+    y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
+    return X, y
+
+
+def loadCifar100_torch(root="./data", train=True):
+    transform = transforms.Compose([transforms.ToTensor()])
+    ds = datasets.CIFAR100(root=root, train=train, download=True, transform=transform)
+
+    X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
+    y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
+    return X, y
 
 def load_images_from_df(df):
     images = df.iloc[:, 1:].values.astype('float32')

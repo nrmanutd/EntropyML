@@ -3,7 +3,7 @@ import time
 
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
+from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
     plot_object_metrics, plot_distributions_kde, plot_multiple_ecdfs, \
     ecdf_advanced
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
