@@ -8,7 +8,7 @@ from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHa
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
-    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger, minimumIterations: int = 10):
+    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger, minimumIterations: int = 2):
         self.minimumIterations = minimumIterations
         self.logger = logger
         self.assesor = assesor
@@ -61,7 +61,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
             shouldStop = should_stop(easinessList, self.logger)
             if shouldStop and i >= self.minimumIterations:
-                self.logger.logDebug(f'Stopping after {i} attempts of {self.nAttempts}')
+                self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 
         self.logger.logDebug('Assesing results...')

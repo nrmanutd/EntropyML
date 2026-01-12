@@ -11,7 +11,7 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger, minimumIterations: int = 10):
+    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger, minimumIterations: int = 2):
         self.minimumIterations = minimumIterations
         self.logger = logger
         self.nAttempts = nAttempts
