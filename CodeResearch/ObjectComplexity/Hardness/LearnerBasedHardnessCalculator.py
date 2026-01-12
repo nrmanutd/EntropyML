@@ -33,7 +33,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         allEasiness = np.zeros(len(target))
         allCounts = np.zeros(len(target))
 
-        baseModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None else None
+        baseModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None and len(baseTarget) != 0 else None
 
         for i in range(self.nAttempts):
             if i%10 == 0:

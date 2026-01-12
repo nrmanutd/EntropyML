@@ -1,3 +1,4 @@
+import time
 from typing import Callable, Optional, Union, Any, Tuple
 
 import numpy as np
@@ -22,7 +23,7 @@ class TorchModelLearner (TorchLearner):
                  update_epochs: int = 1, weight_decay: float = 0.0, device: Optional[Union[str, torch.device]] = None,
                  optimizer_name: str = "adam", momentum: float = 0.9, nesterov: bool = True,
                  scheduler_name: str = "none", cosine_tmax: Optional[int] = None, min_lr: float = 0.0,
-                 step_size: int = 60, gamma: float = 0.2, use_amp: bool = False, label_smoothing: float = 0.0, shouldCompile: bool = False):
+                 step_size: int = 60, gamma: float = 0.2, use_amp: bool = True, label_smoothing: float = 0.0, shouldCompile: bool = False):
         super().__init__(device)
         self.shouldCompile = shouldCompile
         self.model_factory = model_factory
@@ -113,6 +114,8 @@ class TorchModelLearner (TorchLearner):
     # ----------------- train helpers -----------------
 
     def _train_one_epoch(self, model, optimizer, criterion, x, y, probs=None) -> float:
+        t1 = time.time()
+
         model.train()
         x, y, probs = self._to_tensors(x, y, probs)
         loader = self._make_loader(x, y, probs, shuffle=True)
@@ -120,7 +123,9 @@ class TorchModelLearner (TorchLearner):
         total_loss = 0.0
         total_n = 0
 
+        counter = 0
         for batch in loader:
+            counter += 1
             if len(batch) == 2:
                 xb, yb = batch
                 pb = None
@@ -169,6 +174,7 @@ class TorchModelLearner (TorchLearner):
 
         for _ in range(self.epochs):
             _ = self._train_one_epoch(model, optimizer, criterion, x, y, probs)
+
             if scheduler is not None:
                 scheduler.step()
 

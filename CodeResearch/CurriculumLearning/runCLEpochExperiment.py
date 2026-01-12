@@ -24,7 +24,7 @@ diversityAttempts = 100
 targetBatchSize = 128
 scoringBatchSize = 64
 
-repeats = 5
+repeats = 3
 betas = [0.05, 0.1, 0.2, 0.5]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
@@ -69,7 +69,7 @@ for i in range(1, len(taskNames)):
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-        targetEpochs = 100
+        targetEpochs = 80
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'cifar_epoch' and firstClass == -1:
@@ -116,6 +116,7 @@ for i in range(1, len(taskNames)):
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, betas, baseLabels)
 
     targetLearner = learnerFactory.createTargetLearner(None)
+
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner, RandomAllsetSamplerFactory(targetBatchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
