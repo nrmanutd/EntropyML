@@ -1,15 +1,15 @@
 import numpy as np
 
+from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import stability_report
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
-
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
-    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger):
+    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger, minimumIterations: int = 10):
+        self.minimumIterations = minimumIterations
         self.logger = logger
         self.assesor = assesor
         self.nAttempts = nAttempts
@@ -59,8 +59,8 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             uptodateEasiness = self.calculateEasiness(allEasiness, allCounts)
             easinessList.append(uptodateEasiness)
 
-            shouldStop = self.checkIfShouldStop(easinessList)
-            if shouldStop and i > 20:#todo magic number
+            shouldStop = should_stop(easinessList, self.logger)
+            if shouldStop and i >= self.minimumIterations:
                 self.logger.logDebug(f'Stopping after {i} attempts of {self.nAttempts}')
                 break
 
@@ -85,21 +85,14 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         return result, objectCounts
 
     def calculateEasiness(self, easiness, counts):
+        resultEasiness = np.zeros(len(easiness))
+
         for j in range(len(easiness)):
             if counts[j] == 0:
                 if easiness[j] != 0:
                     raise ValueError('Incorrect match between easiness and counts!')
                 continue
 
-            easiness[j] /= counts[j]
+            resultEasiness[j] = easiness[j] / counts[j]
 
-        return easiness
-
-    def checkIfShouldStop(self, scores_list, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
-        if len(scores_list) < window + 1:
-            return False
-
-        reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
-        shouldStop = all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)
-
-        return shouldStop
+        return resultEasiness

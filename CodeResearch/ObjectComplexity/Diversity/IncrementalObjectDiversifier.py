@@ -1,17 +1,18 @@
 import numpy as np
 import torch
 
+from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
-    stability_report
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger):
+    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger, minimumIterations: int = 10):
+        self.minimumIterations = minimumIterations
         self.logger = logger
         self.nAttempts = nAttempts
         self.learner = learner
@@ -44,7 +45,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             importance += scores
             scoresList.append(np.array(importance))
 
-            if self.should_stop(scoresList) and i > 15:#todo magic number
+            if should_stop(scoresList, self.logger) and i >= self.minimumIterations:
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 
@@ -56,9 +57,3 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         self.logger.logDebug(f'Finished calculating additional diversification for alpha = {alpha}')
 
         return importance
-
-    def should_stop(self, scores_list, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
-        if len(scores_list) < window + 1:
-            return False
-        reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
-        return all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)

@@ -213,4 +213,9 @@ class TorchModelLearner (TorchLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
-        return self.test(model, xt, yt)
+        acc, preds_np = self.test(model, xt, yt)
+
+        del model
+        torch.cuda.empty_cache()
+
+        return acc, preds_np

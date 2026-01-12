@@ -1,6 +1,5 @@
 import numpy as np
 
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import stability_report
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
 class StandardAssesor(BaseObjectAssesor):
