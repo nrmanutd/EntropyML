@@ -393,8 +393,8 @@ def spearman_rank_corr(x: np.ndarray, y: np.ndarray) -> float:
     """
     Spearman correlation = Pearson correlation of ranks.
     """
-    rx = rankdata_average(x)
-    ry = rankdata_average(y)
+    rx = x
+    ry = y
 
     rx = rx - rx.mean()
     ry = ry - ry.mean()
@@ -434,6 +434,10 @@ def stability_report(scores_list, frac=0.05, largest=True):
     for t in range(1, len(scores_list)):
         a = scores_list[t-1]
         b = scores_list[t]
+
+        #a = rankdata_average(a)
+        #b = rankdata_average(b)
+
         reps.append({
             "t": t,
             "spearman": spearman_rank_corr(a, b),
