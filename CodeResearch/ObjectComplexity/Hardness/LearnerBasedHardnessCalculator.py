@@ -39,7 +39,9 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             xtest = ds[testIdx]
             ytest = t[testIdx]
 
-            extended_x, extended_y = self.learner.extendSet([x, baseDataSet], [y, baseTarget])
+            extended_x = np.concatenate([x, baseDataSet], axis=0) if baseDataSet is not None else x
+            extended_y = np.concatenate([y, baseTarget]) if baseTarget is not None else y
+
             res = self.learner.trainAndTest(extended_x, extended_y, np.full(len(extended_y), fill_value=1.0/len(extended_y)), xtest, ytest)
 
             trainIdxes.append(trainIdx)

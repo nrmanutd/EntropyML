@@ -19,9 +19,3 @@ class BaseLearner(ABC):
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
         return self.test(model, xt, yt)
-
-    def extendSet(self, xList, yList):
-        extended_x = np.concatenate(xList, axis=0) if xList[1] is not None else xList[0]
-        extended_y = np.concatenate(yList) if yList[1] is not None else yList[0]
-
-        return extended_x, extended_y
