@@ -49,12 +49,12 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
     return hc
 
 def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, scoringBatchSize, diversityEpochs, learnerCreator):
-    l = learnerCreator(easinessEpochs, scoringBatchSize)# createMnistScoring(nClasses, easinessEpochs, scoringBatchSize)
+    l = learnerCreator(easinessEpochs)# createMnistScoring(nClasses, easinessEpochs, scoringBatchSize)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, logger)
 
-    dcLearner = learnerCreator(diversityEpochs, scoringBatchSize)
+    dcLearner = learnerCreator(diversityEpochs)
     hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, scoringBatchSize, logger))
 
     return hc
@@ -93,7 +93,7 @@ def filterDataSet(x, y, alpha, firstClass, secondClass):
 
     tt = enc.fit_transform(np.ravel(target[idx]))
 
-    return x[idx, :], tt
+    return x[idx], tt
 
 def filterDataSetByFraction(x, y, alpha):
     enc = LabelEncoder()

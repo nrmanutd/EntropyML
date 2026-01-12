@@ -1,9 +1,10 @@
 import numpy as np
 
+from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
+from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createSampler, createLearnerHC, createMnistTarget, filterDataSetByFraction, \
-    createMnistScoring
+    createSampler, createLearnerHC, filterDataSetByFraction
 from CodeResearch.Helpers.commonHelpers import normalizeTarget
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
@@ -12,7 +13,7 @@ from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSampl
     RandomAllsetSamplerFactory
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
-from CodeResearch.dataSets import loadCifar, loadMnist, loadCifar100, loadMnist_cnn
+from CodeResearch.dataSets import loadMnist_cnn, loadCifar100_torch, loadCifar10_torch
 
 datasetFraction = 0.1
 nIterations = 20
@@ -27,7 +28,7 @@ diversityEpochs = 10
 targetBatchSize = 128
 scoringBatchSize = 64
 
-repeats = 10
+repeats = 5
 betas = [0.05, 0.1, 0.2, 0.5]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
@@ -54,36 +55,42 @@ taskNames = ['mnist_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch'
 firstClasses = [-1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(len(taskNames)):
+for i in range(1, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
 
-    if taskName == taskNames[0]:
+    if taskName == 'mnist_epoch':
         x, y = loadMnist_cnn()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
-    elif taskName == taskNames[1]:
-        x, y = loadCifar100()
+        nClasses = len(np.unique(y))
+        learnerFactory = MnistLearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+    elif taskName == 'cifar100_epoch':
+        x, y = loadCifar100_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
         y = normalizeTarget(y)
-    elif taskName == taskNames[7]:
-        x, y = loadMnist()
+        nClasses = len(np.unique(y))
+        learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+    elif taskName == 'mnist_epoch' and i > 0:
+        x, y = loadMnist_cnn()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
         y = normalizeTarget(y)
+        nClasses = len(np.unique(y))
+        learnerFactory = MnistLearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+    elif taskName == 'cifar10_epoch':
+        x, y = loadCifar10_torch()
+        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
+        y = normalizeTarget(y)
+        nClasses = len(np.unique(y))
+        learnerFactory = Cifar10LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
     else:
-        x, y = loadCifar()
-        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-        y = normalizeTarget(y)
+        raise ValueError(f'Incorrect taskName: {taskName}')
 
-    nClasses = len(np.unique(y))
     nFeatures = x.shape[1]
 
     prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, betas, baseLabels)
 
-    learnerFactory = MnistLearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-
-    #targetLearner = NNEpochLearnerPyTorch(nClasses, nFeatures)
     targetLearner = learnerFactory.createTargetLearner(None)
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner, RandomAllsetSamplerFactory(targetBatchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)

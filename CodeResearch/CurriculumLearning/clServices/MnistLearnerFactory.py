@@ -1,5 +1,4 @@
 from CodeResearch.CurriculumLearning.clServices.BaseCLLearnersFactory import BaseCLLearnersFactory
-from CodeResearch.CurriculumLearning.clServices.clHelpers import createMnistTarget, createMnistScoring
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import MNISTScoringNet, MNISTTargetNet
 
