@@ -1,20 +1,16 @@
-import math
 import time
 
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
+from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, visualizeAndSaveComplexity, \
     plot_distributions_kde_with_metrics
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
-from CodeResearch.LearningFramework.Samplers.Batches.priorityBasedSampler import PriorityBasedSampler
-from CodeResearch.ObjectComplexity.Diversity.NNBasedObjectDiversifier import NNBasedObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.SeparableObjectDiversifier import SeparableObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
-from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.dataSets import loadCifar100
 

@@ -1,18 +1,12 @@
 import time
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clHelpers import calculateLosses, filterDataSet, processLosses
+from CodeResearch.CurriculumLearning.clServices.clHelpers import calculateLosses, filterDataSet, processLosses
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
-from CodeResearch.LearningFramework.Learners.NNEpochLearner import NNEpochLearner
 from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
-from CodeResearch.LearningFramework.Learners.XGBoostLearner import XGBoostLearner
-from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
-from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSamplerFactory import \
-    RandomAllsetSamplerFactory
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
-from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha
-from CodeResearch.dataSets import loadCifar, loadMnist, load_proteins
+from CodeResearch.dataSets import loadCifar
 
 nIterations = 5
 nAttempts = 20

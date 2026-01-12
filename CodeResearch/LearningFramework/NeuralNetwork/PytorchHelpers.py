@@ -120,10 +120,6 @@ class _BasicBlock(nn.Module):
 
 
 class ResNet18CIFAR(nn.Module):
-    """
-    ResNet-18, адаптированный под CIFAR (conv3x3 stride1, без maxpool).
-    Отлично подходит как target для CIFAR-10/100 и бинарных пар.
-    """
     def __init__(self, num_classes: int, width_mult: float = 1.0):
         super().__init__()
         base = int(64 * width_mult)
@@ -132,14 +128,23 @@ class ResNet18CIFAR(nn.Module):
         self.conv1 = nn.Conv2d(3, base, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(base)
 
-        # слои ResNet-18: [2,2,2,2]
         self.layer1 = self._make_layer(base,   blocks=2, stride=1)
         self.layer2 = self._make_layer(base*2, blocks=2, stride=2)
         self.layer3 = self._make_layer(base*4, blocks=2, stride=2)
         self.layer4 = self._make_layer(base*8, blocks=2, stride=2)
 
+        # Ключевое: единый интерфейс
+        self.features = nn.Sequential(
+            self.conv1,
+            self.bn1,
+            nn.ReLU(inplace=True),
+            self.layer1,
+            self.layer2,
+            self.layer3,
+            self.layer4,
+        )
         self.pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Linear(base*8, num_classes)
+        self.head = nn.Linear(base*8, num_classes)
 
     def _make_layer(self, out_ch, blocks, stride):
         layers = [_BasicBlock(self.in_ch, out_ch, stride)]
@@ -149,13 +154,9 @@ class ResNet18CIFAR(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)), inplace=True)
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
+        x = self.features(x)
         x = self.pool(x).flatten(1)
-        return self.fc(x)
+        return self.head(x)
 
 
 # =========================
@@ -163,14 +164,10 @@ class ResNet18CIFAR(nn.Module):
 # =========================
 
 class CifarResNet6n2(nn.Module):
-    """
-    CIFAR-ResNet-(6n+2): n=3 -> ResNet20, n=5 -> ResNet32, n=9 -> ResNet56.
-    Удобно как scoring: меньше ResNet18CIFAR и часто достаточно стабильна.
-    """
     def __init__(self, num_classes: int, n: int = 3, width_mult: float = 0.5):
         super().__init__()
         base = int(16 * width_mult)
-        base = max(base, 8)  # на всякий случай
+        base = max(base, 8)
         self.in_ch = base
 
         self.conv1 = _conv3x3(3, base, 1)
@@ -180,8 +177,17 @@ class CifarResNet6n2(nn.Module):
         self.layer2 = self._make_layer(base*2, blocks=n, stride=2)
         self.layer3 = self._make_layer(base*4, blocks=n, stride=2)
 
+        # Ключевое: единый интерфейс
+        self.features = nn.Sequential(
+            self.conv1,
+            self.bn1,
+            nn.ReLU(inplace=True),
+            self.layer1,
+            self.layer2,
+            self.layer3,
+        )
         self.pool = nn.AdaptiveAvgPool2d(1)
-        self.fc = nn.Linear(base*4, num_classes)
+        self.head = nn.Linear(base*4, num_classes)
 
     def _make_layer(self, out_ch, blocks, stride):
         layers = [_BasicBlock(self.in_ch, out_ch, stride)]
@@ -191,12 +197,9 @@ class CifarResNet6n2(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)), inplace=True)
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
+        x = self.features(x)
         x = self.pool(x).flatten(1)
-        return self.fc(x)
+        return self.head(x)
 
 
 # =========================

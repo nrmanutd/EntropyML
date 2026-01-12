@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+import torch.nn as nn
 import torch.nn.functional as F
 from torch.func import functional_call, vmap, grad
 
@@ -205,6 +207,111 @@ def per_sample_grads_head_linear_closed_form(model, xb, yb):
         G = grad_W                                       # [B, C*H]
 
     return G
+
+@torch.no_grad()
+def centered_grad_norm_head_linear_two_pass(model, batches, device):
+    """
+    batches: итератор по батчам, возвращает (xb, yb, idx) или (xb, yb)
+            важно: порядок в pass1 и pass2 должен совпадать.
+    Возвращает scores numpy [N] для centered_grad_norm по голове (W и bias).
+    """
+    model.eval()
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError("Works only for model.head = nn.Linear(H, C)")
+
+    C = head.out_features
+
+    # ---------- PASS 1: считаем средний градиент по W и по bias ----------
+    sum_M = None          # [C, H]
+    sum_g = None          # [C] (для bias)
+    n_total = 0
+
+    for batch in batches:
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = model.features(xb)
+        feat = model.pool(feat).flatten(1)          # [B, H]
+        logits = head(feat)                         # [B, C]
+
+        g = torch.softmax(logits, dim=1)            # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0  # p - onehot
+
+        # sum_M += g^T @ feat  (это сумма outer по всем объектам батча)
+        # g: [B,C], feat:[B,H] -> (g.T @ feat): [C,H]
+        M_batch = g.transpose(0, 1) @ feat          # [C, H]
+
+        if sum_M is None:
+            sum_M = M_batch
+            sum_g = g.sum(dim=0)                    # [C]
+        else:
+            sum_M += M_batch
+            sum_g += g.sum(dim=0)
+
+        n_total += g.size(0)
+
+        # освобождение временных
+        del xb, yb, feat, logits, g, M_batch
+
+    mean_M = sum_M / max(n_total, 1)                # [C, H]
+    mean_g = sum_g / max(n_total, 1)                # [C]  (для bias)
+    norm_mean_M2 = (mean_M * mean_M).sum()          # скаляр
+    norm_mean_g2 = (mean_g * mean_g).sum()          # скаляр
+
+    # ---------- PASS 2: считаем scores без materialize grad_W ----------
+    scores = np.empty(n_total, dtype=np.float32)
+    pos = 0
+
+    # важно: batches должен быть "перезапускаемым" (или заранее сохранён список батчей)
+    for batch in batches:
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = model.features(xb)
+        feat = model.pool(feat).flatten(1)          # [B, H]
+        logits = head(feat)                         # [B, C]
+
+        g = torch.softmax(logits, dim=1)            # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0
+
+        # ||outer||_F^2 = ||g||^2 * ||feat||^2
+        g2 = (g * g).sum(dim=1)                     # [B]
+        f2 = (feat * feat).sum(dim=1)               # [B]
+        norm_outer2 = g2 * f2                       # [B]
+
+        # <outer, mean_M> = g^T (mean_M feat)
+        Mf = feat @ mean_M.t()                      # [B, C]  (feat:[B,H], mean_M^T:[H,C])
+        inner = (g * Mf).sum(dim=1)                 # [B]
+
+        # centered norm по W
+        score2 = norm_outer2 + norm_mean_M2 - 2.0 * inner  # [B]
+
+        # если учитываем bias: grad_b = g
+        # centered bias term: ||g - mean_g||^2 = ||g||^2 + ||mean_g||^2 - 2 g·mean_g
+        if head.bias is not None:
+            inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)   # [B]
+            score2 = score2 + g2 + norm_mean_g2 - 2.0 * inner_b
+
+        score = torch.sqrt(torch.clamp(score2, min=0.0))      # [B]
+
+        bsz = score.numel()
+        scores[pos:pos+bsz] = score.detach().cpu().numpy()
+        pos += bsz
+
+        del xb, yb, feat, logits, g, g2, f2, norm_outer2, Mf, inner, score2, score
+
+    return scores
 
 @torch.no_grad()
 def snapshot_all_named_params(model: torch.nn.Module):

@@ -194,8 +194,6 @@ class TorchModelLearner (TorchLearner):
         total = 0
         all_preds = []
 
-        criterion = self._make_criterion()
-
         with torch.no_grad():
             for xb, yb in loader:
                 logits = model(xb)

@@ -3,18 +3,18 @@ import torch
 
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
-from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
-from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
+from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import per_sample_grads_vmap, calculateDelta, \
-    per_sample_grads_last_layer_loop, per_sample_grads_head_linear_closed_form
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass
+from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchLearner, nAttempts: int, logger: BaseLogger):
+    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger):
         self.logger = logger
         self.nAttempts = nAttempts
         self.learner = learner
+        self.batchSize = batchSize
 
     def calculateObjectDiversity(self, ds, t, baseDataSet, baseTarget, alpha):
         device = self.learner.device
@@ -28,21 +28,19 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
         yb = torch.as_tensor(t, dtype=torch.int64, device=device)
 
+        sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
+
         for i in range(self.nAttempts):
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
             model = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
-            model.eval()
 
-            #G_attempt = per_sample_grads_vmap(model, xb, yb)
-            #G_attempt = per_sample_grads_last_layer_loop(model, xb, yb)
-            G_attempt = per_sample_grads_head_linear_closed_form(model, xb, yb)
-            g_delta = calculateDelta(G_attempt, mode='centered_grad_norm')
+            batches = sampler.sample()
+            scores = centered_grad_norm_head_linear_two_pass(model, batches, device)
 
-            importance += g_delta
+            importance += scores
 
-            del G_attempt
             del model
             torch.cuda.empty_cache()
 
