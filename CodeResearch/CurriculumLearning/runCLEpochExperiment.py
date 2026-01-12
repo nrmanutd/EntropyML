@@ -27,7 +27,7 @@ epochs = 20
 hardnessEpochs = 10
 hidden_sizes = (16, 16)
 
-repeats = 10
+repeats = 5
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [0.05]
 

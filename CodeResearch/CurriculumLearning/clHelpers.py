@@ -82,7 +82,7 @@ def createMnistScoring(num_classes, epochs, batch_size):
         batch_size=batch_size,
         epochs=epochs,
         scheduler_name="none",
-        use_amp=True,
+        use_amp=True
     )
 
     return mnist_scoring_learner

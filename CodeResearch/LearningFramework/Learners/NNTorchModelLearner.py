@@ -22,8 +22,9 @@ class TorchModelLearner (TorchLearner):
                  update_epochs: int = 1, weight_decay: float = 0.0, device: Optional[Union[str, torch.device]] = None,
                  optimizer_name: str = "adam", momentum: float = 0.9, nesterov: bool = True,
                  scheduler_name: str = "none", cosine_tmax: Optional[int] = None, min_lr: float = 0.0,
-                 step_size: int = 60, gamma: float = 0.2, use_amp: bool = False, label_smoothing: float = 0.0):
+                 step_size: int = 60, gamma: float = 0.2, use_amp: bool = False, label_smoothing: float = 0.0, shouldCompile: bool = False):
         super().__init__(device)
+        self.shouldCompile = shouldCompile
         self.model_factory = model_factory
         self.lr = float(lr)
         self.batch_size = int(batch_size)
@@ -159,6 +160,9 @@ class TorchModelLearner (TorchLearner):
 
     def train(self, x, y, probs=None) -> nn.Module:
         model = self.build_model().to(self.device)
+        if self.shouldCompile:
+            model = torch.compile(model)
+
         criterion = self._make_criterion()
         optimizer = self._make_optimizer(model)
         scheduler = self._make_scheduler(optimizer, total_epochs=self.epochs)
