@@ -7,7 +7,7 @@ class BaseObjectAssesor(ABC):
         pass
 
     @abstractmethod
-    def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
+    def estimateEasiness(self, trainIdxes, testIdxes, testResponds, target):
         pass
 
     @abstractmethod

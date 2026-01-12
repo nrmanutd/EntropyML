@@ -1,14 +1,16 @@
 import numpy as np
+
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import stability_report
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
 class StandardAssesor(BaseObjectAssesor):
     def estimate(self, trainIdxes, testIdxes, testResponds, target):
-        easiness = self.estimateEasyness(trainIdxes, testIdxes, testResponds, target)
+        easiness = self.estimateEasiness(trainIdxes, testIdxes, testResponds, target)
         importance = self.estimateImportance(trainIdxes, testIdxes, testResponds, target)
 
         return importance, easiness
 
-    def estimateEasyness(self, trainIdxes, testIdxes, testResponds, target):
+    def estimateEasiness(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)
         totalAttempts = len(trainIdxes)
 
@@ -17,6 +19,8 @@ class StandardAssesor(BaseObjectAssesor):
 
         objectsCorrect = np.zeros(totalObjects)
         objectsUsed = np.zeros(totalObjects)
+
+        easinessList = []
 
         for i in range(totalAttempts):
             curTestIdx = testIdxes[i]

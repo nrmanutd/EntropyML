@@ -44,7 +44,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             importance += scores
             scoresList.append(np.array(importance))
 
-            if self.should_stop(scoresList):
+            if self.should_stop(scoresList) and i > 15:#todo magic number
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 
@@ -58,16 +58,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         return importance
 
     def should_stop(self, scores_list, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
-        """
-        Остановиться, если последние window переходов стабильны.
-        """
         if len(scores_list) < window + 1:
             return False
         reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
-
-        self.logger.logDebug('=======================')
-        for r in reps:
-            self.logger.logDebug(f'Spearman: {r['spearman']}, topk: {r['topk_overlap']}')
-        self.logger.logDebug('=======================')
-
         return all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)

@@ -49,7 +49,7 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
     return hc
 
 def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, scoringBatchSize, diversityEpochs, learnerCreator):
-    l = learnerCreator(easinessEpochs)# createMnistScoring(nClasses, easinessEpochs, scoringBatchSize)
+    l = learnerCreator(easinessEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, logger)
