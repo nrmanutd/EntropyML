@@ -5,7 +5,8 @@ from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
+    stability_report
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
@@ -29,6 +30,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         yb = torch.as_tensor(t, dtype=torch.int64, device=device)
 
         sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
+        scoresList = []
 
         for i in range(self.nAttempts):
             if i%10 == 0:
@@ -40,6 +42,11 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             scores = centered_grad_norm_head_linear_two_pass(model, batches, device)
 
             importance += scores
+            scoresList.append(np.array(importance))
+
+            if self.should_stop(scoresList):
+                self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
+                break
 
             del model
             torch.cuda.empty_cache()
@@ -49,3 +56,18 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         self.logger.logDebug(f'Finished calculating additional diversification for alpha = {alpha}')
 
         return importance
+
+    def should_stop(self, scores_list, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
+        """
+        Остановиться, если последние window переходов стабильны.
+        """
+        if len(scores_list) < window + 1:
+            return False
+        reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
+
+        self.logger.logDebug('=======================')
+        for r in reps:
+            self.logger.logDebug(f'Spearman: {r['spearman']}, topk: {r['topk_overlap']}')
+        self.logger.logDebug('=======================')
+
+        return all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)

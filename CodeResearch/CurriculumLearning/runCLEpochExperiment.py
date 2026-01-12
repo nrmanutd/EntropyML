@@ -19,7 +19,7 @@ datasetFraction = 0.1
 nIterations = 20
 
 nEasinessAttempts = 50
-diversityAttempts = 50
+diversityAttempts = 100
 
 targetEpochs = 20
 easinessEpochs = 10
