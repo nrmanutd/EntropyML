@@ -126,26 +126,53 @@ def loadCifar100_cnn():
 
     return trainX, trainY
 
-def loadCifar10_torch(root="./data", train=True):
-    tfms = [transforms.ToTensor()]  # uint8 -> float32, CHW, в [0,1]
-    transform = transforms.Compose(tfms)
+import torch
+from torchvision import datasets, transforms
 
-    ds = datasets.CIFAR10(root=root, train=train, download=True, transform=transform)
+def loadCifar10_torch(root="./data", normalize_to_01=True):
+    """
+    Возвращает:
+        Xtr: [50000, 3, 32, 32], float32 (ToTensor => уже в [0,1])
+        ytr: [50000], int64
+        Xte: [10000, 3, 32, 32], float32
+        yte: [10000], int64
+    """
+    transform = transforms.ToTensor()
 
-    # Собираем всё в один тензор (для CIFAR это ок по памяти)
-    X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
-    y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
+    ds_tr = datasets.CIFAR10(root=root, train=True,  download=True, transform=transform)
+    ds_te = datasets.CIFAR10(root=root, train=False, download=True, transform=transform)
 
-    return X, y
+    Xtr = torch.stack([ds_tr[i][0] for i in range(len(ds_tr))], dim=0)
+    ytr = torch.tensor([ds_tr[i][1] for i in range(len(ds_tr))], dtype=torch.int64)
 
-def loadCifar100_torch(root="./data", train=True):
-    transform = transforms.Compose([transforms.ToTensor()])
-    ds = datasets.CIFAR100(root=root, train=train, download=True, transform=transform)
+    Xte = torch.stack([ds_te[i][0] for i in range(len(ds_te))], dim=0)
+    yte = torch.tensor([ds_te[i][1] for i in range(len(ds_te))], dtype=torch.int64)
 
-    X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
-    y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
+    # ToTensor уже сделал [0,1]. Если normalize_to_01=False — оставляем как есть.
+    return Xtr, ytr, Xte, yte
 
-    return X, y
+
+def loadCifar100_torch(root="./data"):
+    """
+    Возвращает:
+        Xtr: [50000, 3, 32, 32], float32 в [0,1]
+        ytr: [50000], int64
+        Xte: [10000, 3, 32, 32], float32 в [0,1]
+        yte: [10000], int64
+    """
+    transform = transforms.ToTensor()
+
+    ds_tr = datasets.CIFAR100(root=root, train=True,  download=True, transform=transform)
+    ds_te = datasets.CIFAR100(root=root, train=False, download=True, transform=transform)
+
+    Xtr = torch.stack([ds_tr[i][0] for i in range(len(ds_tr))], dim=0)
+    ytr = torch.tensor([ds_tr[i][1] for i in range(len(ds_tr))], dtype=torch.int64)
+
+    Xte = torch.stack([ds_te[i][0] for i in range(len(ds_te))], dim=0)
+    yte = torch.tensor([ds_te[i][1] for i in range(len(ds_te))], dtype=torch.int64)
+
+    return Xtr, ytr, Xte, yte
+
 
 def load_images_from_df(df):
     images = df.iloc[:, 1:].values.astype('float32')
