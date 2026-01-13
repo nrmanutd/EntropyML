@@ -231,7 +231,7 @@ class TorchModelLearner (TorchLearner):
 
         for _ in range(epochs):
             r = self._train_one_epoch(model, optimizer, criterion, x, y, probs, xt, yt)
-            if len(r[0] > 0):
+            if len(r[0]) > 0:
                 print(r[0])
 
             accuracies.append(r[0])
