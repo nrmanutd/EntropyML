@@ -12,7 +12,7 @@ class RandomWithFixedTestSampler(BaseSampler):
         self.priorityCalculator = priorityCalculator
         self.target = target
         self.dataset = dataset
-        self.restAlpha = trainAlpha
+        self.trainAlpha = trainAlpha
 
         if trainAlpha < 0 or trainAlpha > 1:
             raise ValueError("Test part should be between 0 and 1")
@@ -26,7 +26,7 @@ class RandomWithFixedTestSampler(BaseSampler):
         if seed is not None:
             np.random.seed(seed)
 
-        train_idx, remaining_idx = stratified_split_indices_with_min(self.target, self.restAlpha)
+        train_idx, remaining_idx = stratified_split_indices_with_min(self.target, self.trainAlpha)
 
         priority, probs = self.priorityCalculator.calculatePriority(self.dataset[train_idx],
                                                                     self.target[train_idx])
@@ -37,10 +37,10 @@ class RandomWithFixedTestSampler(BaseSampler):
         testY = []
 
         for p in priority:
-            train_idx = train_idx[p]
+            curTrain_idx = train_idx[p]
 
-            trainX.append(self.dataset[train_idx])
-            trainY.append(self.target[train_idx])
+            trainX.append(self.dataset[curTrain_idx])
+            trainY.append(self.target[curTrain_idx])
             testX.append(self.xtest)
             testY.append(self.ytest)
 
