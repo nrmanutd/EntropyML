@@ -10,6 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
+from CodeResearch.LearningFramework.Samplers.RandomWithFixedTestSampler import RandomWithFixedTestSampler
 from CodeResearch.ObjectComplexity.Diversity.IncrementalObjectDiversifier import IncrementalObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
@@ -57,6 +58,12 @@ def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts,
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
     prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
+
+    return sampler
+
+def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger):
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
+    sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha)
 
     return sampler
 

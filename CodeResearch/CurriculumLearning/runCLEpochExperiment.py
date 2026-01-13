@@ -4,7 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createSampler, createLearnerHC, filterDataSetByFraction
+    createSampler, createLearnerHC, filterDataSetByFraction, createSamplerWithTest
 from CodeResearch.Helpers.commonHelpers import normalizeTarget
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
@@ -32,6 +32,7 @@ nArrays = len(baseLabels) * len(betas)
 nSamples = 2000
 alphas = np.array([0.5])
 fraction = 0.5
+trainAlpha = 0.5
 testAlpha = 0.5
 hidden_sizes = (16, 16)
 dHidden_sizes = (16, 16)
@@ -65,8 +66,10 @@ for i in range(1, len(taskNames)):
         easinessEpochs = 5
         diversityEpochs = 5
     elif taskName == 'cifar100_epoch' and firstClass == -1:
-        x, y = loadCifar100_torch()
+        x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
         targetEpochs = 30
@@ -123,7 +126,7 @@ for i in range(1, len(taskNames)):
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
     #sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
-    sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats,
+    sampler = createSamplerWithTest(x, y, alphas / (1 - testAlpha), betas, trainAlpha, repeats,
                             lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts,
                                                                      scoringBatchSize, diversityEpochs, lambda e: learnerFactory.createScoreLearner(e), dataProcessor), logger)
 
