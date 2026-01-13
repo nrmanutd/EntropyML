@@ -14,24 +14,21 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.1
 nIterations = 20
 
 nEasinessAttempts = 100
 diversityAttempts = 100
 
-targetBatchSize = 128
-scoringBatchSize = 64
-
 repeats = 3
 betas = [0.05, 0.1, 0.2, 0.5]
-baseLabels = ['l', 'h&i_inc', 'h&h_inc']
+baseLabels = ['h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
 alphas = np.array([1])
 fraction = 0.5
-trainAlpha = 0.75
+trainAlpha = 1
 testAlpha = 0.5
 hidden_sizes = (16, 16)
 dHidden_sizes = (16, 16)
@@ -62,7 +59,17 @@ for i in range(1, len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = MnistLearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+        learnerFactory = MnistLearnerFactory(nClasses)
+        targetEpochs = 20
+        easinessEpochs = 5
+        diversityEpochs = 5
+    elif taskName == 'mnist_epoch':
+        x, y, xtest, ytest = loadMnist_torch()
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
+
+        nClasses = len(np.unique(y))
+        learnerFactory = MnistLearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 5
         diversityEpochs = 5
@@ -72,7 +79,17 @@ for i in range(1, len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+        learnerFactory = Cifar100LearnerFactory(nClasses)
+        targetEpochs = 30
+        easinessEpochs = 10
+        diversityEpochs = 10
+    elif taskName == 'cifar100_epoch':
+        x, y, xtest, ytest = loadCifar100_torch()
+        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
+        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
+
+        nClasses = len(np.unique(y))
+        learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 30
         easinessEpochs = 10
         diversityEpochs = 10
@@ -82,37 +99,17 @@ for i in range(1, len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+        learnerFactory = Cifar10LearnerFactory(nClasses)
         targetEpochs = 50
         easinessEpochs = 10
         diversityEpochs = 10
-    elif taskName == 'cifar100_epoch':
-        x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
-
-        nClasses = len(np.unique(y))
-        learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-        targetEpochs = 30
-        easinessEpochs = 10
-        diversityEpochs = 10
-    elif taskName == 'mnist_epoch':
-        x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
-
-        nClasses = len(np.unique(y))
-        learnerFactory = MnistLearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-        targetEpochs = 20
-        easinessEpochs = 5
-        diversityEpochs = 5
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
         xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar10LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
+        learnerFactory = Cifar10LearnerFactory(nClasses)
         targetEpochs = 50
         easinessEpochs = 10
         diversityEpochs = 10

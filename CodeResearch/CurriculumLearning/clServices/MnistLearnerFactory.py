@@ -4,7 +4,7 @@ from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import MNISTSco
 
 
 class MnistLearnerFactory(PyTorchCVCLLearnersFactory):
-    def __init__(self, nClasses, targetBatchSize, scoringBatchSize):
+    def __init__(self, nClasses, targetBatchSize=256, scoringBatchSize=512):
         super().__init__(nClasses, targetBatchSize, scoringBatchSize)
 
     def createScoreLearner_int(self, epochs):
