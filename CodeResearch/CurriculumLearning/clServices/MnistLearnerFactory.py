@@ -1,13 +1,13 @@
-from CodeResearch.CurriculumLearning.clServices.BaseCLLearnersFactory import BaseCLLearnersFactory
+from CodeResearch.CurriculumLearning.clServices.PyTorchCVCLLearnersFactory import PyTorchCVCLLearnersFactory
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import MNISTScoringNet, MNISTTargetNet
 
 
-class MnistLearnerFactory(BaseCLLearnersFactory):
+class MnistLearnerFactory(PyTorchCVCLLearnersFactory):
     def __init__(self, nClasses, targetBatchSize, scoringBatchSize):
         super().__init__(nClasses, targetBatchSize, scoringBatchSize)
 
-    def createScoreLearner(self, epochs):
+    def createScoreLearner_int(self, epochs):
         mnist_scoring_learner = TorchModelLearner(
             model_factory=lambda: MNISTScoringNet(num_classes=self.nClasses),
             optimizer_name="adam",
@@ -15,20 +15,21 @@ class MnistLearnerFactory(BaseCLLearnersFactory):
             weight_decay=0.0,
             batch_size=self.scoringBatchSize,
             epochs=epochs,
+            update_epochs=epochs,
             scheduler_name="none",
             use_amp=True,
         )
         return mnist_scoring_learner
 
-    def createTargetLearner(self, parameters):
+    def createTargetLearner_int(self, epochs):
         mnist_target_learner = TorchModelLearner(
             model_factory=lambda: MNISTTargetNet(num_classes=self.nClasses),
             optimizer_name="adam",
             lr=1e-3,
             weight_decay=1e-4,
             batch_size=self.targetBatchSize,
-            update_epochs=1,
-            epochs=1,
+            update_epochs=epochs,
+            epochs=epochs,
             scheduler_name="none"
         )
         return mnist_target_learner

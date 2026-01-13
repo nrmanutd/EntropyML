@@ -115,7 +115,6 @@ class TorchModelLearner (TorchLearner):
     # ----------------- train helpers -----------------
 
     def _train_one_epoch(self, model, optimizer, criterion, x, y, probs=None, xtest=None, ytest=None):
-
         model.train()
         x, y, probs = self._to_tensors(x, y, probs)
         loader = self._make_loader(x, y, probs, shuffle=True)
@@ -232,6 +231,7 @@ class TorchModelLearner (TorchLearner):
 
         for _ in range(epochs):
             r = self._train_one_epoch(model, optimizer, criterion, x, y, probs, xt, yt)
+            print(r[0])
 
             accuracies.append(r[0])
             predictions.append(r[1])

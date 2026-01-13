@@ -69,7 +69,7 @@ for i in range(1, len(taskNames)):
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-        targetEpochs = 80
+        targetEpochs = 30
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'cifar_epoch' and firstClass == -1:
@@ -115,8 +115,8 @@ for i in range(1, len(taskNames)):
     prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, betas, baseLabels)
 
-    targetLearner = learnerFactory.createTargetLearner(30)
-    m, a, p = targetLearner.trainAndTestOnEachEpoch(x, y, None, x, y)
+    targetLearner = learnerFactory.createTargetLearner(targetEpochs)
+    dataProcessor = learnerFactory.getDataPreprocessor()
 
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner, RandomAllsetSamplerFactory(targetBatchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
@@ -125,7 +125,7 @@ for i in range(1, len(taskNames)):
     #sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
     sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats,
                             lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts,
-                                                                     scoringBatchSize, diversityEpochs, lambda e: learnerFactory.createScoreLearner(e)), logger)
+                                                                     scoringBatchSize, diversityEpochs, lambda e: learnerFactory.createScoreLearner(e), dataProcessor), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

@@ -1,13 +1,14 @@
 from CodeResearch.CurriculumLearning.clServices.BaseCLLearnersFactory import BaseCLLearnersFactory
+from CodeResearch.CurriculumLearning.clServices.PyTorchCVCLLearnersFactory import PyTorchCVCLLearnersFactory
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
 from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import ResNet18CIFAR, CifarResNet6n2
 
 
-class Cifar100LearnerFactory(BaseCLLearnersFactory):
+class Cifar100LearnerFactory(PyTorchCVCLLearnersFactory):
     def __init__(self, nClasses, targetBatchSize, scoringBatchSize):
         super().__init__(nClasses, targetBatchSize, scoringBatchSize)
 
-    def createScoreLearner(self, epochs):
+    def createScoreLearner_int(self, epochs):
         # scoring: сеть меньше, lr ниже, чтобы метрика была стабильнее
         cifar100_scoring_learner = TorchModelLearner(
             model_factory=lambda: CifarResNet6n2(num_classes=self.nClasses, n=3, width_mult=0.5),
@@ -19,14 +20,14 @@ class Cifar100LearnerFactory(BaseCLLearnersFactory):
             nesterov=True,
 
             batch_size=self.scoringBatchSize,
-            update_epochs=1,
+            update_epochs=epochs,
             epochs=epochs,
 
             scheduler_name="cosine",  # cosine annealing по эпохам/шагам (как реализовано у тебя)
         )
         return cifar100_scoring_learner
 
-    def createTargetLearner(self, parameters):
+    def createTargetLearner_int(self, epochs):
         cifar100_target_learner = TorchModelLearner(
             model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
@@ -37,8 +38,8 @@ class Cifar100LearnerFactory(BaseCLLearnersFactory):
             nesterov=True,
 
             batch_size=self.targetBatchSize,
-            update_epochs=parameters,
-            epochs=parameters,
+            update_epochs=epochs,
+            epochs=epochs,
 
             scheduler_name="cosine",
         )

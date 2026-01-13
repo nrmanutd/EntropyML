@@ -3,6 +3,9 @@ import torch
 
 from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
+from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
+from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner import \
+    DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
@@ -11,7 +14,8 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, logger: BaseLogger, minimumIterations: int = 2):
+    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
+        self.dataTransformer = dataTransformer
         self.minimumIterations = minimumIterations
         self.logger = logger
         self.nAttempts = nAttempts
@@ -27,6 +31,11 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             return importance
             #raise ValueError('Incremental hardness calculator shouldnt be used with empty baseDataSet ')
 
+        p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
+        learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
+
+        ds, t = self.dataTransformer.applyParametersToData(ds, t, p)
+
         xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
         yb = torch.as_tensor(t, dtype=torch.int64, device=device)
 
@@ -37,7 +46,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
-            model = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
+            model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
 
             batches = sampler.sample()
             scores = centered_grad_norm_head_linear_two_pass(model, batches, device)

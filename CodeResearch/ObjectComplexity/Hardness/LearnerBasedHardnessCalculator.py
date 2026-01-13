@@ -5,12 +5,16 @@ import numpy as np
 from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
+from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
+from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner import \
+    DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
 
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
-    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, logger: BaseLogger, minimumIterations: int = 2):
+    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
+        self.dataTransformer = dataTransformer
         self.minimumIterations = minimumIterations
         self.logger = logger
         self.assesor = assesor
@@ -20,7 +24,6 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         logger.logDebug(f'nAttempts = {nAttempts}')
 
     def calculateHardness(self, dataSet, target, baseDataSet, baseTarget, alpha):
-
         trainIdxes = []
         testIdxes = []
         testResponds = []
@@ -33,7 +36,10 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         allEasiness = np.zeros(len(target))
         allCounts = np.zeros(len(target))
 
-        baseModel = self.learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None and len(baseTarget) != 0 else None
+        p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
+        learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
+
+        baseModel = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None and len(baseTarget) != 0 else None
 
         for i in range(self.nAttempts):
             if i%10 == 0:
@@ -49,11 +55,11 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
             if baseModel is not None:
                 baseModelCopy = copy.deepcopy(baseModel)
-                baseModelCopy = self.learner.update(baseModelCopy, x, y)
+                baseModelCopy = learner.update(baseModelCopy, x, y)
             else:
-                baseModelCopy = self.learner.train(x, y, np.full(len(y), 1.0/len(y)))
+                baseModelCopy = learner.train(x, y, np.full(len(y), 1.0/len(y)))
 
-            res = self.learner.test(baseModelCopy, xtest, ytest)
+            res = learner.test(baseModelCopy, xtest, ytest)
 
             trainIdxes.append(trainIdx)
             testIdxes.append(testIdx)

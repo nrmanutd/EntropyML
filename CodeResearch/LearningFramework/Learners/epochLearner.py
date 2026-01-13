@@ -35,7 +35,6 @@ class EpochLearner(BaseLearner):
         return m
 
     def test(self, models, x, y):
-
         accuracies = []
         predictions = []
         for model in models:
@@ -54,6 +53,8 @@ class EpochLearner(BaseLearner):
         return accuracies
 
     def train(self, x, y, probs):
+        raise NotImplementedError()
+
         currentModel = None
         sampler = self.samplersFactory.createSampler(x, y, probs)
 

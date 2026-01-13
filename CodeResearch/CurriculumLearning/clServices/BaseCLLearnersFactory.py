@@ -14,3 +14,7 @@ class BaseCLLearnersFactory(ABC):
     @abstractmethod
     def createScoreLearner(self, parameters):
         pass
+
+    @abstractmethod
+    def getDataPreprocessor(self):
+        pass

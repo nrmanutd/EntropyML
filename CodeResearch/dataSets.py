@@ -126,9 +126,8 @@ def loadCifar100_cnn():
 
     return trainX, trainY
 
-def loadCifar10_torch(root="./data", train=True, normalize_to_01=True):
+def loadCifar10_torch(root="./data", train=True):
     tfms = [transforms.ToTensor()]  # uint8 -> float32, CHW, в [0,1]
-    # Если normalize_to_01=False, можешь потом сам делить на 255 — но ToTensor уже делает это.
     transform = transforms.Compose(tfms)
 
     ds = datasets.CIFAR10(root=root, train=train, download=True, transform=transform)
@@ -136,8 +135,8 @@ def loadCifar10_torch(root="./data", train=True, normalize_to_01=True):
     # Собираем всё в один тензор (для CIFAR это ок по памяти)
     X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
     y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
-    return X, y
 
+    return X, y
 
 def loadCifar100_torch(root="./data", train=True):
     transform = transforms.Compose([transforms.ToTensor()])
@@ -145,6 +144,7 @@ def loadCifar100_torch(root="./data", train=True):
 
     X = torch.stack([ds[i][0] for i in range(len(ds))], dim=0)  # [N,3,32,32]
     y = torch.tensor([ds[i][1] for i in range(len(ds))], dtype=torch.int64)  # [N]
+
     return X, y
 
 def load_images_from_df(df):
