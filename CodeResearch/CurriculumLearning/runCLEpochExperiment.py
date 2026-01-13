@@ -132,7 +132,7 @@ for i in range(1, len(taskNames)):
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
     #sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
-    sampler = createSamplerWithTest(x, y, alphas / (1 - testAlpha), betas, trainAlpha, repeats,
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas / (1 - testAlpha), betas, trainAlpha, repeats,
                             lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts,
                                                                      scoringBatchSize, diversityEpochs, lambda e: learnerFactory.createScoreLearner(e), dataProcessor), logger)
 
