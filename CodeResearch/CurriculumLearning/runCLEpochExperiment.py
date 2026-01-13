@@ -12,7 +12,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 20
+nIterations = 10
 
 nEasinessAttempts = 20
 diversityAttempts = 10
@@ -41,11 +41,11 @@ dHidden_sizes = (16, 16)
 #x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
 #x, y = load_proteins("../Data/Proteins/df_master.csv")
 
-taskNames = ['mnist_epoch', 'cifar100_epoch', 'cifar_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
+taskNames = ['cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar_epoch']
 firstClasses = [-1, -1, -1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, -1, -1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(1, len(taskNames)):
+for i in range(len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
