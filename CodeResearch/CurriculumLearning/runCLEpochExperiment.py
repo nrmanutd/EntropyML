@@ -23,13 +23,13 @@ diversityAttempts = 100
 targetBatchSize = 128
 scoringBatchSize = 64
 
-repeats = 3
+repeats = 1
 betas = [0.05, 0.1, 0.2, 0.5]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
-alphas = np.array([0.5])
+alphas = np.array([1])
 fraction = 0.5
 trainAlpha = 0.5
 testAlpha = 0.5
@@ -135,7 +135,7 @@ for i in range(1, len(taskNames)):
 
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, scoringBatchSize, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas / (1 - testAlpha), betas, trainAlpha, repeats, hcBuilder, logger)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
