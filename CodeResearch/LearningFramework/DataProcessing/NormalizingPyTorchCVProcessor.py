@@ -16,4 +16,4 @@ class NormalizingPyTorchCVProcessor(BaseDataProcessor):
         mean = dataSet.mean(dim=(0, 2, 3), keepdim=True)
         std = dataSet.std(dim=(0, 2, 3), keepdim=True, unbiased=False)
 
-        return (mean, std)
+        return mean, std

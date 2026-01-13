@@ -33,4 +33,6 @@ class EpochLearner(BaseLearner):
 
     def trainAndTest(self, x, y, probs, xt, yt):
         model, accuracies, predictions = self.learner.trainAndTestOnEachEpoch(x, y, probs, xt, yt)
+        del model
+
         return accuracies, predictions

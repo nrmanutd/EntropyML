@@ -1,12 +1,14 @@
 import numpy as np
 
+from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Samplers.baseSampler import BaseSampler
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 
 
 class RandomWithFixedTestSampler(BaseSampler):
-    def __init__(self, dataset, target, xtest, ytest, priorityCalculator: BasePriorityCalculator, trainAlpha):
+    def __init__(self, dataset, target, xtest, ytest, priorityCalculator: BasePriorityCalculator, trainAlpha, logger: BaseLogger):
+        self.logger = logger
         self.ytest = ytest
         self.xtest = xtest
         self.priorityCalculator = priorityCalculator
@@ -36,8 +38,11 @@ class RandomWithFixedTestSampler(BaseSampler):
         testX = []
         testY = []
 
-        for p in priority:
+        for k in range(len(priority)):
+            p = priority[k]
             curTrain_idx = train_idx[p]
+
+            self.logger.logDebug(f'Calculating objects priority for {len(p)} ({len(p) / len(self.target)}%) objects of {k} ({len(priority)}) priorities. test: {len(self.ytest)} objects')
 
             trainX.append(self.dataset[curTrain_idx])
             trainY.append(self.target[curTrain_idx])

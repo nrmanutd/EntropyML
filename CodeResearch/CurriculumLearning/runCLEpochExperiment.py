@@ -11,15 +11,17 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.1
+datasetFraction = 1
 nIterations = 20
 
-nEasinessAttempts = 100
-diversityAttempts = 100
+nEasinessAttempts = 10
+diversityAttempts = 10
 
 repeats = 3
 betas = [0.05, 0.1, 0.2, 0.5]
-baseLabels = ['h&i_inc', 'h&h_inc']
+baseLabels = ['h&i_inc']
+#baseLabels = ['h&i_inc', 'h&h_inc']
+#baseLabels = ['l']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000

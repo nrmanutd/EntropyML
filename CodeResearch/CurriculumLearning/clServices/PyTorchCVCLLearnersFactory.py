@@ -10,9 +10,7 @@ class PyTorchCVCLLearnersFactory(BaseCLLearnersFactory):
         return NormalizingPyTorchCVProcessor()
 
     def createScoreLearner(self, epochs):
-        # scoring: сеть меньше, lr ниже, чтобы метрика была стабильнее
         learner = self.createScoreLearner_int(epochs)
-
         return learner
 
     def createTargetLearner(self, parameters):

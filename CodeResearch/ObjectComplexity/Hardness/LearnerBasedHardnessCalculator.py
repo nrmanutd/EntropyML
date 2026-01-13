@@ -1,6 +1,7 @@
 import copy
 
 import numpy as np
+import torch
 
 from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import should_stop
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
@@ -83,6 +84,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
                 break
 
             del baseModelCopy
+            torch.cuda.empty_cache()
 
         self.logger.logDebug('Assesing results...')
         importance, easiness = self.assesor.estimate(trainIdxes, testIdxes, testResponds, t)
