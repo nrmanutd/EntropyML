@@ -10,6 +10,10 @@ class NormalizingPyTorchCVProcessor(BaseDataProcessor):
         return X, target
 
     def estimateDataTransformationParameters(self, dataSet, target):
+        print(f'Number of elements to normalize: {len(target)}')
+        if len(target) <= 1:
+            raise ValueError()
+
         mean = dataSet.mean(dim=(0, 2, 3), keepdim=True)
         std = dataSet.std(dim=(0, 2, 3), keepdim=True, unbiased=False)
 

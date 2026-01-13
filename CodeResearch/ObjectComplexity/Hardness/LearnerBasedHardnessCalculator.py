@@ -36,10 +36,13 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
         allEasiness = np.zeros(len(target))
         allCounts = np.zeros(len(target))
 
-        p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
-        learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
-
-        baseModel = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget))) if baseDataSet is not None and len(baseTarget) != 0 else None
+        if baseDataSet is not None and len(baseTarget) != 0:
+            p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
+            learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
+            baseModel = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0/len(baseTarget)))
+        else:
+            learner = self.learner
+            baseModel = None
 
         for i in range(self.nAttempts):
             if i%10 == 0:
@@ -57,6 +60,8 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
                 baseModelCopy = copy.deepcopy(baseModel)
                 baseModelCopy = learner.update(baseModelCopy, x, y)
             else:
+                p = self.dataTransformer.estimateDataTransformationParameters(x, y)
+                learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
                 baseModelCopy = learner.train(x, y, np.full(len(y), 1.0/len(y)))
 
             res = learner.test(baseModelCopy, xtest, ytest)
