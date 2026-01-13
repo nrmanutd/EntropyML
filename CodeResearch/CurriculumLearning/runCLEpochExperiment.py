@@ -8,10 +8,7 @@ from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, 
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
-from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSamplerFactory import \
-    RandomAllsetSamplerFactory
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
-from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 0.1
@@ -124,14 +121,14 @@ for i in range(1, len(taskNames)):
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
     dataProcessor = learnerFactory.getDataPreprocessor()
 
-    compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner, RandomAllsetSamplerFactory(targetBatchSize, PrioritizerType.Probability)), logger)
+    compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #hc = createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes)
     #sampler = createSampler(x, y, alphas / (1 - testAlpha), betas, testAlpha, repeats, lambda shouldUseLearner: createLearnerBasedHardnessCalculator(nAttempts, logger, x.shape[1], nClasses, hardnessEpochs, hidden_sizes, dAttempts, dBatchSize, dEpochs, dHidden_sizes, shouldUseLearner), logger)
 
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, scoringBatchSize, diversityEpochs, scoreLearnerBuilder, dataProcessor)
+    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
     sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
 
     logger.logDebug(f'Starting task {prefix}')

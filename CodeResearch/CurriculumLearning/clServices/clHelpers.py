@@ -44,14 +44,14 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
 
     return hc
 
-def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, scoringBatchSize, diversityEpochs, learnerCreator, dataProcessor):
+def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 
     dcLearner = learnerCreator(diversityEpochs)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, scoringBatchSize, dataProcessor, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, 128, dataProcessor, logger))
 
     return hc
 
