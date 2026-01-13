@@ -44,6 +44,24 @@ def loadMnist_cnn():
 
     return trainX, trainY
 
+import torch
+from torchvision import datasets, transforms
+
+def loadMnist_torch(root="./data"):
+    transform = transforms.ToTensor()  # uint8 -> float32, [0,1], CHW
+
+    ds_tr = datasets.MNIST(root=root, train=True,  download=True, transform=transform)
+    ds_te = datasets.MNIST(root=root, train=False, download=True, transform=transform)
+
+    Xtr = torch.stack([ds_tr[i][0] for i in range(len(ds_tr))], dim=0)  # [N,1,28,28]
+    ytr = torch.tensor([ds_tr[i][1] for i in range(len(ds_tr))], dtype=torch.int64)
+
+    Xte = torch.stack([ds_te[i][0] for i in range(len(ds_te))], dim=0)
+    yte = torch.tensor([ds_te[i][1] for i in range(len(ds_te))], dtype=torch.int64)
+
+    return Xtr, ytr, Xte, yte
+
+
 def loadFashionMnist():
     num_train = 60000  # there are 60000 training examples in MNIST
     num_test = 10000  # there are 10000 test examples in MNIST
