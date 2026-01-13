@@ -14,14 +14,12 @@ from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMni
 datasetFraction = 1
 nIterations = 20
 
-nEasinessAttempts = 10
+nEasinessAttempts = 20
 diversityAttempts = 10
 
-repeats = 3
+repeats = 1
 betas = [0.05, 0.1, 0.2, 0.5]
-baseLabels = ['h&i_inc']
-#baseLabels = ['h&i_inc', 'h&h_inc']
-#baseLabels = ['l']
+baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
