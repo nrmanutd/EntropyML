@@ -12,7 +12,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 10
+nIterations = 20
 
 nEasinessAttempts = 20
 diversityAttempts = 10
@@ -77,7 +77,7 @@ for i in range(len(taskNames)):
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
-        targetEpochs = 30
+        targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'cifar100_epoch':

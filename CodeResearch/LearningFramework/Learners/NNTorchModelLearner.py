@@ -162,7 +162,9 @@ class TorchModelLearner (TorchLearner):
         predictions = None
 
         if xtest is not None:
+            wasTraining = model.training
             accuracies, predictions = self.test(model, xtest, ytest)
+            model.train(wasTraining)
 
         return accuracies, predictions
 
