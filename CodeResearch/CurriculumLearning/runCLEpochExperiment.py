@@ -14,7 +14,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.1
+datasetFraction = 1
 nIterations = 20
 
 nEasinessAttempts = 100
@@ -23,7 +23,7 @@ diversityAttempts = 100
 targetBatchSize = 128
 scoringBatchSize = 64
 
-repeats = 1
+repeats = 3
 betas = [0.05, 0.1, 0.2, 0.5]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
