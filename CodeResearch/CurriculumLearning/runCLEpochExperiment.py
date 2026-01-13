@@ -4,8 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createSampler, createLearnerHC, filterDataSetByFraction, createSamplerWithTest
-from CodeResearch.Helpers.commonHelpers import normalizeTarget
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -13,7 +12,7 @@ from CodeResearch.LearningFramework.Samplers.SamplersFactories.RandomAllSetSampl
     RandomAllsetSamplerFactory
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.ObjectComplexity.InstancePriority.PrioritizerType import PrioritizerType
-from CodeResearch.dataSets import loadMnist_cnn, loadCifar100_torch, loadCifar10_torch, loadMnist_torch
+from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
 nIterations = 20
