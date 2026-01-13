@@ -19,3 +19,7 @@ class BaseLearner(ABC):
     def trainAndTest(self, x, y, probs, xt, yt):
         model = self.train(x, y, probs)
         return self.test(model, xt, yt)
+
+    @abstractmethod
+    def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
+        pass

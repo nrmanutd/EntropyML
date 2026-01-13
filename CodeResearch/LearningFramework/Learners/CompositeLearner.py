@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import torch
 
@@ -47,3 +49,17 @@ class CompositeLearner(BaseLearner):
             resultsPredictions.append(predictions)
 
         return resultsAccuracy, resultsPredictions
+
+    def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
+        resultsAccuracy = []
+        resultsPredictions = []
+        models = []
+
+        for i in range(len(x)):
+            self.logger.logDebug(f'Training model #{i} of {len(x)}')
+            m, accuracy, predictions = self.learner.trainAndTestOnEachEpoch(x[i], y[i], probs[i], xt[i], yt[i])
+            resultsAccuracy.append(accuracy)
+            resultsPredictions.append(predictions)
+            models.append(copy.deepcopy(m))
+
+        return models, resultsAccuracy, resultsPredictions

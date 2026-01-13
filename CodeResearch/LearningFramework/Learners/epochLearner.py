@@ -10,8 +10,11 @@ from CodeResearch.LearningFramework.Samplers.SamplersFactories.baseSamplersFacto
 
 
 class EpochLearner(BaseLearner):
+    def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
+        raise NotImplementedError()
+
     def update(self, model, x, y):
-        pass
+        raise NotImplementedError()
 
     def __init__(self, epochs, learner: BaseLearner, samplersFactory: BaseSamplersFactory):
         self.samplersFactory = samplersFactory
@@ -79,18 +82,5 @@ class EpochLearner(BaseLearner):
         return trainedModels
 
     def trainAndTest(self, x, y, probs, xt, yt):
-        currentModel = None
-
-        accuracies = []
-        predictions = []
-
-        for epoch in range(self.epochs):
-            currentModel = self.learner.train(x, y, probs) if currentModel is None else self.learner.update(
-                currentModel, x, y)
-
-            accuracy, prediction = self.learner.test(currentModel, xt, yt)
-            accuracies.append(accuracy)
-            predictions.append(prediction)
-            torch.cuda.empty_cache()
-
+        model, accuracies, predictions = self.learner.trainAndTestOnEachEpoch(x, y, probs, xt, yt)
         return accuracies, predictions

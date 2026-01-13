@@ -37,8 +37,8 @@ class Cifar100LearnerFactory(BaseCLLearnersFactory):
             nesterov=True,
 
             batch_size=self.targetBatchSize,
-            update_epochs=1,
-            epochs=1,
+            update_epochs=parameters,
+            epochs=parameters,
 
             scheduler_name="cosine",
         )

@@ -4,6 +4,7 @@ from typing import Callable, Optional, Union, Any, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
+from keras.src.metrics.accuracy_metrics import accuracy
 from torch.utils.data import DataLoader, TensorDataset
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
@@ -113,8 +114,7 @@ class TorchModelLearner (TorchLearner):
 
     # ----------------- train helpers -----------------
 
-    def _train_one_epoch(self, model, optimizer, criterion, x, y, probs=None) -> float:
-        t1 = time.time()
+    def _train_one_epoch(self, model, optimizer, criterion, x, y, probs=None, xtest=None, ytest=None):
 
         model.train()
         x, y, probs = self._to_tensors(x, y, probs)
@@ -159,38 +159,25 @@ class TorchModelLearner (TorchLearner):
             total_loss += float(loss.item()) * bs
             total_n += bs
 
-        return total_loss / max(total_n, 1)
+        accuracies = []
+        predictions = []
+
+        if xtest is not None:
+            accuracies, predictions = self.test(model, xtest, ytest)
+
+        return accuracies, predictions
 
     # ----------------- public API -----------------
 
     def train(self, x, y, probs=None) -> nn.Module:
         model = self.build_model().to(self.device)
-        if self.shouldCompile:
-            model = torch.compile(model)
-
-        criterion = self._make_criterion()
-        optimizer = self._make_optimizer(model)
-        scheduler = self._make_scheduler(optimizer, total_epochs=self.epochs)
-
-        for _ in range(self.epochs):
-            _ = self._train_one_epoch(model, optimizer, criterion, x, y, probs)
-
-            if scheduler is not None:
-                scheduler.step()
-
+        model, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
         return model
 
     def update(self, model: nn.Module, x, y) -> nn.Module:
         model = model.to(self.device)
-        criterion = self._make_criterion()
-        optimizer = self._make_optimizer(model)
-        scheduler = self._make_scheduler(optimizer, total_epochs=self.update_epochs)
 
-        for _ in range(self.update_epochs):
-            _ = self._train_one_epoch(model, optimizer, criterion, x, y, probs=None)
-            if scheduler is not None:
-                scheduler.step()
-
+        model, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None)
         return model
 
     def test(self, model: nn.Module, x, y):
@@ -225,3 +212,31 @@ class TorchModelLearner (TorchLearner):
         torch.cuda.empty_cache()
 
         return acc, preds_np
+
+    def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
+        model = self.build_model().to(self.device)
+
+        model, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
+        return model, a, p
+
+    def _trainModel(self, model, x, y, probs, epochs, xt, yt):
+        if self.shouldCompile:
+            model = torch.compile(model)
+
+        criterion = self._make_criterion()
+        optimizer = self._make_optimizer(model)
+        scheduler = self._make_scheduler(optimizer, total_epochs=epochs)
+
+        accuracies = []
+        predictions = []
+
+        for _ in range(epochs):
+            r = self._train_one_epoch(model, optimizer, criterion, x, y, probs, xt, yt)
+
+            accuracies.append(r[0])
+            predictions.append(r[1])
+
+            if scheduler is not None:
+                scheduler.step()
+
+        return model, accuracies, predictions

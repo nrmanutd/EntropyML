@@ -86,7 +86,7 @@ for i in range(1, len(taskNames)):
         y = normalizeTarget(y)
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses, targetBatchSize, scoringBatchSize)
-        targetEpochs = 100
+        targetEpochs = 30
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'mnist_epoch':
@@ -115,7 +115,8 @@ for i in range(1, len(taskNames)):
     prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_NN'
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, betas, baseLabels)
 
-    targetLearner = learnerFactory.createTargetLearner(None)
+    targetLearner = learnerFactory.createTargetLearner(30)
+    m, a, p = targetLearner.trainAndTestOnEachEpoch(x, y, None, x, y)
 
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner, RandomAllsetSamplerFactory(targetBatchSize, PrioritizerType.Probability)), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
