@@ -80,6 +80,9 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
 
             shouldStop = should_stop(easinessList, self.logger)
             if shouldStop and i >= self.minimumIterations:
+                del baseModelCopy
+                torch.cuda.empty_cache()
+
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 

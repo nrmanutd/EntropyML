@@ -55,6 +55,9 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             scoresList.append(np.array(importance))
 
             if should_stop(scoresList, self.logger) and i >= self.minimumIterations:
+                del model
+                torch.cuda.empty_cache()
+
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts}')
                 break
 
