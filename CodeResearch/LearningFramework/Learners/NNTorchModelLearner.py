@@ -158,8 +158,8 @@ class TorchModelLearner (TorchLearner):
             total_loss += float(loss.item()) * bs
             total_n += bs
 
-        accuracies = []
-        predictions = []
+        accuracies = None
+        predictions = None
 
         if xtest is not None:
             accuracies, predictions = self.test(model, xtest, ytest)
@@ -229,10 +229,11 @@ class TorchModelLearner (TorchLearner):
         accuracies = []
         predictions = []
 
+        t1 = time.time()
         for _ in range(epochs):
             r = self._train_one_epoch(model, optimizer, criterion, x, y, probs, xt, yt)
-            if len(r[0]) > 0:
-                print(r[0])
+            if r[0] is not None:
+                print(f'Epoch #{_}({epochs}) {time.time() - t1}: {r[0]}')
 
             accuracies.append(r[0])
             predictions.append(r[1])
