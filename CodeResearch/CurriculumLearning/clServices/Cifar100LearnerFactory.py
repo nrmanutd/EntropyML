@@ -5,7 +5,7 @@ from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import ResNet18
 
 
 class Cifar100LearnerFactory(PyTorchCVCLLearnersFactory):
-    def __init__(self, nClasses, targetBatchSize=128, scoringBatchSize=32):
+    def __init__(self, nClasses, targetBatchSize=128, scoringBatchSize=64):
         super().__init__(nClasses, targetBatchSize, scoringBatchSize)
 
     def createScoreLearner_int(self, epochs):
