@@ -12,7 +12,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 20
+nIterations = 50
 
 nEasinessAttempts = 30
 diversityAttempts = 30
