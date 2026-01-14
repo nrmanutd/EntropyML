@@ -14,8 +14,8 @@ from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMni
 datasetFraction = 1
 nIterations = 20
 
-nEasinessAttempts = 20
-diversityAttempts = 10
+nEasinessAttempts = 30
+diversityAttempts = 30
 
 repeats = 1
 betas = [0.05, 0.1, 0.2, 0.5]

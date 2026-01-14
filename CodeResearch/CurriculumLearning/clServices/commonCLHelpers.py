@@ -1,3 +1,4 @@
+import numpy as np
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 
 def should_stop(scores_list, logger:BaseLogger, window=5, spearman_thr=0.95, overlap_thr=0.90, frac=0.05, largest=True) -> bool:
@@ -14,8 +15,6 @@ def should_stop(scores_list, logger:BaseLogger, window=5, spearman_thr=0.95, ove
         logger.logDebug('=============')
 
     return result
-
-import numpy as np
 
 def rankdata_average(a: np.ndarray) -> np.ndarray:
     """
