@@ -14,7 +14,7 @@ class Cifar100LearnerFactory(PyTorchCVCLLearnersFactory):
             model_factory=lambda: CifarResNet6n2(num_classes=self.nClasses, n=3, width_mult=0.5),
 
             optimizer_name="sgd",
-            lr=0.02,  # мягче, чем target (стабильность сигналов)
+            lr=0.05,  # мягче, чем target (стабильность сигналов)
             weight_decay=5e-4,
             momentum=0.9,
             nesterov=True,
@@ -32,7 +32,7 @@ class Cifar100LearnerFactory(PyTorchCVCLLearnersFactory):
             model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
-            lr=0.05,  # классика для CIFAR при bs~128
+            lr=0.1,  # классика для CIFAR при bs~128
             weight_decay=5e-4,
             momentum=0.9,
             nesterov=True,
