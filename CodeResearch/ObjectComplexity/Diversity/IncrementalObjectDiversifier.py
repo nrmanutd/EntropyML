@@ -9,7 +9,8 @@ from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
+    per_sample_grads_head_linear_closed_form, calculateDelta
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
@@ -39,7 +40,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
         yb = torch.as_tensor(t, dtype=torch.int64, device=device)
 
-        sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
+        #sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
         scoresList = []
 
         for i in range(self.nAttempts):
@@ -48,8 +49,10 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
 
             model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
 
-            batches = sampler.sample()
-            scores = centered_grad_norm_head_linear_two_pass(model, batches, device)
+            #batches = sampler.sample()
+            #scores = centered_grad_norm_head_linear_two_pass(model, batches, device)
+            g = per_sample_grads_head_linear_closed_form(model, xb, yb)
+            scores = calculateDelta(g, "centered_grad_norm")
 
             importance += scores
             scoresList.append(np.array(importance))
