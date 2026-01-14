@@ -1,18 +1,17 @@
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory, \
-    Cifar100CachedOptimizerLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createSamplerForChain, createLearnerHCForChain
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.1
 nIterations = 50
 
 nEasinessAttempts = 30
