@@ -63,7 +63,7 @@ class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
             else:
                 p = self.dataTransformer.estimateDataTransformationParameters(x, y)
                 learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
-                baseModelCopy = learner.train(x, y, None)
+                baseModelCopy = learner.train(x, y, np.full(len(y), 1.0/len(y)))
 
             res = learner.test(baseModelCopy, xtest, ytest)
 

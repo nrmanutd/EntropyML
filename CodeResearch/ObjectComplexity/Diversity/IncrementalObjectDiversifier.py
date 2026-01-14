@@ -46,7 +46,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
-            model = learner.train(baseDataSet, baseTarget, None)
+            model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
 
             batches = sampler.sample()
             scores = centered_grad_norm_head_linear_two_pass(model, batches, device)

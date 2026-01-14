@@ -110,13 +110,8 @@ class TorchModelLearner (TorchLearner):
         return x, y, probs
 
     def _make_loader(self, x: torch.Tensor, y: torch.Tensor, probs=None, shuffle=True) -> DataLoader:
-        ds = TensorDataset(x, y)
-
-        if probs is None:
-            return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
-
-        sampler = SortedByProbSampler(probs)
-        return DataLoader(ds, batch_size=self.batch_size, sampler=sampler, shuffle=False)
+        ds = TensorDataset(x, y) #if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
+        return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
 
     # ----------------- train helpers -----------------
 
