@@ -19,7 +19,8 @@ diversityAttempts = 30
 
 repeats = 1
 betas = [0.05, 0.1, 0.2, 0.5]
-baseLabels = ['l', 'h&i_inc', 'h&h_inc']
+#baseLabels = ['l', 'h&i_inc', 'h&h_inc']
+baseLabels = ['l']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
