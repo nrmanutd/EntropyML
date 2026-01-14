@@ -5,7 +5,7 @@ from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import ResNet18
 
 
 class Cifar10LearnerFactory(PyTorchCVCLLearnersFactory):
-    def __init__(self, nClasses, targetBatchSize=128, scoringBatchSize=256):
+    def __init__(self, nClasses, targetBatchSize=128, scoringBatchSize=64):
         super().__init__(nClasses, targetBatchSize, scoringBatchSize)
 
     def createScoreLearner_int(self, epochs):
@@ -13,7 +13,7 @@ class Cifar10LearnerFactory(PyTorchCVCLLearnersFactory):
             model_factory=lambda: CifarResNet6n2(num_classes=self.nClasses, n=3, width_mult=0.5),
 
             optimizer_name="sgd",
-            lr=0.05,  # мягче для scoring
+            lr=0.02,  # мягче для scoring
             weight_decay=5e-4,
             momentum=0.9,
             nesterov=True,
@@ -31,7 +31,7 @@ class Cifar10LearnerFactory(PyTorchCVCLLearnersFactory):
             model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
-            lr=0.1,  # классика CIFAR при bs~128
+            lr=0.05,  # классика CIFAR при bs~128
             weight_decay=5e-4,
             momentum=0.9,
             nesterov=True,
