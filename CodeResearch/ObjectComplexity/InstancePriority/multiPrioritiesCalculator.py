@@ -3,6 +3,7 @@ import math
 import numpy as np
 from scipy.special import softmax
 
+from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import calculateProductBasedPriority
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min_and_priority
 from CodeResearch.ObjectComplexity.Hardness.UsefulObjectsCalculator import UsefulObjectsCalculator
@@ -154,9 +155,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             elif currentPriorityType == 'easiness_delta':
                 priority = easinessDelta
             elif currentPriorityType == 'easiness_delta&importance':
-                priority = self.calculateProductBasedPriority(importance, easinessDelta, 0.5)
+                priority = calculateProductBasedPriority(importance, easinessDelta, 0.5)
             elif currentPriorityType == 'easiness&importance':
-                priority = self.calculateProductBasedPriority(importance, easiness, 0.5)
+                priority = calculateProductBasedPriority(importance, easiness, 0.5)
             else:
                 raise ValueError(f'Unknown priorityType: {priorityType}')
 
@@ -220,7 +221,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             elif priorityType == 'easiness':
                 priority = easiness
             else:
-                priority = self.calculateProductBasedPriority(importance, easiness, 0.5)
+                priority = calculateProductBasedPriority(importance, easiness, 0.5)
 
             cutIdx = stratified_split_indices_with_min_and_priority(target, priority, fraction)
             #curProbs = easiness[cutIdx] / sum(easiness[cutIdx])
@@ -231,12 +232,3 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 probs.append(curProbs)
 
         return resultPriorities, probs
-
-    def calculateProductBasedPriority(self, importance, easiness, alpha = 0.5):
-        n = len(importance)
-        eps = 1 / (2 * n)
-
-        score = np.exp(alpha * np.log(eps + importance) + (1 - alpha) * np.log(eps + easiness))
-
-        return score
-

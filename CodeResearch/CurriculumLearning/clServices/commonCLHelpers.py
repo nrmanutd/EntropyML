@@ -96,11 +96,10 @@ def stability_report(scores_list, frac=0.05, largest=True):
         })
     return reps
 
+def calculateProductBasedPriority(importance, easiness, alpha = 0.5):
+    n = len(importance)
+    eps = 1 / (2 * n)
 
-# ---- пример использования ----
-# допустим, ты копишь importance после каждого прогона:
-# importance_runs = [imp_run1, imp_run2, ..., imp_runR]  # каждый imp_run shape (N,)
+    score = np.exp(alpha * np.log(eps + importance) + (1 - alpha) * np.log(eps + easiness))
 
-# reps = stability_report(importance_runs, frac=0.05, largest=True)
-# for r in reps:
-#     print(r["t"], "spearman=", r["spearman"], "top5% overlap=", r["topk_overlap"])
+    return score

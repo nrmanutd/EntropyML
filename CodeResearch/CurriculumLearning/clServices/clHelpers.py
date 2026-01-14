@@ -19,6 +19,7 @@ from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import Hardn
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
@@ -61,8 +62,11 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
 
     return sampler
 
-def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, False, False, False)
+def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, learner, logger):
+    #prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, False, False, False)
+
+    hc = hcBuilder(True)
+    prioritizer = ChainMultiPrioritiesCalculator(betas, repeats, learner, hc, logger)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 
     return sampler

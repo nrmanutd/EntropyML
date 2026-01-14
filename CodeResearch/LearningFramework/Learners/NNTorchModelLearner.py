@@ -4,11 +4,10 @@ from typing import Callable, Optional, Union, Any, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
-from keras.src.metrics.accuracy_metrics import accuracy
+from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
-from CodeResearch.LearningFramework.Samplers.Batches.SortedByProbSampler import SortedByProbSampler
 
 ModelFactory = Callable[[], nn.Module]
 
@@ -173,13 +172,12 @@ class TorchModelLearner (TorchLearner):
 
     def train(self, x, y, probs=None) -> nn.Module:
         model = self.build_model().to(self.device)
-        model, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
+        model, optimizer, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
         return model
 
     def update(self, model: nn.Module, x, y) -> nn.Module:
         model = model.to(self.device)
-
-        model, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None)
+        model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None)
         return model
 
     def test(self, model: nn.Module, x, y):
@@ -218,15 +216,16 @@ class TorchModelLearner (TorchLearner):
     def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
         model = self.build_model().to(self.device)
 
-        model, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
+        model, optimizer, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
         return model, a, p
 
-    def _trainModel(self, model, x, y, probs, epochs, xt, yt):
+    def _trainModel(self, model, x, y, probs, epochs, xt, yt, optimizer: Optimizer=None):
         if self.shouldCompile:
             model = torch.compile(model)
 
         criterion = self._make_criterion()
-        optimizer = self._make_optimizer(model)
+        if optimizer is None:
+            optimizer = self._make_optimizer(model)
         scheduler = self._make_scheduler(optimizer, total_epochs=epochs)
 
         accuracies = []
@@ -244,4 +243,4 @@ class TorchModelLearner (TorchLearner):
             if scheduler is not None:
                 scheduler.step()
 
-        return model, accuracies, predictions
+        return model, optimizer, accuracies, predictions

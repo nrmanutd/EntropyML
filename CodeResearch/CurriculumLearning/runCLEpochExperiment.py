@@ -1,6 +1,7 @@
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
+from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory, \
+    Cifar100CachedOptimizerLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
@@ -77,7 +78,8 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar100LearnerFactory(nClasses)
+        #learnerFactory = Cifar100LearnerFactory(nClasses)
+        learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10
@@ -130,7 +132,7 @@ for i in range(len(taskNames)):
 
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, targetLearner, logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
