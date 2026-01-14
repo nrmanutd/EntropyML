@@ -5,7 +5,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createSamplerForChain, createLearnerHCForChain
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -19,9 +19,9 @@ nEasinessAttempts = 30
 diversityAttempts = 30
 
 repeats = 1
-betas = [0.05, 0.1, 0.2, 0.5]
-#baseLabels = ['l', 'h&i_inc', 'h&h_inc']
-baseLabels = ['l']
+betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
+baseLabels = ['h&i_inc', 'h&h_inc']
+#baseLabels = ['h&i_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
@@ -78,8 +78,7 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        #learnerFactory = Cifar100LearnerFactory(nClasses)
-        learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
+        learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10
@@ -132,7 +131,10 @@ for i in range(len(taskNames)):
 
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, targetLearner, logger)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+
+    #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
+    #sampler = createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, lambda: learnerFactory.createScoreLearner(easinessEpochs), logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

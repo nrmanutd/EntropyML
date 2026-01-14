@@ -384,7 +384,6 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         feat = model.pool(feat).flatten(1)          # [B, H]
         logits = head(feat)                         # [B, C]
 
-        pred = torch.argmax(logits, dim=1)
         loss_i = F.cross_entropy(logits, yb, reduction='none')
 
         g = torch.softmax(logits, dim=1)            # [B, C]

@@ -56,16 +56,28 @@ def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts,
 
     return hc
 
+def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
+    l = learnerCreator(easinessEpochs)
+    a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
+
+    hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
+    return hc
+
 def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
     prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler
 
-def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, learner, logger):
-    #prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, False, False, False)
+def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger):
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, False, True, True, False)
+    sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 
-    hc = hcBuilder(True)
+    return sampler
+
+def createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, learnerBuilder, logger):
+
+    learner = learnerBuilder()
     prioritizer = ChainMultiPrioritiesCalculator(betas, repeats, learner, hc, logger)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 

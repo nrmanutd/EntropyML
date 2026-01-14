@@ -5,4 +5,4 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 class StandardPriorityCalculator(BasePriorityCalculator):
     def calculatePriority(self, dataSet, target):
         n = len(target)
-        return [range(n)], [np.full(n, 1.0/n)]
+        return range(n), np.full(n, 1.0/n)

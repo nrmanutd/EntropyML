@@ -70,7 +70,7 @@ class Cifar100CachedOptimizerLearnerFactory(PyTorchCVCLLearnersFactory):
         return cifar100_scoring_learner
 
     def createTargetLearner_int(self, epochs):
-        cifar100_target_learner = NNUpdatableTorchModelLearner(
+        cifar100_target_learner = TorchModelLearner(
             model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",

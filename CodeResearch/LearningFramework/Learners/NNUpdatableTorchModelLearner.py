@@ -1,3 +1,5 @@
+import torch
+import numpy as np
 from torch import nn as nn
 
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
@@ -18,3 +20,39 @@ class NNUpdatableTorchModelLearner(TorchModelLearner):
         model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, optimizer)
 
         return model, optimizer
+
+    def test(self, m, x, y):
+        model = m[0]
+        optimizer = m[1]
+
+        model = model.to(self.device)
+        model.eval()
+
+        x, y, _ = self._to_tensors(x, y, probs=None)
+        loader = self._make_loader(x, y, probs=None, shuffle=False)
+
+        correct = 0
+        total = 0
+        all_preds = []
+
+        with torch.no_grad():
+            for xb, yb in loader:
+                logits = model(xb)
+                preds = torch.argmax(logits, dim=1)
+                all_preds.append(preds.detach().cpu().numpy())
+
+                correct += int((preds == yb).sum().item())
+                total += int(yb.size(0))
+
+        acc = correct / max(total, 1)
+        preds_np = np.concatenate(all_preds, axis=0) if all_preds else np.array([])
+        return acc, preds_np
+
+    def trainAndTest(self, x, y, probs, xt, yt):
+        model = self.train(x, y, probs)
+        acc, preds_np = self.test(model, xt, yt)
+
+        del model
+        torch.cuda.empty_cache()
+
+        return acc, preds_np

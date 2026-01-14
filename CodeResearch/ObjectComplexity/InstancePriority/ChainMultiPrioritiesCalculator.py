@@ -37,7 +37,7 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         return resultPriorities, probs
 
     def calculatePriorities(self, dataSet, target):
-        self.logger.logDebug(f'Calculating priorities via chain ')
+        self.logger.logDebug(f'Calculating priorities via chain. Objects in dataset = {len(target)} ')
 
         nObjects = len(target)
 
@@ -54,7 +54,6 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
                 ci = set(currentDataSetIdx)
                 restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
                 currentDataSetIdx.extend(restIdx)
-
                 break
 
             if k == 0:
@@ -72,7 +71,9 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
             fraction = deltaBeta * nObjects / len(restIdx)
 
             idx, model = self.getYetAnotherChain(model, dataSet[restIdx], target[restIdx], fraction)
-            currentDataSetIdx.extend(idx)
+
+            currentIdx = restIdx[idx]
+            currentDataSetIdx.extend(currentIdx)
 
         return np.array(currentDataSetIdx)
 
@@ -84,7 +85,7 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
     def getYetAnotherChain(self, model, dataSet, target, fraction):
         sampler = RandomAllsetSampler(dataSet, target, 128, StandardPriorityCalculator())
         batches = sampler.sample()
-        importance, hardness = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, self.learner.device)
+        importance, hardness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches, self.learner.device)
 
         priority = calculateProductBasedPriority(importance, np.exp(-hardness))
         nObjects = math.ceil(fraction * len(target))
