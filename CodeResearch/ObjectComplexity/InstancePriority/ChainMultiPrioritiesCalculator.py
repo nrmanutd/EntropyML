@@ -100,10 +100,9 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         extended_x = np.concatenate([baseDataSet, dataSet[nextObjectsToTrainIdx]], axis=0)
         extended_y = np.concatenate([basetTarget, target[nextObjectsToTrainIdx]])
 
-
         self.logger.logDebug(f'Before training on extended dataset of length {len(extended_y)}')
-        #model = self.learner.train(extended_x, extended_y, None)
-        model = self.learner.update(model, extended_x, extended_y)
+        model = self.learner.train(extended_x, extended_y, None)
+        #model = self.learner.update(model, extended_x, extended_y)
         self.logger.logDebug('Training finished')
 
         return nextObjectsToTrainIdx, model
