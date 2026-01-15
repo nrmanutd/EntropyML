@@ -41,8 +41,10 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
 
         sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
         scoresList = []
+        currentCounter = 0
 
         for i in range(self.nAttempts):
+            currentCounter = i
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
@@ -64,7 +66,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             del model
             torch.cuda.empty_cache()
 
-        importance /= self.nAttempts
+        importance /= (currentCounter + 1)
 
         self.logger.logDebug(f'Finished calculating additional diversification for alpha = {alpha}')
 

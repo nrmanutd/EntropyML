@@ -4,7 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -14,19 +14,19 @@ from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMni
 datasetFraction = 1
 nIterations = 50
 
-nEasinessAttempts = 30
+nEasinessAttempts = 50
 diversityAttempts = 30
 
 repeats = 1
-betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
-baseLabels = ['h&i_inc', 'h&h_inc']
+betas = [0.05, 0.1, 0.2, 0.5, 1]
+baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 #baseLabels = ['h&i_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
 alphas = np.array([1])
 fraction = 0.5
-trainAlpha = 1
+trainAlpha = 0.5
 testAlpha = 0.5
 hidden_sizes = (16, 16)
 dHidden_sizes = (16, 16)
@@ -130,7 +130,9 @@ for i in range(len(taskNames)):
 
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+
+    sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger)
 
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
     #sampler = createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, lambda: learnerFactory.createScoreLearner(easinessEpochs), logger)
