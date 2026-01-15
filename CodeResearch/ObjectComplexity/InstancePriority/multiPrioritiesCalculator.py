@@ -168,7 +168,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
 
             #curProbs = softmax(np.arange(len(currentDataSetIdx), 0, -1))
-            curProbs = (np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx)))
+            curProbs = np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx))
 
             for r in range(self.repeats):
                 resultPriorities.append(np.array(currentDataSetIdx))

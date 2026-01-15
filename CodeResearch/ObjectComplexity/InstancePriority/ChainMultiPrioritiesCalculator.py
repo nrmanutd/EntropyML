@@ -86,8 +86,9 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         sampler = RandomAllsetSampler(dataSet, target, 128, StandardPriorityCalculator())
         batches = sampler.sample()
         importance, hardness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches, self.learner.device)
+        easiness = 1 - hardness
 
-        priority = calculateProductBasedPriority(importance, np.exp(-hardness))
+        priority = calculateProductBasedPriority(importance, easiness)
         nObjects = math.ceil(fraction * len(target))
 
         nextObjectsToTrainIdx = np.argsort(-priority)[:nObjects]
