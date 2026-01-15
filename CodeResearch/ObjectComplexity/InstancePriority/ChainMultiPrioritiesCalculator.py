@@ -4,6 +4,7 @@ import numpy as np
 
 from CodeResearch.CurriculumLearning.clServices.commonCLHelpers import calculateProductBasedPriority
 from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
+from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min_and_priority
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import \
@@ -70,29 +71,39 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
             restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
             fraction = deltaBeta * nObjects / len(restIdx)
 
-            idx, model = self.getYetAnotherChain(model, dataSet[restIdx], target[restIdx], fraction)
+            currentIdx = np.array(currentDataSetIdx)
+            idx, model = self.getYetAnotherChain(model, dataSet[restIdx], target[restIdx], dataSet[currentIdx], target[currentIdx], fraction)
 
-            currentIdx = restIdx[idx]
-            currentDataSetIdx.extend(currentIdx)
+            restOrigIdx = restIdx[idx]
+            currentDataSetIdx.extend(restOrigIdx)
 
         return np.array(currentDataSetIdx)
 
     def GetInitialSet(self, dataSet, target, beta) -> np.ndarray:
         importance, easiness = self.hc.calculateHardness(dataSet, target, None, None, beta)
-        nObjects = math.ceil(beta * len(target))
-        return np.argsort(-easiness)[:nObjects]
+        cutIdx = stratified_split_indices_with_min_and_priority(target, easiness, beta)
 
-    def getYetAnotherChain(self, model, dataSet, target, fraction):
+        return cutIdx
+
+    def getYetAnotherChain(self, model, dataSet, target, baseDataSet, basetTarget, fraction):
         sampler = RandomAllsetSampler(dataSet, target, 128, StandardPriorityCalculator())
         batches = sampler.sample()
+        self.logger.logDebug(f'Another chain calculating: {len(target)} of potential objects, {len(basetTarget)} of added objects')
         importance, hardness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches, self.learner.device)
+        self.logger.logDebug(f'Calculated importance and hardness')
+
         easiness = 1 - hardness
 
         priority = calculateProductBasedPriority(importance, easiness)
-        nObjects = math.ceil(fraction * len(target))
+        nextObjectsToTrainIdx = stratified_split_indices_with_min_and_priority(target, priority, fraction)
 
-        nextObjectsToTrainIdx = np.argsort(-priority)[:nObjects]
+        extended_x = np.concatenate([baseDataSet, dataSet[nextObjectsToTrainIdx]], axis=0)
+        extended_y = np.concatenate([basetTarget, target[nextObjectsToTrainIdx]])
 
-        model = self.learner.update(model, dataSet[nextObjectsToTrainIdx], target[nextObjectsToTrainIdx])
+
+        self.logger.logDebug(f'Before training on extended dataset of length {len(extended_y)}')
+        #model = self.learner.train(extended_x, extended_y, None)
+        model = self.learner.update(model, extended_x, extended_y)
+        self.logger.logDebug('Training finished')
 
         return nextObjectsToTrainIdx, model
