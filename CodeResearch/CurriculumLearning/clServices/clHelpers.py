@@ -17,6 +17,7 @@ from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator imp
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
+from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
@@ -54,6 +55,11 @@ def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts,
     dcLearner = learnerCreator(diversityEpochs)
     hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, 128, dataProcessor, logger))
 
+    return hc
+
+def createIncrementalLearnerHC(attempts, logger, easinessEpochs, learnerCreator, dataProcessor):
+    l = learnerCreator(easinessEpochs)
+    hc = IncrementalHardnessCalculator(l, attempts, 128, dataProcessor, logger)
     return hc
 
 def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
