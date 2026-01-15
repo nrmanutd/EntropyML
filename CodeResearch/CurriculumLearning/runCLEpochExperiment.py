@@ -22,7 +22,7 @@ diversityAttempts = 30
 repeats = 1
 betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 #baseLabels = ['l', 'h&i_inc', 'h&h_inc']
-baseLabels = ['h&i_inc']
+baseLabels = ['h&i_inc', 'h&h_inc']
 nArrays = len(baseLabels) * len(betas)
 
 nSamples = 2000
@@ -82,8 +82,8 @@ for i in range(len(taskNames)):
         learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
         #learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 20
-        easinessEpochs = 20
-        diversityEpochs = 20
+        easinessEpochs = 10
+        diversityEpochs = 10
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
