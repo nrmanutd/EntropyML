@@ -89,10 +89,8 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         sampler = RandomAllsetSampler(dataSet, target, 128, StandardPriorityCalculator())
         batches = sampler.sample()
         self.logger.logDebug(f'Another chain calculating: {len(target)} of potential objects, {len(basetTarget)} of added objects')
-        importance, hardness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches, self.learner.device)
+        importance, easiness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches, self.learner.device)
         self.logger.logDebug(f'Calculated importance and hardness')
-
-        easiness = 1 - hardness
 
         priority = calculateProductBasedPriority(importance, easiness)
         nextObjectsToTrainIdx = stratified_split_indices_with_min_and_priority(target, priority, fraction)
@@ -101,8 +99,8 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         extended_y = np.concatenate([basetTarget, target[nextObjectsToTrainIdx]])
 
         self.logger.logDebug(f'Before training on extended dataset of length {len(extended_y)}')
-        model = self.learner.train(extended_x, extended_y, None)
-        #model = self.learner.update(model, extended_x, extended_y)
+        #model = self.learner.train(extended_x, extended_y, None)
+        model = self.learner.update(model, extended_x, extended_y)
         self.logger.logDebug('Training finished')
 
         return nextObjectsToTrainIdx, model

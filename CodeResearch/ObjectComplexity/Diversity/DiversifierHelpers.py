@@ -1,8 +1,9 @@
-import torch
 import numpy as np
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.func import functional_call, vmap, grad
+
 
 def calculateDelta(g_list, mode):
     """
@@ -384,8 +385,8 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         feat = model.pool(feat).flatten(1)          # [B, H]
         logits = head(feat)                         # [B, C]
 
-        #loss_i = F.cross_entropy(logits, yb, reduction='none')
-        loss_i = entropy_from_logits(logits)
+        loss_i = F.cross_entropy(logits, yb, reduction='none')
+        #loss_i = entropy_from_logits(logits)
 
         g = torch.softmax(logits, dim=1)            # [B, C]
         g[torch.arange(g.size(0), device=device), yb] -= 1.0
@@ -417,7 +418,13 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
 
         del xb, yb, feat, logits, g, g2, f2, norm_outer2, Mf, inner, score2, score, loss_i
 
-    return scores, loss_all
+    #for logits entropy
+    #easiness = 1 - loss_all
+
+    #for cross entropy
+    easiness = np.exp(-loss_all)
+
+    return scores, easiness
 
 def entropy_from_logits(logits: torch.Tensor) -> torch.Tensor:
     B, C = logits.shape

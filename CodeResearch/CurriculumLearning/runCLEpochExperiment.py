@@ -5,7 +5,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createSampler, createLearnerHCForChain, \
+    createLearnerHC, filterDataSetByFraction, createLearnerHCForChain, \
     createSamplerForChain
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
@@ -20,7 +20,7 @@ nEasinessAttempts = 50
 diversityAttempts = 30
 
 repeats = 1
-betas = [0.05, 0.1, 0.2, 0.5]
+betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 #baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 baseLabels = ['h&i_inc']
 nArrays = len(baseLabels) * len(betas)
