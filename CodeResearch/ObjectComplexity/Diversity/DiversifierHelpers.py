@@ -385,8 +385,9 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         feat = model.pool(feat).flatten(1)          # [B, H]
         logits = head(feat)                         # [B, C]
 
-        loss_i = F.cross_entropy(logits, yb, reduction='none')
+        #loss_i = F.cross_entropy(logits, yb, reduction='none')
         #loss_i = entropy_from_logits(logits)
+        loss_i = easiness_from_logits(logits, yb)
 
         g = torch.softmax(logits, dim=1)            # [B, C]
         g[torch.arange(g.size(0), device=device), yb] -= 1.0
@@ -422,7 +423,9 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
     #easiness = 1 - loss_all
 
     #for cross entropy
-    easiness = np.exp(-loss_all)
+    #easiness = np.exp(-loss_all)
+
+    easiness = loss_all
 
     return scores, easiness
 
@@ -436,6 +439,12 @@ def entropy_from_logits(logits: torch.Tensor) -> torch.Tensor:
     Hn = H / torch.log(torch.tensor(float(C), device=logits.device))
 
     return Hn.clamp(0.0, 1.0)
+
+def easiness_from_logits(logits: torch.Tensor, yb) -> torch.Tensor:
+    p_true = torch.softmax(logits, dim=1)
+    loss_i = p_true[torch.arange(p_true.size(0), device=logits.device), yb]
+
+    return loss_i
 
 @torch.no_grad()
 def snapshot_all_named_params(model: torch.nn.Module):
