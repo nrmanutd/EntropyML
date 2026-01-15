@@ -8,7 +8,7 @@ def should_stop(scores_list, logger:BaseLogger, window=5, spearman_thr=0.95, ove
     reps = stability_report(scores_list[-(window + 1):], frac=frac, largest=largest)
     result = all((r["spearman"] >= spearman_thr) and (r["topk_overlap"] >= overlap_thr) for r in reps)
 
-    if True:
+    if result:
         logger.logDebug('=============')
         for r in reps:
             logger.logDebug(f'Spearman: {r["spearman"]}, top-k: {r["topk_overlap"]}')

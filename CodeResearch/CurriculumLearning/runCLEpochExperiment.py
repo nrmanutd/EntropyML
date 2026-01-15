@@ -1,6 +1,7 @@
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
+from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory, \
+    Cifar100CachedOptimizerLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
@@ -11,7 +12,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.1
+datasetFraction = 1
 nIterations = 40
 
 nEasinessAttempts = 50
@@ -78,8 +79,8 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        #learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
-        learnerFactory = Cifar100LearnerFactory(nClasses)
+        learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
+        #learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10
@@ -137,6 +138,7 @@ for i in range(len(taskNames)):
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
     #sampler = createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, lambda: learnerFactory.createScoreLearner(easinessEpochs), logger)
 
+    #sync incremental
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createIncrementalLearnerHC(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
     sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)

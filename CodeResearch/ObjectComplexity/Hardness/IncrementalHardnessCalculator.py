@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import torch
 
@@ -28,6 +30,8 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
         easiness = np.zeros(len(target))
         objectsUsed = np.zeros(len(target))
 
+        self.logger.logDebug(f'Start hardness calculation for alpha = {alpha}...')
+
         device = self.learner.device
 
         ds = torch.as_tensor(dataSet, dtype=torch.float32, device=device)
@@ -35,6 +39,14 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
 
         bds = torch.as_tensor(baseDataSet, dtype=torch.float32, device=device)
         bt = torch.as_tensor(baseTarget, dtype=torch.int64, device=device)
+
+        if baseDataSet is not None and len(baseTarget) != 0:
+            p = self.dataTransformer.estimateDataTransformationParameters(bds, bt)
+            learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
+            baseModel = learner.train(bds, bt, np.full(len(baseTarget), 1.0/len(baseTarget)))
+        else:
+            learner = self.learner
+            baseModel = None
 
         importancesList = []
         easinessesList = []
@@ -46,7 +58,7 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
             shouldStopImportance = should_stop(importancesList, self.logger)
             shouldStopEasiness = should_stop(easinessesList, self.logger)
 
-            self.logger.logDebug(f'Should stop importance: {shouldStopImportance}, should stop easiness: {shouldStopEasiness}')
+            #self.logger.logDebug(f'Should stop importance: {shouldStopImportance}, should stop easiness: {shouldStopEasiness}')
 
             if shouldStopEasiness and shouldStopImportance:
                 self.logger.logDebug(f'Stop criteria based on rank correlation at iteration {i} of {self.nAttempts} is applied')
@@ -61,24 +73,21 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
             xtest = ds[testIdx]
             ytest = t[testIdx]
 
-            #split dataset on test and train at fraction alpha
-            extended_x = torch.cat([x, bds]) if baseDataSet is not None and len(baseTarget) != 0 else x
-            extended_y = torch.cat([y, bt]) if baseDataSet is not None and len(baseTarget) != 0 else y
+            if baseModel is not None:
+                baseModelCopy = copy.deepcopy(baseModel)
+                baseModelCopy = learner.update(baseModelCopy, x, y)
+            else:
+                p = self.dataTransformer.estimateDataTransformationParameters(x, y)
+                learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
+                baseModelCopy = learner.train(x, y, np.full(len(y), 1.0/len(y)))
 
-            p = self.dataTransformer.estimateDataTransformationParameters(extended_x, extended_y)
-            learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
-            extended_x, extended_y = self.dataTransformer.applyParametersToData(extended_x, extended_y, p)
             xtest, ytest = self.dataTransformer.applyParametersToData(xtest, ytest, p)
-
-            self.logger.logDebug('Start training...')
-            model = learner.train(extended_x, extended_y, None)
-            self.logger.logDebug('Learner trained.')
 
             sampler = RandomAllsetSampler(xtest, ytest, self.batchSize, StandardPriorityCalculator())
             batches = sampler.sample()
 
             if not shouldStopImportance:
-                curImportance, curEasiness = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, self.learner.device)
+                curImportance, curEasiness = centered_grad_norm_head_linear_two_pass_entropy_loss(baseModelCopy[0], batches, self.learner.device)#todo: hack for optimizer holding
 
                 curImportance = self.convert(curImportance, len(t), testIdx)
                 importance += curImportance
@@ -91,12 +100,11 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
                     eas = self.normalize(easiness, objectsUsed)
                     easinessesList.append(eas)
 
-                del model
+                del baseModelCopy
                 torch.cuda.empty_cache()
-
                 continue
 
-            predictions = self.learner.test(model, xtest, ytest)[1]
+            predictions = self.learner.test(baseModelCopy, xtest, ytest)[1]
             curEasiness = (predictions == ytest.detach().cpu().numpy()).astype(int)
 
             curEasiness = self.convert(curEasiness, len(t), testIdx)
@@ -105,7 +113,7 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
             eas = self.normalize(easiness, objectsUsed)
             easinessesList.append(eas)
 
-            del model
+            del baseModelCopy
             torch.cuda.empty_cache()
 
         importance = importancesList[-1]
