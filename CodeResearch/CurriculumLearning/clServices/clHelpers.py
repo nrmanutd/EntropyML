@@ -78,7 +78,7 @@ def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats
 def createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, learnerBuilder, logger):
 
     learner = learnerBuilder()
-    prioritizer = ChainMultiPrioritiesCalculator(betas, repeats, learner, hc, logger)
+    prioritizer = ChainMultiPrioritiesCalculator(betas, 10, repeats,  learner, hc, logger)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 
     return sampler

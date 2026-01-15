@@ -1,3 +1,4 @@
+import copy
 import math
 
 import numpy as np
@@ -15,7 +16,8 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, betas, repeats, learner: TorchLearner, hc: BaseHardnessCalculator, logger: BaseLogger):
+    def __init__(self, betas, nAttempts, repeats, learner: TorchLearner, hc: BaseHardnessCalculator, logger: BaseLogger):
+        self.nAttempts = nAttempts
         self.hc = hc
         self.learner = learner
         self.repeats = repeats
@@ -35,15 +37,6 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
                 resultPriorities.append(rIdx)
                 probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
-        prioritiesIdx = self.calculatePriorities(dataSet, target, 'easiness')
-
-        for beta in self.betas:
-            curNTrain = math.ceil(beta * len(target))
-            for r in range(self.repeats):
-                rIdx = prioritiesIdx[:curNTrain]
-                resultPriorities.append(rIdx)
-                probs.append(np.full(curNTrain, 1.0 / curNTrain))
-
         return resultPriorities, probs
 
     def calculatePriorities(self, dataSet, target, priorityType):
@@ -54,7 +47,7 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
         currentDataSetIdx = []
         prevBeta = 0
 
-        model = None
+        prioritiezedOrigIdxes = []
 
         for k in range(len(self.betas)):
             beta = self.betas[k]
@@ -67,11 +60,7 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
                 break
 
             if k == 0:
-                idx = self.GetInitialSet(dataSet, target, beta)
-                currentDataSetIdx.extend(idx)
-                model = self.learner.train(dataSet[idx], target[idx], None)
-                prevBeta = beta
-                continue
+                priority = self.GetInitialPriority(dataSet, target, beta)
 
             deltaBeta = beta - prevBeta
             prevBeta = beta
@@ -81,18 +70,57 @@ class ChainMultiPrioritiesCalculator(BasePriorityCalculator):
             fraction = deltaBeta * nObjects / len(restIdx)
 
             currentIdx = np.array(currentDataSetIdx)
-            idx, model = self.getYetAnotherChain(model, dataSet[restIdx], target[restIdx], dataSet[currentIdx], target[currentIdx], fraction, priorityType)
+            addedIdxes, priority = self.updateModelAccordingToPrioritiezed(dataSet, target, currentIdx, restIdx, priority, fraction, priorityType)
 
-            restOrigIdx = restIdx[idx]
-            currentDataSetIdx.extend(restOrigIdx)
+            currentDataSetIdx.extend(addedIdxes)
 
         return np.array(currentDataSetIdx)
 
-    def GetInitialSet(self, dataSet, target, beta) -> np.ndarray:
+    def GetInitialPriority(self, dataSet, target, beta, idxesFraction=1) -> np.ndarray:
         importance, easiness = self.hc.calculateHardness(dataSet, target, None, None, beta)
-        cutIdx = stratified_split_indices_with_min_and_priority(target, easiness, beta)
 
-        return cutIdx
+        return easiness
+
+    def updateModelAccordingToPrioritiezed(self, dataSet, target, currentIdx, restIdx, priority, fraction, priorityType: str):
+        currentAddedIdxes = stratified_split_indices_with_min_and_priority(target[restIdx], priority, fraction)
+        addedIdxes = restIdx[currentAddedIdxes]
+
+        ci = set(addedIdxes)
+        restIdxes = np.array([i for i in restIdx if i not in ci], dtype=np.int64)
+
+        importance = np.zeros(len(restIdxes))
+        easiness = np.zeros(len(restIdxes))
+
+        sampler = RandomAllsetSampler(dataSet[restIdxes], target[restIdxes], 128, StandardPriorityCalculator())
+        batches = sampler.sample()
+
+        extended_x = np.concatenate([dataSet[currentIdx], dataSet[addedIdxes]], axis=0) if len(currentIdx) > 0 else dataSet[addedIdxes]
+        extended_y = np.concatenate([target[currentIdx], target[addedIdxes]]) if len(currentIdx) > 0 else target[addedIdxes]
+
+        for i in range(self.nAttempts):
+            self.logger.logDebug(f'Learning attempt {i} of {self.nAttempts}. Objects number: {len(extended_y)}')
+            model = self.learner.train(extended_x, extended_y, None)
+            self.logger.logDebug('Model trained')
+            curImportance, curEasiness = centered_grad_norm_head_linear_two_pass_entropy_loss(model[0], batches,
+                                                                                        self.learner.device)
+
+            self.logger.logDebug('Calculated importance and easiness...')
+
+            importance += curImportance
+            easiness += curEasiness
+
+        importance /= self.nAttempts
+        easiness /= self.nAttempts
+
+        if priorityType == 'easiness&importance':
+            priority = calculateProductBasedPriority(importance, easiness)
+        elif priorityType == 'easiness':
+            priority = easiness
+        else:
+            raise ValueError(f'Unknown priority: {priorityType}')
+
+        return addedIdxes, priority
+
 
     def getYetAnotherChain(self, model, dataSet, target, baseDataSet, basetTarget, fraction, priorityType: str):
         sampler = RandomAllsetSampler(dataSet, target, 128, StandardPriorityCalculator())
