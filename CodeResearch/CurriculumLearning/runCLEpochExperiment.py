@@ -12,7 +12,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.1
+datasetFraction = 1
 nIterations = 40
 
 nEasinessAttempts = 50

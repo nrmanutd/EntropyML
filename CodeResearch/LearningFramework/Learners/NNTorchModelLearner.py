@@ -116,7 +116,6 @@ class TorchModelLearner (TorchLearner):
         if probs is None:
             return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
 
-        print('DataLoader with weighted sampler...')
         w = torch.as_tensor(probs, dtype=torch.double)
         sampler = WeightedRandomSampler(w, num_samples=len(ds), replacement=False)
         return DataLoader(ds, batch_size=self.batch_size, sampler=sampler, shuffle=False)
