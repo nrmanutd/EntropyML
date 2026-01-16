@@ -15,9 +15,11 @@ class NNUpdatableTorchModelLearner(TorchModelLearner):
     def update(self, m, x, y):
         model = m[0]
         optimizer = m[1]
+        new_opt = type(optimizer)(model.parameters(), **optimizer.defaults)
+        new_opt.load_state_dict(optimizer.state_dict())
 
         model = model.to(self.device)
-        model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, optimizer)
+        model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, new_opt)
 
         return model, optimizer
 
