@@ -10,13 +10,20 @@ class NNUpdatableTorchModelLearner(TorchModelLearner):
         model = self.build_model().to(self.device)
         model, optimizer, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
 
-        return model, optimizer
+        return model, optimizer, self.scaler
 
     def update(self, m, x, y):
         model = m[0]
         optimizer = m[1]
+        scaler = m[2]
+
         new_opt = type(optimizer)(model.parameters(), **optimizer.defaults)
         new_opt.load_state_dict(optimizer.state_dict())
+
+        new_scaler = torch.cuda.amp.GradScaler(enabled=scaler.is_enabled())
+        new_scaler.load_state_dict(scaler.state_dict())
+
+        self.scaler = new_scaler
 
         model = model.to(self.device)
         model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, new_opt)
@@ -25,7 +32,6 @@ class NNUpdatableTorchModelLearner(TorchModelLearner):
 
     def test(self, m, x, y):
         model = m[0]
-        optimizer = m[1]
 
         model = model.to(self.device)
         model.eval()
