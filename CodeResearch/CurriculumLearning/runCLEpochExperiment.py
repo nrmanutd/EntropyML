@@ -79,8 +79,8 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
-        #learnerFactory = Cifar100LearnerFactory(nClasses)
+        #learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
+        learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10

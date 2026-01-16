@@ -8,9 +8,9 @@ from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchMod
 class NNUpdatableTorchModelLearner(TorchModelLearner):
     def train(self, x, y, probs=None):
         model = self.build_model().to(self.device)
-        model, optimizer, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
 
-        return model, optimizer, self.scaler
+        return model, optimizer, scaler
 
     def update(self, m, x, y):
         model = m[0]
@@ -20,15 +20,13 @@ class NNUpdatableTorchModelLearner(TorchModelLearner):
         new_opt = type(optimizer)(model.parameters(), **optimizer.defaults)
         new_opt.load_state_dict(optimizer.state_dict())
 
-        new_scaler = torch.cuda.amp.GradScaler(enabled=scaler.is_enabled())
+        new_scaler = torch.amp.GradScaler(enabled=scaler.is_enabled())
         new_scaler.load_state_dict(scaler.state_dict())
 
-        self.scaler = new_scaler
-
         model = model.to(self.device)
-        model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, new_opt)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None, new_opt, new_scaler)
 
-        return model, optimizer
+        return model, optimizer, scaler
 
     def test(self, m, x, y):
         model = m[0]

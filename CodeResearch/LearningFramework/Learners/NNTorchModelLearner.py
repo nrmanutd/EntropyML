@@ -45,7 +45,7 @@ class TorchModelLearner (TorchLearner):
         self.gamma = float(gamma)
 
         self.use_amp = bool(use_amp) and (self.device.type == "cuda")
-        self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
+        #self.scaler = torch.amp.GradScaler('cuda', enabled=self.use_amp)
 
         self.label_smoothing = float(label_smoothing)
 
@@ -73,6 +73,9 @@ class TorchModelLearner (TorchLearner):
                 nesterov=self.nesterov,
             )
         raise ValueError("optimizer_name must be 'adam' or 'sgd'")
+
+    def _make_scaler(self):
+        return torch.amp.GradScaler('cuda', enabled=self.use_amp)
 
     def _make_scheduler(self, optimizer: torch.optim.Optimizer, total_epochs: int):
         if self.scheduler_name == "none":
@@ -114,7 +117,7 @@ class TorchModelLearner (TorchLearner):
 
     # ----------------- train helpers -----------------
 
-    def _train_one_epoch(self, model, optimizer, criterion, x, y, probs=None, xtest=None, ytest=None):
+    def _train_one_epoch(self, model, optimizer, scaler, criterion, x, y, probs=None, xtest=None, ytest=None):
         model.train()
         x, y, probs = self._to_tensors(x, y, probs)
         loader = self._make_loader(x, y, probs, shuffle=True)
@@ -141,9 +144,9 @@ class TorchModelLearner (TorchLearner):
                         pb = pb.view_as(losses)
                         losses = losses * pb
                     loss = losses.mean()
-                self.scaler.scale(loss).backward()
-                self.scaler.step(optimizer)
-                self.scaler.update()
+                scaler.scale(loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
             else:
                 logits = model(xb)
                 losses = criterion(logits, yb)
@@ -172,12 +175,12 @@ class TorchModelLearner (TorchLearner):
 
     def train(self, x, y, probs=None) -> nn.Module:
         model = self.build_model().to(self.device)
-        model, optimizer, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, probs, self.epochs, None, None)
         return model
 
     def update(self, model: nn.Module, x, y) -> nn.Module:
         model = model.to(self.device)
-        model, optimizer, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, None, self.update_epochs, None, None)
         return model
 
     def test(self, model: nn.Module, x, y):
@@ -216,16 +219,19 @@ class TorchModelLearner (TorchLearner):
     def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
         model = self.build_model().to(self.device)
 
-        model, optimizer, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
         return model, a, p
 
-    def _trainModel(self, model, x, y, probs, epochs, xt, yt, optimizer: Optimizer=None):
+    def _trainModel(self, model, x, y, probs, epochs, xt, yt, optimizer: Optimizer=None, scaler = None,):
         if self.shouldCompile:
             model = torch.compile(model)
 
         criterion = self._make_criterion()
         if optimizer is None:
             optimizer = self._make_optimizer(model)
+        if scaler is None:
+            scaler = self._make_scaler()
+
         scheduler = self._make_scheduler(optimizer, total_epochs=epochs)
 
         accuracies = []
@@ -233,7 +239,7 @@ class TorchModelLearner (TorchLearner):
 
         t1 = time.time()
         for _ in range(epochs):
-            r = self._train_one_epoch(model, optimizer, criterion, x, y, probs, xt, yt)
+            r = self._train_one_epoch(model, optimizer, scaler, criterion, x, y, probs, xt, yt)
             if r[0] is not None:
                 print(f'Epoch #{_}({epochs}) {time.time() - t1}: {r[0]}')
 
@@ -243,4 +249,4 @@ class TorchModelLearner (TorchLearner):
             if scheduler is not None:
                 scheduler.step()
 
-        return model, optimizer, accuracies, predictions
+        return model, optimizer, scaler, accuracies, predictions
