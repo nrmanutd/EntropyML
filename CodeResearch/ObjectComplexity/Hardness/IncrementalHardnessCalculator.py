@@ -87,7 +87,7 @@ class IncrementalHardnessCalculator(BaseHardnessCalculator):
             batches = sampler.sample()
 
             if not shouldStopImportance:
-                curImportance, curEasiness = centered_grad_norm_head_linear_two_pass_entropy_loss(baseModelCopy[0], batches, self.learner.device)#todo: hack for optimizer holding
+                curImportance, curEasiness = centered_grad_norm_head_linear_two_pass_entropy_loss(baseModelCopy, batches, self.learner.device)#todo: hack for optimizer holding
 
                 curImportance = self.convert(curImportance, len(t), testIdx)
                 importance += curImportance

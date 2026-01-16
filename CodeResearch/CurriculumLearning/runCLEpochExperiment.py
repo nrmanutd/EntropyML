@@ -129,9 +129,9 @@ for i in range(len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #standard
-    scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+    #scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
+    #hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
     #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger)
 
     #chain
@@ -139,9 +139,9 @@ for i in range(len(taskNames)):
     #sampler = createSamplerForChain(x, y, xtest, ytest, betas, trainAlpha, repeats, hc, lambda: learnerFactory.createScoreLearner(easinessEpochs), logger)
 
     #sync incremental
-    #scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    #hcBuilder = lambda shouldUseLearner: createIncrementalLearnerHC(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
-    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+    scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
+    hcBuilder = lambda shouldUseLearner: createIncrementalLearnerHC(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)
