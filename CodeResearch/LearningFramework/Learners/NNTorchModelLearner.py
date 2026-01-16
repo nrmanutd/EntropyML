@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, TensorDataset, WeightedRandomSampler
 
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 
@@ -112,8 +112,14 @@ class TorchModelLearner (TorchLearner):
         return x, y, probs
 
     def _make_loader(self, x: torch.Tensor, y: torch.Tensor, probs=None, shuffle=True) -> DataLoader:
-        ds = TensorDataset(x, y) #if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
-        return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
+        ds = TensorDataset(x, y)  # if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
+        if probs is None:
+            return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
+
+        print('DataLoader with weighted sampler...')
+        w = torch.as_tensor(probs, dtype=torch.double)
+        sampler = WeightedRandomSampler(w, num_samples=len(ds), replacement=False)
+        return DataLoader(ds, batch_size=self.batch_size, sampler=sampler, shuffle=False)
 
     # ----------------- train helpers -----------------
 
@@ -219,7 +225,7 @@ class TorchModelLearner (TorchLearner):
     def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
         model = self.build_model().to(self.device)
 
-        model, optimizer, scaler, a, p = self._trainModel(model, x, y, None, self.epochs, xt, yt)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, probs, self.epochs, xt, yt)
         return model, a, p
 
     def _trainModel(self, model, x, y, probs, epochs, xt, yt, optimizer: Optimizer=None, scaler = None,):

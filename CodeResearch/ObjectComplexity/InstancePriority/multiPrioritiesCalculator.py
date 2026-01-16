@@ -119,6 +119,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         currentDataSetIdx = []
         prevBeta = 0
         prevEasiness = np.zeros(nObjects)
+        curProbs = []
 
         for k in range(len(self.betas)):
             beta = self.betas[k]
@@ -164,15 +165,18 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             cutIdx = stratified_split_indices_with_min_and_priority(target[restIdx], priority, fraction)
             currentDataSetIdx.extend(restIdx[cutIdx])
 
+            multiplier = 1 if len(curProbs) == 0 else (curProbs[-1] / max(priority[cutIdx]))
+            curProbs.extend(priority[cutIdx] * multiplier)
+
             ci = set(cutIdx)
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
 
             #curProbs = softmax(np.arange(len(currentDataSetIdx), 0, -1))
-            curProbs = np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx))
+            #curProbs = np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx))
 
             for r in range(self.repeats):
                 resultPriorities.append(np.array(currentDataSetIdx))
-                probs.append(curProbs)
+                probs.append(softmax(np.array(curProbs)))
 
         return resultPriorities, probs
 
