@@ -17,7 +17,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
         self.hcBuilder = hcBuilder
         self.logger = logger
         self.alphas = alphas
-        self.betas = betas
+        self.betas = np.sort(betas)
         self.useBoth = useBoth
         self.useHardness = useHardness
         self.useImportance = useImportance
@@ -127,8 +127,13 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if abs(beta - 1) < 0.001:
                 for r in range(self.repeats):
                     resultPriorities.append(np.arange(nObjects))
-                    probs.append(np.full(nObjects, 1.0 / nObjects))
 
+                    ci = set(currentDataSetIdx)
+                    restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
+                    currentDataSetIdx.extend(restIdx)
+
+                    curProbs.extend(np.ones(len(restIdx)) * curProbs[-1])
+                    probs.append(softmax(curProbs))
                 break
 
             deltaBeta = beta - prevBeta
@@ -171,12 +176,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             ci = set(cutIdx)
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
 
-            #curProbs = softmax(np.arange(len(currentDataSetIdx), 0, -1))
-            #curProbs = np.full(len(currentDataSetIdx), 1.0/len(currentDataSetIdx))
-
             for r in range(self.repeats):
                 resultPriorities.append(np.array(currentDataSetIdx))
-                probs.append(softmax(np.array(curProbs)))
+                probs.append(np.full(len(currentDataSetIdx), 1.0 / len(currentDataSetIdx)))
 
         return resultPriorities, probs
 

@@ -13,15 +13,15 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 40
+nIterations = 5
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 1
+repeats = 20
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
-betas = [0.05, 0.1, 0.2, 0.5]
-baseLabels = ['h&i_inc', 'h&h_inc']
+betas = [0.05, 0.1, 0.2, 0.5, 1]
+baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 #baseLabels = ['h&i_inc']
 nArrays = len(baseLabels) * len(betas)
 
