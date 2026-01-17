@@ -95,13 +95,13 @@ for i in range(len(taskNames)):
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'cifar_epoch' and firstClass == -1:
-        x, y, xtest, ytest = loadCifar100_torch()
+        x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
-        targetEpochs = 50
+        targetEpochs = 30
         easinessEpochs = 10
         diversityEpochs = 10
     elif taskName == 'cifar_epoch':
@@ -111,7 +111,7 @@ for i in range(len(taskNames)):
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
-        targetEpochs = 50
+        targetEpochs = 30
         easinessEpochs = 10
         diversityEpochs = 10
     else:
