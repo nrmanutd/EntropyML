@@ -133,7 +133,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     currentDataSetIdx.extend(restIdx)
 
                     curProbs.extend(np.ones(len(restIdx)) * curProbs[-1])
-                    probs.append(softmax(curProbs))
+                    #probs.append(softmax(curProbs))
+                    probs.append(np.full(len(curProbs), 1.0/len(curProbs)))
                 break
 
             deltaBeta = beta - prevBeta

@@ -5,7 +5,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createIncrementalLearnerHC
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createIncrementalLearnerHC, createSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -13,12 +13,12 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 5
+nIterations = 10
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 20
+repeats = 5
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
@@ -131,8 +131,8 @@ for i in range(len(taskNames)):
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
-    #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
+    sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
