@@ -11,8 +11,9 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hcBuilder, logger: BaseLogger, alphas, betas, repeats, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hcBuilder, logger: BaseLogger, alphas, betas, repeats, shouldEstimateForFullSet, useBasedPriority, useImportance, useHardness,
                  useBoth):
+        self.shouldEstimateForFullSet = shouldEstimateForFullSet
         self.repeats = repeats
         self.hcBuilder = hcBuilder
         self.logger = logger
@@ -126,15 +127,14 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
 
             if abs(beta - 1) < 0.001:
                 for r in range(self.repeats):
-                    resultPriorities.append(np.arange(nObjects))
-
                     ci = set(currentDataSetIdx)
                     restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
                     currentDataSetIdx.extend(restIdx)
-
                     curProbs.extend(np.ones(len(restIdx)) * curProbs[-1])
-                    #probs.append(softmax(curProbs))
-                    probs.append(np.full(len(curProbs), 1.0/len(curProbs)))
+
+                    resultPriorities.append(np.array(currentDataSetIdx))
+                    probs.append(softmax(curProbs))
+                    #probs.append(np.full(len(curProbs), 1.0/len(curProbs)))
                 break
 
             deltaBeta = beta - prevBeta
@@ -177,9 +177,10 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             ci = set(cutIdx)
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
 
-            for r in range(self.repeats):
-                resultPriorities.append(np.array(currentDataSetIdx))
-                probs.append(np.full(len(currentDataSetIdx), 1.0 / len(currentDataSetIdx)))
+            if self.shouldEstimateForFullSet is False:
+                for r in range(self.repeats):
+                    resultPriorities.append(np.array(currentDataSetIdx))
+                    probs.append(np.full(len(currentDataSetIdx), 1.0 / len(currentDataSetIdx)))
 
         return resultPriorities, probs
 
@@ -215,7 +216,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if abs(beta - 1) < 0.001:
                 for r in range(self.repeats):
                     resultPriorities.append(np.arange(nObjects))
-                    probs.append(np.full(nObjects, 1.0 / nObjects))
+                    probs.append(np.full(nObjects, 1.0 / nObjects))#todo: add logic for collecting idxes from previous iterations
                 break
 
             fraction = beta * alpha
@@ -234,8 +235,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             #curProbs = easiness[cutIdx] / sum(easiness[cutIdx])
             curProbs = softmax(priority[cutIdx])
 
-            for r in range(self.repeats):
-                resultPriorities.append(np.array(cutIdx))
-                probs.append(curProbs)
+            if self.shouldEstimateForFullSet is False:
+                for r in range(self.repeats):
+                    resultPriorities.append(np.array(cutIdx))
+                    probs.append(curProbs)
 
         return resultPriorities, probs

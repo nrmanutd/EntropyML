@@ -22,9 +22,6 @@ class EpochLearner(BaseLearner):
         self.trainId = 0
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    def loadModel(self, model):
-        raise NotImplementedError()
-
     def test(self, models, x, y):
         raise NotImplementedError()
 

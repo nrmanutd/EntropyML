@@ -69,8 +69,8 @@ def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCre
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
     return hc
 
-def createSampler(x, y, alphas, betas, testAlpha, repeats, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, True, True, True, False)
+def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, shouldEstimateForFullSet, False, True, False, False)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler
