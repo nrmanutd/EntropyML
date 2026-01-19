@@ -12,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_chain_main_standard_incremental_real_emulation'
+        self.prefix = f'{prefix}_chain_main_standard_incremental_real_emulation_weighted_samples_for_beta_1'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
