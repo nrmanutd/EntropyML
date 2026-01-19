@@ -9,13 +9,6 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class NNCumulativeEpochLearner(TorchModelLearner):
-    def __init__(self, model_factory: ModelFactory, fraction = 0.1):
-        super().__init__(model_factory)
-        self.fraction = fraction
-
-    def test(self, models, x, y):
-        raise NotImplementedError()
-
     def train(self, x, y, probs=None):
         raise NotImplementedError()
 
@@ -26,8 +19,7 @@ class NNCumulativeEpochLearner(TorchModelLearner):
         raise NotImplementedError()
 
     def trainAndTestOnEachEpoch(self, x, y, probs, xt, yt):
-        model = self.build_model().to(self.device)
-
+        self.fraction = 0.1
         innerEpochs = self.update_epochs
         outerEpochs = self.epochs
 
@@ -40,14 +32,13 @@ class NNCumulativeEpochLearner(TorchModelLearner):
 
         curX = None
         curY = None
-        probs = None
 
         for xb, yb in batches:
             curX = np.concatenate([curX, xb], axis=0)  if curX is not None else xb
-            curY = np.concatenate([curY, yb], axis=0)  if curY is not None else yb
+            curY = np.concatenate([curY, yb])  if curY is not None else yb
 
             if model is None:
-                model = self.build_model()
+                model = self.build_model().to(self.device)
 
             model, optimizer, scaler, a, p = self._trainModel(model, curX, curY, probs[:len(curY)], innerEpochs, xt, yt, optimizer, scaler)
 

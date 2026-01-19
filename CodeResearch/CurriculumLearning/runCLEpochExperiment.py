@@ -1,9 +1,11 @@
 import numpy as np
 
 from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory, \
-    Cifar100CachedOptimizerLearnerFactory
-from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
-from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
+    Cifar100CachedOptimizerLearnerFactory, Cifar100CumulativeLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory, \
+    Cifar10CumulativeLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory, \
+    MnistCumulativeLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
     createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createIncrementalLearnerHC, createSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
@@ -13,12 +15,12 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 10
+nIterations = 5
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 5
+repeats = 10
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #baseLabels = ['l', 'h&i_inc', 'h&h_inc']
@@ -60,7 +62,8 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = MnistLearnerFactory(nClasses)
+        #learnerFactory = MnistLearnerFactory(nClasses)
+        learnerFactory = MnistCumulativeLearnerFactory(nClasses)
         targetEpochs = 40
         easinessEpochs = 20
         diversityEpochs = 20
@@ -81,7 +84,8 @@ for i in range(len(taskNames)):
 
         nClasses = len(np.unique(y))
         #learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
-        learnerFactory = Cifar100LearnerFactory(nClasses)
+        #learnerFactory = Cifar100LearnerFactory(nClasses)
+        learnerFactory = Cifar100CumulativeLearnerFactory(nClasses)
         targetEpochs = 20
         easinessEpochs = 10
         diversityEpochs = 10
@@ -101,7 +105,8 @@ for i in range(len(taskNames)):
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
-        learnerFactory = Cifar10LearnerFactory(nClasses)
+        #learnerFactory = Cifar10LearnerFactory(nClasses)
+        learnerFactory = Cifar10CumulativeLearnerFactory(nClasses)
         targetEpochs = 40
         easinessEpochs = 15
         diversityEpochs = 15

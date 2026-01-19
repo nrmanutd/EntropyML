@@ -181,6 +181,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 for r in range(self.repeats):
                     resultPriorities.append(np.array(currentDataSetIdx))
                     probs.append(np.full(len(currentDataSetIdx), 1.0 / len(currentDataSetIdx)))
+                    #probs.append(softmax(curProbs))
 
         return resultPriorities, probs
 
