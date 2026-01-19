@@ -40,7 +40,7 @@ class NNCumulativeEpochLearner(TorchModelLearner):
             if model is None:
                 model = self.build_model().to(self.device)
 
-            model, optimizer, scaler, a, p = self._trainModel(model, curX, curY, probs[:len(curY)], innerEpochs, xt, yt, optimizer, scaler)
+            model, optimizer, scaler, a, p = self._trainModel(model, curX, curY, np.full(len(curY), 1.0/len(curY)), innerEpochs, xt, yt, optimizer, scaler)
 
-        model, optimizer, scaler, a, p = self._trainModel(model, x, y, probs, outerEpochs, xt, yt, optimizer, scaler)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, np.full(len(probs), 1.0/len(probs)), outerEpochs, xt, yt, optimizer, scaler)
         return model, a, p
