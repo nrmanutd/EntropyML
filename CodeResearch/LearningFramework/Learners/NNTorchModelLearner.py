@@ -112,8 +112,8 @@ class TorchModelLearner (TorchLearner):
         return x, y, probs
 
     def _make_loader(self, x: torch.Tensor, y: torch.Tensor, probs=None, shuffle=True) -> DataLoader:
-        ds = TensorDataset(x, y)  # if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
-        return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
+        ds = TensorDataset(x, y)  if probs is None else TensorDataset(x, y, probs) #todo: check if probs really necessary here
+        #return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
 
         if probs is None:
             return DataLoader(ds, batch_size=self.batch_size, shuffle=shuffle)
@@ -140,6 +140,7 @@ class TorchModelLearner (TorchLearner):
                 pb = None
             else:
                 xb, yb, pb = batch
+                #pb = None#todo: fix probs usage if necessary, right now it's disabled
 
             optimizer.zero_grad(set_to_none=True)
 
