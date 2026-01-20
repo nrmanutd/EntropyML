@@ -15,12 +15,12 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 10
+nIterations = 5
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 5
+repeats = 20
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 baseLabels = ['l', 'h&i_inc', 'h&h_inc']
@@ -130,7 +130,6 @@ for i in range(2, len(taskNames)):
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, loggingBetas, baseLabels)
 
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
-
     dataProcessor = learnerFactory.getDataPreprocessor()
 
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner), logger)
@@ -139,8 +138,8 @@ for i in range(2, len(taskNames)):
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, hcBuilder, logger)
-    sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
