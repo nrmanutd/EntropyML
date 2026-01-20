@@ -79,7 +79,7 @@ class Cifar100CumulativeLearnerFactory(PyTorchCVCLLearnersFactory):
             nesterov=True,
 
             batch_size=self.targetBatchSize,
-            update_epochs=5,
+            update_epochs=10,
             epochs=epochs,
 
             scheduler_name="cosine",

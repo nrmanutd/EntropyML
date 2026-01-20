@@ -20,13 +20,14 @@ nIterations = 5
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 10
+repeats = 5
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5, 1]
 #baseLabels = ['l', 'h&i_inc', 'h&h_inc']
 baseLabels = ['h&i_inc']
 shouldEstimateForFullSet = True
-nArrays = len(baseLabels) * (len(betas) if shouldEstimateForFullSet is False else 1)
+loggingBetas = betas if shouldEstimateForFullSet is False else [1]
+nArrays = len(baseLabels) * (len(loggingBetas))
 
 nSamples = 2000
 alphas = np.array([1])
@@ -126,7 +127,7 @@ for i in range(len(taskNames)):
     nFeatures = x.shape[1]
 
     prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_NN'
-    logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, betas, baseLabels)
+    logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, loggingBetas, baseLabels)
 
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
     dataProcessor = learnerFactory.getDataPreprocessor()

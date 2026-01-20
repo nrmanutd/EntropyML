@@ -12,7 +12,7 @@ class EpochLearnerLogger(BaseLogger):
         self.nArrays = nArrays
         self.nRepeats = nRepeats
         self.nAttempts = nAttempts
-        self.prefix = f'{prefix}_chain_main_standard_incremental_real_emulation_for_beta_1_prod'
+        self.prefix = f'{prefix}_chain_main_standard_incremental_real_emulation_for_beta_1_prod_weights'
         self.taskName = taskName
         self.epochs = epochs
         self.counter = 0
@@ -40,8 +40,8 @@ class EpochLearnerLogger(BaseLogger):
 
         xAxis = range(self.epochs)
 
-        #if len(self.baseLabels) != int(self.nArrays / len(self.betas)):
-        #    raise ValueError('Incorrect number of labels in baseLabels array')
+        if len(self.baseLabels) != int(self.nArrays / len(self.betas)):
+            raise ValueError('Incorrect number of labels in baseLabels array')
 
         labels = []
         for l in self.baseLabels:

@@ -27,20 +27,21 @@ class NNCumulativeEpochLearner(TorchModelLearner):
         batches = sampler.sample()
 
         model = None
-        optimizer = None
-        scaler = None
-
         curX = None
         curY = None
 
+        currentBatch = 0
+
         for xb, yb in batches:
+            print(f'Training cumulative batch# {currentBatch} of {len(batches)}')
             curX = np.concatenate([curX, xb], axis=0)  if curX is not None else xb
             curY = np.concatenate([curY, yb])  if curY is not None else yb
 
             if model is None:
                 model = self.build_model().to(self.device)
 
-            model, optimizer, scaler, a, p = self._trainModel(model, curX, curY, np.full(len(curY), 1.0/len(curY)), innerEpochs, xt, yt, optimizer, scaler)
+            model, optimizer, scaler, a, p = self._trainModel(model, curX, curY, np.full(len(curY), 1.0/len(curY)), innerEpochs, xt, yt, None, None)
+            currentBatch += 1
 
-        model, optimizer, scaler, a, p = self._trainModel(model, x, y, np.full(len(probs), 1.0/len(probs)), outerEpochs, xt, yt, optimizer, scaler)
+        model, optimizer, scaler, a, p = self._trainModel(model, x, y, np.full(len(probs), 1.0/len(probs)), outerEpochs, xt, yt, None, None)
         return model, a, p

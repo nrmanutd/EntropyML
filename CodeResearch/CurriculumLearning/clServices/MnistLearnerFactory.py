@@ -60,7 +60,7 @@ class MnistCumulativeLearnerFactory(PyTorchCVCLLearnersFactory):
             lr=1e-3,
             weight_decay=1e-4,
             batch_size=self.targetBatchSize,
-            update_epochs=5,
+            update_epochs=15,
             epochs=epochs,
             scheduler_name="none"
         )

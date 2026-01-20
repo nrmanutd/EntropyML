@@ -78,7 +78,7 @@ class Cifar10CumulativeLearnerFactory(PyTorchCVCLLearnersFactory):
             nesterov=True,
 
             batch_size=self.targetBatchSize,
-            update_epochs=5,
+            update_epochs=10,
             epochs=parameters,
 
             scheduler_name="none"  # см. комментарий выше
