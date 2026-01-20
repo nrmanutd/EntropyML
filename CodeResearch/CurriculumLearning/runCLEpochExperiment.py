@@ -131,8 +131,6 @@ for i in range(2, len(taskNames)):
 
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
 
-    targetLearner.learner.trainAndTestOnEachEpoch(x, y)
-
     dataProcessor = learnerFactory.getDataPreprocessor()
 
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner), logger)
