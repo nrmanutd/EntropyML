@@ -126,11 +126,12 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             beta = self.betas[k]
 
             if abs(beta - 1) < 0.001:
+                ci = set(currentDataSetIdx)
+                restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
+                currentDataSetIdx.extend(restIdx)
+                curProbs.extend(np.ones(len(restIdx)) * min(curProbs))
+
                 for r in range(self.repeats):
-                    ci = set(currentDataSetIdx)
-                    restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
-                    currentDataSetIdx.extend(restIdx)
-                    curProbs.extend(np.ones(len(restIdx)) * min(curProbs))
                     resultPriorities.append(np.array(currentDataSetIdx))
 
                     #probs.append(softmax(curProbs))
