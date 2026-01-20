@@ -130,12 +130,14 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     ci = set(currentDataSetIdx)
                     restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
                     currentDataSetIdx.extend(restIdx)
-                    curProbs.extend(np.ones(len(restIdx)) * curProbs[-1])
-
+                    curProbs.extend(np.ones(len(restIdx)) * min(curProbs))
                     resultPriorities.append(np.array(currentDataSetIdx))
+
                     #probs.append(softmax(curProbs))
-                    probs.append(np.array(curProbs) / np.mean(np.array(curProbs)))
-                    #probs.append(np.full(len(curProbs), 1.0/len(curProbs)))
+                    #probs.append(np.array(curProbs) / np.mean(np.array(curProbs)))
+                    #self.logger.logDebug(f'max={max(probs[-1])}, min={min(probs[-1])}, mean={np.mean(np.array(probs[-1]))}, array={np.array(probs[-1])}')
+
+                    probs.append(np.full(len(curProbs), 1.0))
                 break
 
             deltaBeta = beta - prevBeta
@@ -172,8 +174,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             cutIdx = stratified_split_indices_with_min_and_priority(target[restIdx], priority, fraction)
             currentDataSetIdx.extend(restIdx[cutIdx])
 
-            multiplier = 1 if len(curProbs) == 0 else (curProbs[-1] / max(priority[cutIdx]))
-            curProbs.extend(priority[cutIdx] * multiplier)
+            multiplier = 1 if len(curProbs) == 0 else (min(curProbs) / np.max(softmax(priority[cutIdx])))
+            curProbs.extend(softmax(priority[cutIdx]) * multiplier)
 
             ci = set(cutIdx)
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
@@ -181,8 +183,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if self.shouldEstimateForFullSet is False:
                 for r in range(self.repeats):
                     resultPriorities.append(np.array(currentDataSetIdx))
-                    probs.append(np.full(len(currentDataSetIdx), 1.0 / len(currentDataSetIdx)))
-                    #probs.append(softmax(curProbs))
+                    probs.append(np.full(len(currentDataSetIdx), 1.0))
+                    #probs.append(curProbs / np.mean(np.array(curProbs)))
 
         return resultPriorities, probs
 
