@@ -15,17 +15,17 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 5
+nIterations = 10
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 20
+repeats = 5
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
-baseLabels = ['l', 'h&i_inc', 'h&h_inc']
-#baseLabels = ['l']
+#baseLabels = ['l', 'h&i_inc', 'h&h_inc']
+baseLabels = ['h&i_inc']
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
 nArrays = len(baseLabels) * (len(loggingBetas))
@@ -53,7 +53,7 @@ taskNames = ['cifar100_epoch', 'mnist_epoch', 'cifar_epoch', 'cifar100_epoch', '
 firstClasses = [-1, -1, -1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, -1, -1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(2, len(taskNames)):
+for i in range(1, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -139,8 +139,8 @@ for i in range(2, len(taskNames)):
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
-    #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
