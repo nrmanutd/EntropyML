@@ -76,7 +76,7 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFull
     return sampler
 
 def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, shouldEstimateForFullSet, True, True, True, False)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, shouldEstimateForFullSet, False, True, False, False)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 
     return sampler
