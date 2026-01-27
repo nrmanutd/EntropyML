@@ -9,7 +9,8 @@ from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass
+from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
+    cosine_to_mean_grad_head_linear_two_pass
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
@@ -52,6 +53,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
 
             batches = sampler.sample()
             scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
+            #scores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
 
             importance += scores
             scoresList.append(np.array(importance))

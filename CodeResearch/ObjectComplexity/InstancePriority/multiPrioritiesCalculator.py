@@ -45,7 +45,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                         probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance', 'easiness')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'importance', 'easiness')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
