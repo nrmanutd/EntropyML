@@ -53,13 +53,14 @@ taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'cifar100_epoch', '
 firstClasses = [-1, -1, -1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, -1, -1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(len(taskNames)):
+for i in range(2, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
 
     if taskName == 'mnist_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadMnist_torch()
+
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
@@ -81,6 +82,8 @@ for i in range(len(taskNames)):
         diversityEpochs = 25
     elif taskName == 'cifar100_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadCifar100_torch()
+        print(len(ytest))
+
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
@@ -103,6 +106,7 @@ for i in range(len(taskNames)):
         diversityEpochs = 15
     elif taskName == 'cifar_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadCifar10_torch()
+        print(len(ytest))
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 

@@ -319,6 +319,120 @@ def centered_grad_norm_head_linear_two_pass(model, batches, device):
     return scores
 
 @torch.no_grad()
+def cosine_to_mean_grad_head_linear_two_pass(model, batches, device, eps: float = 1e-12):
+    """
+    batches: итератор по батчам, возвращает (xb, yb, idx) или (xb, yb)
+            важно: порядок в pass1 и pass2 должен совпадать.
+    Возвращает scores numpy [N] = cos(grad_i, mean_grad) по голове (W и bias),
+    где grad_i — градиент по (W,bias) для одного объекта, mean_grad — средний по датасету.
+
+    Реализация без materialize per-sample grad_W:
+      grad_W(i) = outer(g_i, feat_i), где g_i = p_i - onehot(y_i)
+      grad_b(i) = g_i
+    """
+    model.eval()
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError("Works only for model.head = nn.Linear(H, C)")
+
+    # ---------- PASS 1: считаем средний градиент по W и по bias ----------
+    sum_M = None          # [C, H]  = sum_i (g_i^T @ feat_i)
+    sum_g = None          # [C]     = sum_i g_i (для bias)
+    n_total = 0
+
+    for batch in batches:
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = model.features(xb)
+        feat = model.pool(feat).flatten(1)          # [B, H]
+        logits = head(feat)                         # [B, C]
+
+        g = torch.softmax(logits, dim=1)            # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0  # p - onehot
+
+        M_batch = g.transpose(0, 1) @ feat          # [C, H]
+
+        if sum_M is None:
+            sum_M = M_batch
+            sum_g = g.sum(dim=0)                    # [C]
+        else:
+            sum_M += M_batch
+            sum_g += g.sum(dim=0)
+
+        n_total += g.size(0)
+
+        del xb, yb, feat, logits, g, M_batch
+
+    mean_M = sum_M / max(n_total, 1)                # [C, H]
+    mean_g = sum_g / max(n_total, 1)                # [C]
+
+    # ||mean_grad|| for W and bias
+    norm_mean2 = (mean_M * mean_M).sum()
+    if head.bias is not None:
+        norm_mean2 = norm_mean2 + (mean_g * mean_g).sum()
+    norm_mean = torch.sqrt(torch.clamp(norm_mean2, min=0.0))
+    norm_mean = torch.clamp(norm_mean, min=eps)
+
+    # ---------- PASS 2: считаем cos(grad_i, mean_grad) ----------
+    scores = np.empty(n_total, dtype=np.float32)
+    pos = 0
+
+    # важно: batches должен быть "перезапускаемым" (или заранее сохранён список батчей)
+    for batch in batches:
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = model.features(xb)
+        feat = model.pool(feat).flatten(1)          # [B, H]
+        logits = head(feat)                         # [B, C]
+
+        g = torch.softmax(logits, dim=1)            # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0
+
+        # <grad_W(i), mean_M> = <outer(g_i, feat_i), mean_M> = g_i^T (mean_M feat_i)
+        Mf = feat @ mean_M.t()                      # [B, C]
+        inner_W = (g * Mf).sum(dim=1)               # [B]
+        inner = inner_W
+
+        # bias term: <grad_b(i), mean_g> = g_i · mean_g
+        if head.bias is not None:
+            inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)  # [B]
+            inner = inner + inner_b
+
+        # ||grad_i||^2 = ||outer||_F^2 + (||g_i||^2 if bias)
+        g2 = (g * g).sum(dim=1)                     # [B]
+        f2 = (feat * feat).sum(dim=1)               # [B]
+        norm_outer2 = g2 * f2                       # [B]
+        norm_i2 = norm_outer2
+        if head.bias is not None:
+            norm_i2 = norm_i2 + g2
+
+        norm_i = torch.sqrt(torch.clamp(norm_i2, min=0.0))
+        norm_i = torch.clamp(norm_i, min=eps)
+
+        cos = inner / (norm_i * norm_mean)          # [B]
+        cos = torch.clamp(cos, min=-1.0, max=1.0)
+
+        bsz = cos.numel()
+        scores[pos:pos+bsz] = cos.detach().cpu().numpy()
+        pos += bsz
+
+        del xb, yb, feat, logits, g, Mf, inner_W, inner, g2, f2, norm_outer2, norm_i2, norm_i, cos
+
+    return scores
+
+@torch.no_grad()
 def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device):
     """
     batches: итератор по батчам, возвращает (xb, yb, idx) или (xb, yb)

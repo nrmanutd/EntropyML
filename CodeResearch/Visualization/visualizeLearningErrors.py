@@ -1,3 +1,4 @@
+import math
 import os
 
 import numpy as np
@@ -116,7 +117,7 @@ def plot_multi_errors_vs_alpha(errors_nested, alphas, labels, resultsFolder, tas
     plt.close(fig)
 
 
-def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder, taskName, markersCount, startIdx=0):
+def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder, taskName, markersCount, startIdx=0, yLabel='Test Accuracy', title='Test Accuracy vs Epoch (Mean ± Std)'):
     """
     Plot learning curves for multiple classifiers on the same figure.
     Also creates a separate plot for standard deviations.
@@ -176,7 +177,7 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
 
         clf_errors = [np.asarray(e) for e in clf_errors]
         means = np.array([e.mean() for e in clf_errors])
-        stds = np.array([e.std(ddof=1) if len(e) > 1 else 0.0 for e in clf_errors])
+        stds = np.array([e.std(ddof=1)/math.sqrt(len(e)) if len(e) > 1 else 0.0 for e in clf_errors])
 
         color = bright_colors[clf_idx % len(bright_colors)]
         marker = markers[clf_idx%markersCount]
@@ -202,8 +203,8 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
     # Настройки первого графика
     ax1.legend(handles=lines, loc='upper left', bbox_to_anchor=(1, 1), fontsize=6, markerscale=0.3)
     ax1.set_xlabel("Epoch number")
-    ax1.set_ylabel("Test Accuracy")
-    ax1.set_title("Test Accuracy vs Epoch (Mean ± Std)")
+    ax1.set_ylabel(yLabel)
+    ax1.set_title(title)
     ax1.grid(True)
 
     # Сохраняем первый график
