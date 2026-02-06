@@ -14,7 +14,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.05
 nIterations = 2
 
 nEasinessAttempts = 50
@@ -24,8 +24,8 @@ repeats = 5
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
-#baseLabels = ['l', 'h&i_inc', 'h&h_inc']
-baseLabels = ['i_inner_p']
+baseLabels = ['l', 'h&i_inc']
+#baseLabels = ['i_inner_p']
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
 nArrays = len(baseLabels) * (len(loggingBetas))

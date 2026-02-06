@@ -52,9 +52,9 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
 
             batches = sampler.sample()
-            #scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
+            scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
             #scores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
-            scores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
+            #scores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
 
             importance += scores
             scoresList.append(np.array(importance))
