@@ -6,10 +6,10 @@ import numpy as np
 import torch
 from torchvision import datasets, transforms
 
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.datasets import cifar100
-from tensorflow.keras.datasets import mnist
-from tensorflow.keras.datasets import fashion_mnist
+#from tensorflow.keras.datasets import cifar10
+#from tensorflow.keras.datasets import cifar100
+#from tensorflow.keras.datasets import mnist
+#from tensorflow.keras.datasets import fashion_mnist
 
 def loadMnist():
     num_train = 60000  # there are 60000 training examples in MNIST
