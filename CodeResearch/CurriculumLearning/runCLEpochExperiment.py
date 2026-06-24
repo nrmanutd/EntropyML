@@ -7,7 +7,8 @@ from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cif
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory, \
     MnistCumulativeLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createIncrementalLearnerHC, createSampler
+    createLearnerHC, filterDataSetByFraction, createSamplerWithTest, createIncrementalLearnerHC, createSampler, \
+    createBaselineSamplerWithTest
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -137,10 +138,16 @@ for i in range(1, len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #standard
-    scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    #scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
+    #hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
     #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+
+    #graNd
+    graNdAttempts = 10
+    graNdBatchSize = 128
+    learnerCreator = lambda: learnerFactory.createTargetLearner(targetEpochs)
+    sampler = createBaselineSamplerWithTest(x, y, xtest, ytest, graNdAttempts, betas, graNdBatchSize, "GraNd",  trainAlpha, repeats, dataProcessor, learnerCreator, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)

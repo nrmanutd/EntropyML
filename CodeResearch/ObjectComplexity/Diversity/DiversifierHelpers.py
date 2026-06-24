@@ -318,6 +318,190 @@ def centered_grad_norm_head_linear_two_pass(model, batches, device):
 
     return scores
 
+def _unpack_batch(batch):
+    """
+    Поддерживает batch = (xb, yb) или (xb, yb, idx).
+    idx игнорируется, потому что порядок scores сохраняется как порядок прохождения batches.
+    """
+    if len(batch) == 3:
+        xb, yb, _idx = batch
+    elif len(batch) == 2:
+        xb, yb = batch
+    else:
+        raise ValueError("Batch must be (xb, yb) or (xb, yb, idx).")
+    return xb, yb
+
+
+def _extract_features_default(model, xb):
+    """
+    Под твою архитектуру:
+        model.features -> model.pool -> flatten -> model.head
+    """
+    feat = model.features(xb)
+
+    if hasattr(model, "pool") and model.pool is not None:
+        feat = model.pool(feat)
+
+    feat = feat.flatten(1)
+    return feat
+
+
+@torch.no_grad()
+def grad_norm_head_linear_one_pass(
+    model,
+    batches,
+    device,
+    *,
+    include_bias=True,
+    feature_fn=None,
+    input_dtype=torch.float32,
+):
+    """
+    Считает per-object norm градиента loss по линейной голове model.head.
+
+    Возвращает:
+        scores: np.ndarray [N], dtype float32
+
+    Важно:
+    - scores идут строго в порядке прохождения объектов через batches.
+    - Если нужен порядок датасета, dataloader должен иметь shuffle=False.
+    - Если dataloader shuffle=True, возвращаемый порядок будет порядком текущего прохода.
+    - Функция не использует autograd; градиент по голове считается аналитически.
+    - Работает для model.head = nn.Linear(H, C).
+
+    Для каждого объекта:
+        logits = head(features)
+        g = softmax(logits) - onehot(y)
+
+        ||grad_W||^2 = ||g||^2 * ||features||^2
+        ||grad_b||^2 = ||g||^2, если include_bias=True и bias существует
+
+        score = sqrt(||grad_W||^2 + ||grad_b||^2)
+    """
+    model.eval()
+
+    if not hasattr(model, "head"):
+        raise AttributeError("Expected model.head to exist.")
+
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError("Works only for model.head = nn.Linear(H, C).")
+
+    if feature_fn is None:
+        feature_fn = _extract_features_default
+
+    use_bias = include_bias and (head.bias is not None)
+
+    scores_list = []
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = xb.to(device=device, dtype=input_dtype, non_blocking=True)
+        yb = yb.to(device=device, dtype=torch.long, non_blocking=True)
+
+        feat = feature_fn(model, xb)          # [B, H]
+        logits = head(feat)                  # [B, C]
+
+        probs = F.softmax(logits, dim=1)     # [B, C]
+        g = probs.clone()
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0  # p - onehot
+
+        g2 = (g * g).sum(dim=1)              # [B]
+        f2 = (feat * feat).sum(dim=1)        # [B]
+
+        score2 = g2 * f2                     # norm grad_W squared
+
+        if use_bias:
+            score2 = score2 + g2             # add norm grad_b squared
+
+        scores = torch.sqrt(torch.clamp(score2, min=0.0))
+
+        scores_list.append(scores.detach().cpu().numpy().astype(np.float32))
+
+        del xb, yb, feat, logits, probs, g, g2, f2, score2, scores
+
+    if len(scores_list) == 0:
+        return np.empty(0, dtype=np.float32)
+
+    return np.concatenate(scores_list, axis=0)
+
+@torch.no_grad()
+def el2n_scores(
+    model,
+    batches,
+    device,
+    *,
+    num_classes=None,
+    return_indices=False,
+    dtype=torch.float32,
+):
+    """
+    Считает EL2N score для каждого объекта:
+
+        EL2N_i = ||softmax(model(x_i)) - onehot(y_i)||_2
+
+    Важно:
+    - scores возвращаются ровно в порядке прохождения объектов через batches.
+    - Если return_indices=True и batch содержит idx, дополнительно возвращаются idx.
+    - В отличие от gradient norm, здесь используется обычный model(xb),
+      а не model.features + model.head.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+    batches : iterable
+        Возвращает (xb, yb) или (xb, yb, idx).
+    device : str or torch.device
+    num_classes : int or None
+        Если None, берется из logits.shape[1].
+    return_indices : bool
+    dtype : torch dtype
+
+    Returns
+    -------
+    scores : np.ndarray [N]
+    indices : np.ndarray [N], optional
+    """
+    model.eval()
+
+    scores_list = []
+    idx_list = []
+
+    for batch in batches:
+        xb, yb, idx = _unpack_batch(batch)
+
+        if return_indices and idx is not None:
+            idx_list.append(torch.as_tensor(idx).cpu().numpy())
+
+        xb = xb.to(device=device, dtype=dtype, non_blocking=True)
+        yb = yb.to(device=device, dtype=torch.long, non_blocking=True)
+
+        logits = model(xb)  # [B, C]
+
+        if isinstance(logits, (tuple, list)):
+            logits = logits[0]
+
+        probs = F.softmax(logits, dim=1)
+
+        C = probs.size(1) if num_classes is None else num_classes
+        y_onehot = F.one_hot(yb, num_classes=C).to(dtype=probs.dtype)
+
+        score = torch.norm(probs - y_onehot, p=2, dim=1)
+
+        scores_list.append(score.detach().cpu().numpy().astype(np.float32))
+
+    scores = np.concatenate(scores_list, axis=0) if scores_list else np.empty(0, dtype=np.float32)
+
+    if return_indices:
+        if idx_list:
+            indices = np.concatenate(idx_list, axis=0)
+        else:
+            indices = np.arange(len(scores), dtype=np.int64)
+        return scores, indices
+
+    return scores
+
 @torch.no_grad()
 def cosine_to_mean_grad_head_linear_two_pass(model, batches, device, eps: float = 1e-12):
     """

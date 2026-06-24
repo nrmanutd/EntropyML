@@ -20,6 +20,7 @@ from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCor
 from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
 #from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.RepeatingPrioritizer import RepeatingPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
@@ -79,6 +80,13 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFull
 
 def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
     prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, True, False, False)
+    prioritizer = RepeatingPrioritizer(repeats, prioritizer)
+    sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
+
+    return sampler
+
+def createBaselineSamplerWithTest(x, y, xtest, ytest, nAttempts, betas, batchSize, metric, trainAlpha, repeats, dataTransformer, learnerCreator, logger):
+    prioritizer = BaselinesPriorityCalculator(nAttempts, betas, batchSize, metric, dataTransformer, learnerCreator)
     prioritizer = RepeatingPrioritizer(repeats, prioritizer)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 

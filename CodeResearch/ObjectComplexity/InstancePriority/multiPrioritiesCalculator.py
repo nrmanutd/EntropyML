@@ -128,7 +128,6 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 currentDataSetIdx.extend(restIdx)
                 curProbs.extend(np.ones(len(restIdx)) * min(curProbs))
 
-
                 resultPriorities.append(np.array(currentDataSetIdx))
                 probs.append(np.full(len(curProbs), 1.0))
                 break
