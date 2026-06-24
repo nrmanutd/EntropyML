@@ -25,7 +25,7 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
         p = self.dataTransformer.estimateDataTransformationParameters(dataSet, target)
         ds, t = self.dataTransformer.applyParametersToData(dataSet, target, p)
 
-        device = self.learnerCreator().device
+        device = self.learnerCreator().learner.device
         xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
         yb = torch.as_tensor(t, dtype=torch.int64, device=device)
         

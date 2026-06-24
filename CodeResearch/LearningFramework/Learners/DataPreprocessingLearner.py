@@ -28,4 +28,7 @@ class DataPreprocessingLearner(BaseLearner):
         raise NotImplementedError()
 
     def train(self, x, y, probs):
-        raise NotImplementedError()
+        p = self.dataTransformer.estimateDataTransformationParameters(x, y)
+        x, y = self.dataTransformer.applyParametersToData(x, y, p)
+
+        return self.learner.train(x, y, probs)

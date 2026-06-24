@@ -26,7 +26,7 @@ repeats = 5
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
 #baseLabels = ['l', 'h&i_inc']
-baseLabels = ['GraNd']
+baseLabels = ['EL2N']
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
 nArrays = len(baseLabels) * (len(loggingBetas))
@@ -146,8 +146,9 @@ for i in range(0, len(taskNames)):
     #graNd
     graNdAttempts = 10
     graNdBatchSize = 128
-    learnerCreator = lambda: learnerFactory.createTargetLearner(targetEpochs)
-    sampler = createBaselineSamplerWithTest(x, y, xtest, ytest, graNdAttempts, betas, graNdBatchSize, "GraNd",  trainAlpha, repeats, dataProcessor, learnerCreator, logger)
+    epochs = 20
+    learnerCreator = lambda: learnerFactory.createTargetLearner(epochs)
+    sampler = createBaselineSamplerWithTest(x, y, xtest, ytest, graNdAttempts, betas, graNdBatchSize, "EL2N",  trainAlpha, repeats, dataProcessor, learnerCreator, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
