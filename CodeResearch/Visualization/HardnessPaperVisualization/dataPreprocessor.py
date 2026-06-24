@@ -52,6 +52,12 @@ def preprocessLabels(labels):
             r.append('Hard')
         elif label == 'h&i_inc':
             r.append('H&U')
+        elif label == 'i':
+            r.append('Utility')
+        elif label == 'i_cos':
+            r.append('Cosine')
+        elif label == 'i_inner_p':
+            r.append('MProb&U')
         else:
             raise ValueError(f'Unknown label: {label}')
 

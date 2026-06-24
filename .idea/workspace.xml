@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added betas to prioritizer">
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/showExtragoldFigures.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/showExtragoldFullStatistics.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/baseLearner.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/LearningFramework/Learners/baseLearner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/Hardness/LearnerBasedHardnessCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/Hardness/LearnerBasedHardnessCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/dataPreprocessor.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/dataPreprocessor.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/Visualization/HardnessPaperVisualization/extractData.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,28 +50,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.runCLEpochExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runCLExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runProteinsExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runProteinsHardnessCalculationExample.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runShapExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showLogsWithProcessing.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showSignificantDeltas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualizeComplexity.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.extractData.executor": "Run",
+    "Python.runCLEpochExperiment.executor": "Run",
+    "Python.runCLExperiment.executor": "Run",
+    "Python.runProteinsExperiment.executor": "Run",
+    "Python.runProteinsHardnessCalculationExample.executor": "Run",
+    "Python.runShapExperiment.executor": "Run",
+    "Python.showAULC.executor": "Run",
+    "Python.showCI.executor": "Run",
+    "Python.showExtragoldFigures.executor": "Run",
+    "Python.showExtragoldFullStatistics.executor": "Run",
+    "Python.showFigures.executor": "Run",
+    "Python.showFullStatistics.executor": "Run",
+    "Python.showLogsWithProcessing.executor": "Run",
+    "Python.showSignificantDeltas.executor": "Run",
+    "Python.visualizeComplexity.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;module&quot;,
-      &quot;repository&quot;
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Current\Work\Science\CodeResearch\CurriculumLearning\clServices" />
@@ -371,7 +380,63 @@
       <option name="project" value="LOCAL" />
       <updated>1768212082114</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="added betas to prioritizer">
+      <option name="closed" value="true" />
+      <created>1768219706892</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1768219706892</updated>
+    </task>
+    <task id="LOCAL-00037" summary="added betas to prioritizer">
+      <option name="closed" value="true" />
+      <created>1768222500008</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1768222500008</updated>
+    </task>
+    <task id="LOCAL-00038" summary="added betas to prioritizer">
+      <option name="closed" value="true" />
+      <created>1768226835096</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1768226835096</updated>
+    </task>
+    <task id="LOCAL-00039" summary="improved logic">
+      <option name="closed" value="true" />
+      <created>1768231089691</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1768231089691</updated>
+    </task>
+    <task id="LOCAL-00040" summary="improved logic">
+      <option name="closed" value="true" />
+      <created>1768310718393</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1768310718393</updated>
+    </task>
+    <task id="LOCAL-00041" summary="improved logic">
+      <option name="closed" value="true" />
+      <created>1768311312139</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1768311312139</updated>
+    </task>
+    <task id="LOCAL-00042" summary="improved logic">
+      <option name="closed" value="true" />
+      <created>1769531506317</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1769531506317</updated>
+    </task>
+    <option name="localTasksCounter" value="43" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -388,9 +453,10 @@
     <MESSAGE value="added model delta logic" />
     <MESSAGE value="added networks for global experiments" />
     <MESSAGE value="refactored experimental setup" />
-    <MESSAGE value="added betas to prioritizer" />
     <MESSAGE value="fixed setup for cifar10, cifar100" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed setup for cifar10, cifar100" />
+    <MESSAGE value="added betas to prioritizer" />
+    <MESSAGE value="improved logic" />
+    <option name="LAST_COMMIT_MESSAGE" value="improved logic" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

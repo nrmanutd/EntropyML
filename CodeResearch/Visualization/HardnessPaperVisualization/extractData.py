@@ -10,10 +10,10 @@ from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors
 def extractFiles(folder, task, mode):
     targetFolder = f'{folder}\\{task}'
 
-    noGradientFolder = None
-    gradientFolder = None
-
     all_items = os.listdir(targetFolder)
+
+    gradFiles = []
+    noGradFiles = []
 
     for item in all_items:
         if not os.path.isdir(os.path.join(targetFolder, item)):
@@ -22,12 +22,14 @@ def extractFiles(folder, task, mode):
         if mode in item:
             if 'gradient' in item:
                 gradientFolder = item
+                gf = [(file, os.path.join(targetFolder, gradientFolder, file)) for file in
+                             os.listdir(f'{targetFolder}\\{gradientFolder}') if file.endswith('txt')]
+                gradFiles.extend(gf)
             else:
                 noGradientFolder = item
-
-
-    gradFiles = [(file, os.path.join(targetFolder, gradientFolder, file)) for file in os.listdir(f'{targetFolder}\\{gradientFolder}') if file.endswith('txt')]
-    noGradFiles = [(file, os.path.join(targetFolder, noGradientFolder, file)) for file in os.listdir(f'{targetFolder}\\{noGradientFolder}') if file.endswith('txt')]
+                ngf = [(file, os.path.join(targetFolder, noGradientFolder, file)) for file in
+                               os.listdir(f'{targetFolder}\\{noGradientFolder}') if file.endswith('txt')]
+                noGradFiles.extend(ngf)
 
     return gradFiles, noGradFiles
 
@@ -81,7 +83,7 @@ def filterFiles(files, modes):
 
 def processFiles(grad, noGrad):
     g = filterFiles(grad, ['h&i_inc'])
-    ng = filterFiles(noGrad, ['l', 'h&h_inc'])
+    ng = filterFiles(noGrad, ['l', 'h&h_inc', 'i', 'i_cos', 'i_inner_p'])
 
     res = dict()
     for key, value in g.items():
@@ -126,9 +128,41 @@ import matplotlib.image as mpimg
 from pathlib import Path
 def make_grid(image_paths, out_path, nrows=2, ncols=3, dpi=300, title=None):
     assert len(image_paths) == nrows * ncols, "Need exactly nrows*ncols images"
-    fig, axes = plt.subplots(nrows, ncols, figsize=(ncols*4.0, nrows*3.0), dpi=dpi)
+    fig, axes = plt.subplots(nrows, ncols, dpi=dpi)
 
     for ax, p in zip(axes.flat, image_paths):
+        img = mpimg.imread(p)
+        ax.imshow(img)
+        ax.axis("off")
+
+    if title:
+        fig.suptitle(title)
+
+    plt.tight_layout()
+    fig.savefig(out_path, bbox_inches="tight")
+    plt.close(fig)
+
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
+def make_2plus1_grid(image_paths, out_path, dpi=300, title=None, pad=0.02):
+    """
+    Layout:
+      [img0 | img1]
+      [   img2    ]  (spans both columns)
+    """
+    assert len(image_paths) == 3, "Need exactly 3 images"
+
+    fig = plt.figure(dpi=dpi)
+    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1], wspace=pad, hspace=pad)
+
+    ax0 = fig.add_subplot(gs[0, 0])
+    ax1 = fig.add_subplot(gs[0, 1])
+    ax2 = fig.add_subplot(gs[1, :])  # span both columns
+
+    axes = [ax0, ax1, ax2]
+
+    for ax, p in zip(axes, image_paths):
         img = mpimg.imread(p)
         ax.imshow(img)
         ax.axis("off")
@@ -143,6 +177,7 @@ def make_grid(image_paths, out_path, nrows=2, ncols=3, dpi=300, title=None):
 
 def extractAndSave(folder, task, targetLength, fraction, protocol, startIdx=0):
     r = extractTask(folder, task.lower())
+    print(r)
 
     files = extractFilesForParameters(r, fraction, protocol)
 
