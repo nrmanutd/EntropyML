@@ -455,6 +455,9 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         else:
             xb, yb = batch
 
+        n_total += len(yb)
+        continue
+
         xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
         yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
 
@@ -481,10 +484,10 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         # освобождение временных
         del xb, yb, feat, logits, g, M_batch
 
-    mean_M = sum_M / max(n_total, 1)                # [C, H]
-    mean_g = sum_g / max(n_total, 1)                # [C]  (для bias)
-    norm_mean_M2 = (mean_M * mean_M).sum()          # скаляр
-    norm_mean_g2 = (mean_g * mean_g).sum()          # скаляр
+    #mean_M = sum_M / max(n_total, 1)                # [C, H]
+    #mean_g = sum_g / max(n_total, 1)                # [C]  (для bias)
+    #norm_mean_M2 = (mean_M * mean_M).sum()          # скаляр
+    #norm_mean_g2 = (mean_g * mean_g).sum()          # скаляр
 
     # ---------- PASS 2: считаем scores без materialize grad_W ----------
     scores = np.empty(n_total, dtype=np.float32)
@@ -519,17 +522,17 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         norm_outer2 = g2 * f2                       # [B]
 
         # <outer, mean_M> = g^T (mean_M feat)
-        Mf = feat @ mean_M.t()                      # [B, C]  (feat:[B,H], mean_M^T:[H,C])
-        inner = (g * Mf).sum(dim=1)                 # [B]
+        #Mf = feat @ mean_M.t()                      # [B, C]  (feat:[B,H], mean_M^T:[H,C])
+        #inner = (g * Mf).sum(dim=1)                 # [B]
 
         # centered norm по W
-        score2 = norm_outer2 + norm_mean_M2 - 2.0 * inner  # [B]
+        score2 = norm_outer2# + norm_mean_M2 - 2.0 * inner  # [B]
 
         # если учитываем bias: grad_b = g
         # centered bias term: ||g - mean_g||^2 = ||g||^2 + ||mean_g||^2 - 2 g·mean_g
         if head.bias is not None:
-            inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)   # [B]
-            score2 = score2 + g2 + norm_mean_g2 - 2.0 * inner_b
+            #inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)   # [B]
+            score2 = score2 + g2# + norm_mean_g2 - 2.0 * inner_b
 
         score = torch.sqrt(torch.clamp(score2, min=0.0))      # [B]
 
@@ -538,7 +541,7 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         loss_all[pos:pos+bsz] = loss_i.cpu().numpy()
         pos += bsz
 
-        del xb, yb, feat, logits, g, g2, f2, norm_outer2, Mf, inner, score2, score, loss_i
+        del xb, yb, feat, logits, g, g2, f2, norm_outer2, score2, score, loss_i#, Mf, inner,
 
     #for logits entropy
     #easiness = 1 - loss_all
@@ -548,7 +551,7 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
 
     easiness = loss_all
 
-    return scores, easiness
+    return scores * easiness
 
 def entropy_from_logits(logits: torch.Tensor) -> torch.Tensor:
     B, C = logits.shape

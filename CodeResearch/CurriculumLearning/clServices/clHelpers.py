@@ -21,6 +21,7 @@ from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
+from CodeResearch.ObjectComplexity.InstancePriority.RepeatingPrioritizer import RepeatingPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
 
@@ -70,13 +71,15 @@ def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCre
     return hc
 
 def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, shouldEstimateForFullSet, False, True, False, False)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True, False, False)
+    RepeatingPrioritizer(repeats, prioritizer)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
     return sampler
 
 def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
-    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, repeats, shouldEstimateForFullSet, False, True, False, False)
+    prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, True, False, False)
+    prioritizer = RepeatingPrioritizer(repeats, prioritizer)
     sampler = RandomWithFixedTestSampler(x, y, xtest, ytest, prioritizer, trainAlpha, logger)
 
     return sampler

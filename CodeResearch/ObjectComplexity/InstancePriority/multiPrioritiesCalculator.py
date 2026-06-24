@@ -11,10 +11,9 @@ from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator impor
 
 
 class MultiPrioritiesCalculator(BasePriorityCalculator):
-    def __init__(self, hcBuilder, logger: BaseLogger, alphas, betas, repeats, shouldEstimateForFullSet, useBasedPriority, useImportance, useHardness,
+    def __init__(self, hcBuilder, logger: BaseLogger, alphas, betas, shouldEstimateForFullSet, useBasedPriority, useImportance, useHardness,
                  useBoth):
         self.shouldEstimateForFullSet = shouldEstimateForFullSet
-        self.repeats = repeats
         self.hcBuilder = hcBuilder
         self.logger = logger
         self.alphas = alphas
@@ -39,13 +38,12 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if self.useBasedPriority:
                 for beta in self.betas:
                     curNTrain = math.ceil(beta * nTrain)
-                    for r in range(self.repeats):
-                        rIdx = np.random.permutation(len(target))
-                        resultPriorities.append(rIdx[range(curNTrain)])
-                        probs.append(np.full(curNTrain, 1.0 / curNTrain))
+                    rIdx = np.random.permutation(len(target))
+                    resultPriorities.append(rIdx[range(curNTrain)])
+                    probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance', 'easiness')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'importance', 'easiness')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
@@ -78,10 +76,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             if self.useBasedPriority:
                 for beta in self.betas:
                     curNTrain = math.ceil(beta * nTrain)
-                    for r in range(self.repeats):
-                        rIdx = np.random.permutation(len(target))
-                        resultPriorities.append(rIdx[range(curNTrain)])
-                        probs.append(np.full(curNTrain, 1.0 / curNTrain))
+                    rIdx = np.random.permutation(len(target))
+                    resultPriorities.append(rIdx[range(curNTrain)])
+                    probs.append(np.full(curNTrain, 1.0 / curNTrain))
 
             if self.useImportance:
                 resIdxes, resProbs = self.calculateChainNoState(target, importances, easinesses, alpha, 'importance')
@@ -131,14 +128,9 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                 currentDataSetIdx.extend(restIdx)
                 curProbs.extend(np.ones(len(restIdx)) * min(curProbs))
 
-                for r in range(self.repeats):
-                    resultPriorities.append(np.array(currentDataSetIdx))
 
-                    #probs.append(softmax(curProbs))
-                    #probs.append(np.array(curProbs) / np.mean(np.array(curProbs)))
-                    #self.logger.logDebug(f'max={max(probs[-1])}, min={min(probs[-1])}, mean={np.mean(np.array(probs[-1]))}, array={np.array(probs[-1])}')
-
-                    probs.append(np.full(len(curProbs), 1.0))
+                resultPriorities.append(np.array(currentDataSetIdx))
+                probs.append(np.full(len(curProbs), 1.0))
                 break
 
             deltaBeta = beta - prevBeta
@@ -182,10 +174,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             prevEasiness = easiness[np.array([i for i in range(len(easiness)) if i not in ci], dtype=np.int64)]
 
             if self.shouldEstimateForFullSet is False:
-                for r in range(self.repeats):
-                    resultPriorities.append(np.array(currentDataSetIdx))
-                    probs.append(np.full(len(currentDataSetIdx), 1.0))
-                    #probs.append(curProbs / np.mean(np.array(curProbs)))
+                resultPriorities.append(np.array(currentDataSetIdx))
+                probs.append(np.full(len(currentDataSetIdx), 1.0))
 
         return resultPriorities, probs
 
@@ -219,9 +209,8 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             beta = self.betas[k]
 
             if abs(beta - 1) < 0.001:
-                for r in range(self.repeats):
-                    resultPriorities.append(np.arange(nObjects))
-                    probs.append(np.full(nObjects, 1.0 / nObjects))#todo: add logic for collecting idxes from previous iterations
+                resultPriorities.append(np.arange(nObjects))
+                probs.append(np.full(nObjects, 1.0 / nObjects))#todo: add logic for collecting idxes from previous iterations
                 break
 
             fraction = beta * alpha
@@ -241,8 +230,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             curProbs = softmax(priority[cutIdx])
 
             if self.shouldEstimateForFullSet is False:
-                for r in range(self.repeats):
-                    resultPriorities.append(np.array(cutIdx))
-                    probs.append(curProbs)
+                resultPriorities.append(np.array(cutIdx))
+                probs.append(curProbs)
 
         return resultPriorities, probs
