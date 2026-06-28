@@ -32,7 +32,7 @@ class Cifar10LearnerFactory(PyTorchCVCLLearnersFactory):
             model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
-            lr=0.05,  # классика CIFAR при bs~128
+            lr=0.1,  # классика CIFAR при bs~128
             weight_decay=5e-4,
             momentum=0.9,
             nesterov=True,
@@ -41,7 +41,7 @@ class Cifar10LearnerFactory(PyTorchCVCLLearnersFactory):
             update_epochs=parameters,
             epochs=parameters,
 
-            scheduler_name="none"  # см. комментарий выше
+            scheduler_name="cosine"  # см. комментарий выше
         )
         return cifar10_target_learner
 

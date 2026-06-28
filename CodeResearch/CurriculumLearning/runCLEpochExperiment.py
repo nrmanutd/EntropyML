@@ -16,17 +16,17 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 10
+nIterations = 5
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 5
+repeats = 15
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
-#baseLabels = ['l', 'h&i_inc']
-baseLabels = ['GraNd']
+baseLabels = ['l', 'h&i_inc']
+#baseLabels = ['GraNd']
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
 nArrays = len(baseLabels) * (len(loggingBetas))
@@ -54,7 +54,7 @@ taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'cifar100_epoch', '
 firstClasses = [-1, -1, -1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, -1, -1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(0, len(taskNames)):
+for i in range(1, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -67,9 +67,9 @@ for i in range(0, len(taskNames)):
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
         #learnerFactory = MnistCumulativeLearnerFactory(nClasses)
-        targetEpochs = 80
-        easinessEpochs = 25
-        diversityEpochs = 25
+        targetEpochs = 35
+        easinessEpochs = 20
+        diversityEpochs = 20
     elif taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
@@ -77,9 +77,9 @@ for i in range(0, len(taskNames)):
 
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
-        targetEpochs = 80
-        easinessEpochs = 25
-        diversityEpochs = 25
+        targetEpochs = 35
+        easinessEpochs = 20
+        diversityEpochs = 20
     elif taskName == 'cifar100_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
@@ -89,9 +89,9 @@ for i in range(0, len(taskNames)):
         #learnerFactory = Cifar100CachedOptimizerLearnerFactory(nClasses)
         learnerFactory = Cifar100LearnerFactory(nClasses)
         #learnerFactory = Cifar100CumulativeLearnerFactory(nClasses)
-        targetEpochs = 40
-        easinessEpochs = 15
-        diversityEpochs = 15
+        targetEpochs = 200
+        easinessEpochs = 40
+        diversityEpochs = 40
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
@@ -99,9 +99,9 @@ for i in range(0, len(taskNames)):
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
-        targetEpochs = 40
-        easinessEpochs = 15
-        diversityEpochs = 15
+        targetEpochs = 200
+        easinessEpochs = 40
+        diversityEpochs = 40
     elif taskName == 'cifar_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
@@ -110,9 +110,9 @@ for i in range(0, len(taskNames)):
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
         #learnerFactory = Cifar10CumulativeLearnerFactory(nClasses)
-        targetEpochs = 40
-        easinessEpochs = 15
-        diversityEpochs = 15
+        targetEpochs = 200
+        easinessEpochs = 40
+        diversityEpochs = 40
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
@@ -120,9 +120,9 @@ for i in range(0, len(taskNames)):
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
-        targetEpochs = 40
-        easinessEpochs = 15
-        diversityEpochs = 15
+        targetEpochs = 200
+        easinessEpochs = 40
+        diversityEpochs = 40
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
@@ -138,16 +138,16 @@ for i in range(0, len(taskNames)):
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
     #standard
-    #scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    #hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
+    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
+    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
     #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 
     #graNd
-    graNdAttempts = 10
-    graNdBatchSize = 128
-    learnerCreator = lambda: learnerFactory.createTargetLearner(targetEpochs)
-    sampler = createBaselineSamplerWithTest(x, y, xtest, ytest, graNdAttempts, betas, graNdBatchSize, "GraNd",  trainAlpha, repeats, dataProcessor, learnerCreator, logger)
+    #graNdAttempts = 10
+    #graNdBatchSize = 128
+    #learnerCreator = lambda: learnerFactory.createTargetLearner(targetEpochs)
+    #sampler = createBaselineSamplerWithTest(x, y, xtest, ytest, graNdAttempts, betas, graNdBatchSize, "GraNd",  trainAlpha, repeats, dataProcessor, learnerCreator, logger)
 
     #chain
     #hc = createLearnerHCForChain(nEasinessAttempts, logger, easinessEpochs, scoreLearnerBuilder, dataProcessor)
