@@ -16,12 +16,12 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
 datasetFraction = 1
-nIterations = 5
+nIterations = 3
 
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-repeats = 15
+repeats = 3
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
@@ -111,8 +111,8 @@ for i in range(2, len(taskNames)):
         learnerFactory = Cifar10LearnerFactory(nClasses)
         #learnerFactory = Cifar10CumulativeLearnerFactory(nClasses)
         targetEpochs = 200
-        easinessEpochs = 40
-        diversityEpochs = 40
+        easinessEpochs = 20
+        diversityEpochs = 20
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
@@ -121,8 +121,8 @@ for i in range(2, len(taskNames)):
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
         targetEpochs = 200
-        easinessEpochs = 40
-        diversityEpochs = 40
+        easinessEpochs = 20
+        diversityEpochs = 20
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
