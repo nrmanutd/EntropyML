@@ -433,7 +433,6 @@ def el2n_scores(
     device,
     *,
     num_classes=None,
-    return_indices=False,
     dtype=torch.float32,
 ):
     """
@@ -469,10 +468,7 @@ def el2n_scores(
     idx_list = []
 
     for batch in batches:
-        xb, yb, idx = _unpack_batch(batch)
-
-        if return_indices and idx is not None:
-            idx_list.append(torch.as_tensor(idx).cpu().numpy())
+        xb, yb = _unpack_batch(batch)
 
         xb = xb.to(device=device, dtype=dtype, non_blocking=True)
         yb = yb.to(device=device, dtype=torch.long, non_blocking=True)
@@ -492,13 +488,6 @@ def el2n_scores(
         scores_list.append(score.detach().cpu().numpy().astype(np.float32))
 
     scores = np.concatenate(scores_list, axis=0) if scores_list else np.empty(0, dtype=np.float32)
-
-    if return_indices:
-        if idx_list:
-            indices = np.concatenate(idx_list, axis=0)
-        else:
-            indices = np.arange(len(scores), dtype=np.int64)
-        return scores, indices
 
     return scores
 
