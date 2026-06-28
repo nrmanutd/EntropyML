@@ -57,7 +57,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     probs.append(resProbs[i])
 
             if self.useBoth:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'both')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
@@ -95,7 +95,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     probs.append(resProbs[i])
 
             if self.useBoth:
-                resIdxes, resProbs = self.calculateChainNoState(target, importances, easinesses, alpha, 'both')
+                resIdxes, resProbs = self.calculateChainNoState(target, importances, easinesses, alpha, 'easiness&importance')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
