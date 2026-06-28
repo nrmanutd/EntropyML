@@ -54,7 +54,7 @@ taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'cifar100_epoch', '
 firstClasses = [-1, -1, -1, 43, 47, 43, 70, 9, 23, 5, 3, 0]
 secondClasses = [-1, -1, -1, 87, 52, 88, 91, 10, 33, 6, 5, 8]
 
-for i in range(1, len(taskNames)):
+for i in range(2, len(taskNames)):
     taskName = taskNames[i]
     firstClass = firstClasses[i]
     secondClass = secondClasses[i]
@@ -90,8 +90,8 @@ for i in range(1, len(taskNames)):
         learnerFactory = Cifar100LearnerFactory(nClasses)
         #learnerFactory = Cifar100CumulativeLearnerFactory(nClasses)
         targetEpochs = 200
-        easinessEpochs = 40
-        diversityEpochs = 40
+        easinessEpochs = 20
+        diversityEpochs = 20
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
@@ -100,8 +100,8 @@ for i in range(1, len(taskNames)):
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
         targetEpochs = 200
-        easinessEpochs = 40
-        diversityEpochs = 40
+        easinessEpochs = 20
+        diversityEpochs = 20
     elif taskName == 'cifar_epoch' and firstClass == -1:
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
@@ -140,8 +140,8 @@ for i in range(1, len(taskNames)):
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
     hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, scoreLearnerBuilder, dataProcessor)
-    sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
-    #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    #sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
+    sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 
     #graNd
     #graNdAttempts = 10
