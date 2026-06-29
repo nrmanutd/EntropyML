@@ -36,8 +36,6 @@ alphas = np.array([1])
 fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
-hidden_sizes = (16, 16)
-dHidden_sizes = (16, 16)
 
 #x, y = make_random(nSamples)
 #x, y = datasets.make_blobs(n_samples=nSamples, centers=2, n_features=2, random_state=42)
