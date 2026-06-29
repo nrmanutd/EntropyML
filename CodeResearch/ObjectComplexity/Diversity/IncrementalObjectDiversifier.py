@@ -10,12 +10,14 @@ from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
-    cosine_to_mean_grad_head_linear_two_pass, centered_grad_norm_head_linear_two_pass_entropy_loss
+    cosine_to_mean_grad_head_linear_two_pass, centered_grad_norm_head_linear_two_pass_entropy_loss, el2n_scores, \
+    grad_norm_head_linear_one_pass
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
 class IncrementalObjectDiversifier(BaseObjectDiversifier):
-    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
+    def __init__(self, learner: TorchLearner, nAttempts: int, batchSize: int, metric: str, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
+        self.metric = metric
         self.dataTransformer = dataTransformer
         self.minimumIterations = minimumIterations
         self.logger = logger
@@ -52,7 +54,20 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
 
             batches = sampler.sample()
-            scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
+
+            if self.metric == "EL2N":
+                scores = el2n_scores(model, batches, device)
+            elif self.metric == "GradNorm":
+                scores = grad_norm_head_linear_one_pass(model, batches, device)
+            elif self.metric == 'cos':
+                scores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
+            elif self.metric == 'entropy':
+                scores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
+            else:
+                raise ValueError(f'Incorrect metric type: {self.metric}')
+
+            #todo: check if centered_grad equal to GraNd
+            #scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
             #scores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
             #scores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
 

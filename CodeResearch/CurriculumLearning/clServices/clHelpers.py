@@ -1,3 +1,4 @@
+import json
 import math
 
 import matplotlib.pyplot as plt
@@ -48,16 +49,36 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
 
     return hc
 
-def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, learnerCreator, dataProcessor):
+def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, metric, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 
     dcLearner = learnerCreator(diversityEpochs)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, 128, dataProcessor, logger))
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, 128, metric, dataProcessor, logger))
 
     return hc
+
+def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, nAttempts, dataTransformer, learnerCreator):
+    if m == 'rand':
+        return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False,
+                                            False, False)
+    if not m.contains('_inc'):
+        return BaselinesPriorityCalculator(nAttempts, betas, 128, m, dataTransformer, learnerCreator)
+
+    if m == 'h_inc':
+        return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
+                                         True, False)
+
+    if not m.contains('h&'):
+        return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True,
+                                            False, False)
+
+    return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
+                                     False, True)
+
+
 
 def createIncrementalLearnerHC(attempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
@@ -690,3 +711,129 @@ def find_ecdf_intersection_optimize(x1, y1, x2, y2):
             intersections.append(a)
 
     return intersections
+
+import json
+import re
+from pathlib import Path
+
+import numpy as np
+
+
+PRIORITIES_DIR = Path("saved_priorities")
+
+
+def _safe_filename_part(text: str, max_len: int = 120) -> str:
+    """
+    Превращает prefix в безопасную часть имени файла.
+    Например: "cifar10 alpha=0.1/seed=42" -> "cifar10_alpha_0_1_seed_42"
+    """
+    text = str(text)
+    text = re.sub(r"[^\w\-\.]+", "_", text, flags=re.UNICODE)
+    text = text.strip("_")
+    return text[:max_len] if text else "priorities"
+
+
+def _to_jsonable_array_list(arrays):
+    """
+    Конвертирует список numpy-массивов / списков в обычные Python lists.
+    """
+    return [
+        np.asarray(arr).tolist()
+        for arr in arrays
+    ]
+
+
+def savePriorities(resultPriorities, resultProbs, prefix, baseLabels, taskName):
+    """
+    Сохраняет результаты генерации приоритетов в JSON.
+
+    Parameters
+    ----------
+    resultPriorities : list[array-like]
+        Список массивов индексов объектов исходного датасета.
+
+    resultProbs : list[array-like]
+        Список массивов вероятностей. Должен совпадать по структуре
+        с resultPriorities.
+
+    prefix : str
+        Уникальная характеристика текущего набора приоритетов.
+        Также используется в имени файла.
+
+    baseLabels : array-like
+        Доли / alpha / labels, для которых рассчитывался порядок.
+
+    Returns
+    -------
+    Path
+        Путь к сохраненному JSON-файлу.
+    """
+
+    if len(resultPriorities) != len(resultProbs):
+        raise ValueError(
+            f"len(resultPriorities)={len(resultPriorities)} не совпадает "
+            f"с len(resultProbs)={len(resultProbs)}"
+        )
+
+    for i, (priorities, probs) in enumerate(zip(resultPriorities, resultProbs)):
+        if len(priorities) != len(probs):
+            raise ValueError(
+                f"Для элемента {i}: len(priorities)={len(priorities)} "
+                f"не совпадает с len(probs)={len(probs)}"
+            )
+
+    safe_prefix = _safe_filename_part(prefix)
+    file_path = f'{taskName}\\priorities_{safe_prefix}.json'
+
+    payload = {
+        "prefix": str(prefix),
+        "baseLabels": np.asarray(baseLabels).tolist(),
+        "resultPriorities": _to_jsonable_array_list(resultPriorities),
+        "resultProbs": _to_jsonable_array_list(resultProbs),
+    }
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, ensure_ascii=False, indent=2)
+
+    return file_path
+
+
+def loadPriorities(file_path):
+    """
+    Загружает ранее сохраненные приоритеты из JSON.
+
+    Parameters
+    ----------
+    file_path : str | Path
+        Путь к JSON-файлу.
+
+    Returns
+    -------
+    resultPriorities : list[np.ndarray]
+        Список массивов индексов.
+
+    resultProbs : list[np.ndarray]
+        Список массивов вероятностей.
+
+    prefix : str
+        Prefix, сохраненный внутри файла.
+    """
+
+    file_path = Path(file_path)
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        payload = json.load(f)
+
+    prefix = payload["prefix"]
+
+    resultPriorities = [
+        np.asarray(arr, dtype=np.int64)
+        for arr in payload["resultPriorities"]
+    ]
+
+    resultProbs = [
+        np.asarray(arr, dtype=np.float64)
+        for arr in payload["resultProbs"]
+    ]
+
+    return resultPriorities, resultProbs, prefix

@@ -6,7 +6,8 @@ import torch
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
 from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
-    grad_norm_head_linear_one_pass, el2n_scores
+    grad_norm_head_linear_one_pass, el2n_scores, cosine_to_mean_grad_head_linear_two_pass, \
+    centered_grad_norm_head_linear_two_pass_entropy_loss
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
@@ -39,8 +40,12 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
             batches = sampler.sample()
             if self.metric == "EL2N":
                 currentScores = el2n_scores(model, batches, device)
-            elif self.metric == "GraNd":
+            elif self.metric == "GradNorm":
                 currentScores = grad_norm_head_linear_one_pass(model, batches, device)
+            elif self.metric == 'cos':
+                currentScores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
+            elif self.metric == 'entropy':
+                currentScores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)#todo: check if the logic is correct
             else:
                 raise ValueError(f'Incorrect metric type: {self.metric}')
 
