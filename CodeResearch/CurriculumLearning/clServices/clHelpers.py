@@ -1,8 +1,7 @@
-import json
 import math
+import zipfile
 
 import matplotlib.pyplot as plt
-import numpy as np
 from scipy import interpolate
 from scipy import stats
 from sklearn.feature_selection import mutual_info_regression
@@ -10,6 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler import PredefinedWithFixedTestSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedTestSampler import RandomWithFixedTestSampler
 from CodeResearch.ObjectComplexity.Diversity.IncrementalObjectDiversifier import IncrementalObjectDiversifier
@@ -19,10 +19,11 @@ from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEn
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
-#from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
+# from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
+from CodeResearch.ObjectComplexity.InstancePriority.PredefinedPrioritizer import PredefinedPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.RepeatingPrioritizer import RepeatingPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
@@ -97,6 +98,13 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFull
     prioritizer = RepeatingPrioritizer(repeats, prioritizer)
     sampler = RandomWithFixedLengthSampler(x, y, prioritizer, 0, testAlpha)
 
+    return sampler
+
+def createPredefinedSampler(x, y, xtest, ytest, repeats, priorities, probs, logger):
+    prioritizer = PredefinedPrioritizer(priorities, probs)
+    prioritizer = RepeatingPrioritizer(repeats, prioritizer)
+
+    sampler = PredefinedWithFixedTestSampler(x, y, xtest, ytest, prioritizer, logger)
     return sampler
 
 def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
@@ -743,7 +751,7 @@ def _to_jsonable_array_list(arrays):
     ]
 
 
-def savePriorities(resultPriorities, resultProbs, prefix, baseLabels, taskName):
+def savePriorities(resultPriorities, resultProbs, prefix, baseLabels, taskName, method):
     """
     Сохраняет результаты генерации приоритетов в JSON.
 
@@ -783,48 +791,73 @@ def savePriorities(resultPriorities, resultProbs, prefix, baseLabels, taskName):
             )
 
     safe_prefix = _safe_filename_part(prefix)
-    file_path = f'{taskName}\\priorities_{safe_prefix}.json'
 
     payload = {
+        "task": str(taskName),
+        "method": str(method),
         "prefix": str(prefix),
         "baseLabels": np.asarray(baseLabels).tolist(),
         "resultPriorities": _to_jsonable_array_list(resultPriorities),
         "resultProbs": _to_jsonable_array_list(resultProbs),
     }
 
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
+    json_text = json.dumps(payload, ensure_ascii=False, indent=2)
 
-    return file_path
+    file_path = f'priorities_{safe_prefix}.json'
+    #with open(file_path, "w", encoding="utf-8") as f:
+    #    json.dump(payload, f, ensure_ascii=False, indent=2)
 
+
+    zip_path = f"{taskName}\\priorities_{safe_prefix}.zip"
+
+    with zipfile.ZipFile(
+            zip_path,
+            mode="w",
+            compression=zipfile.ZIP_DEFLATED,
+            compresslevel=9
+    ) as zf:
+        zf.writestr(file_path, json_text)
+
+    return zip_path
 
 def loadPriorities(file_path):
     """
-    Загружает ранее сохраненные приоритеты из JSON.
-
-    Parameters
-    ----------
-    file_path : str | Path
-        Путь к JSON-файлу.
+    Загружает resultPriorities, resultProbs и prefix из .json.zip файла.
 
     Returns
     -------
     resultPriorities : list[np.ndarray]
-        Список массивов индексов.
-
     resultProbs : list[np.ndarray]
-        Список массивов вероятностей.
-
     prefix : str
-        Prefix, сохраненный внутри файла.
     """
 
     file_path = Path(file_path)
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        payload = json.load(f)
+    if not file_path.exists():
+        raise FileNotFoundError(f"Файл не найден: {file_path}")
+
+    with zipfile.ZipFile(file_path, mode="r") as zf:
+        json_files = [
+            name for name in zf.namelist()
+            if name.endswith(".json")
+        ]
+
+        if len(json_files) == 0:
+            raise ValueError(f"В архиве нет JSON-файла: {file_path}")
+
+        if len(json_files) > 1:
+            raise ValueError(
+                f"В архиве найдено несколько JSON-файлов: {json_files}. "
+                f"Ожидался один файл."
+            )
+
+        with zf.open(json_files[0], mode="r") as f:
+            payload = json.loads(f.read().decode("utf-8"))
 
     prefix = payload["prefix"]
+    task = payload["task"]
+    baseLabels = payload['baseLabels']
+    method = payload['method']
 
     resultPriorities = [
         np.asarray(arr, dtype=np.int64)
@@ -836,4 +869,4 @@ def loadPriorities(file_path):
         for arr in payload["resultProbs"]
     ]
 
-    return resultPriorities, resultProbs, prefix
+    return resultPriorities, resultProbs, prefix, task, baseLabels, method
