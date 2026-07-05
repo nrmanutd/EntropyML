@@ -105,7 +105,7 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
     if m == 'rand':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False,
                                             False, False)
-    if not m.contains('_inc'):
+    if '_inc' not in m:
         scoreCalculator = createScoreCalculator(m)
         device = learnerCreator().learner.device
         return BaselinesPriorityCalculator(nAttempts, betas, batchSize, dataTransformer, scoreCalculator, device, learnerCreator)
@@ -114,7 +114,7 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
                                          True, False)
 
-    if m.contains('h&'):
+    if 'h&' in m:
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
                                          False, True)
 
@@ -129,7 +129,7 @@ def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityA
         return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
 
     metric = extractMetric(method)
-    if method.contains('_inc') and not method.contains('h&'):
+    if '_inc' in method and 'h&' not in method:
         return lambda: createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor)
 
     return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
