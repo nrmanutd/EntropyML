@@ -50,7 +50,7 @@ class EpochLearnerLogger(BaseLogger):
         for i in range(len(errors)):
             err = errors[i]
             serialize_labeled_list_of_arrays(err, [f'{k}_{labels[i]}' for k in range(len(err))], self.prefix, self.nAttempts,
-                                             f'{self.taskName}\\{self.prefix}_{labels[i]}_{self.counter}_data.txt')
+                                             f'{self.taskName}//{self.prefix}_{labels[i]}_{self.counter}_data.txt')
 
         plot_multi_errors_vs_alpha_std(errors, xAxis, labels, self.taskName, f'{self.prefix}_{self.counter}', len(self.betas))
         plot_multi_errors_vs_alpha_std(errors, xAxis, labels, self.taskName, f'{self.prefix}_5_{self.counter}', len(self.betas), 5)
