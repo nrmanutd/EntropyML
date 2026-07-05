@@ -9,8 +9,8 @@ from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalcu
 from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
-from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
-from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoostAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssessor import StandardAssessor
+from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssessor import XGBoostAssessor
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import plot_with_custom_brightness, extractData
 from CodeResearch.dataSets import load_proteins, generate_lin_reg_dataset
 
@@ -31,7 +31,7 @@ np.random.seed(42)
 #plot_with_custom_brightness(x, y, e1, title='Easiness1')
 #plot_with_custom_brightness(x, y, i1, title='Importance1')
 
-assesor = StandardAssesor()
+assesor = StandardAssessor()
 #assesor = XGBoostAssesor()
 #hc2 = LearnerBasedHardnessCalculator(KSLearner(KSMetric(), logger), assesor, nAttempts, alpha, logger)
 hc2 = LearnerBasedHardnessCalculator(XGBoostLearner(), assesor, nAttempts, alpha, logger)

@@ -1,11 +1,11 @@
-import shap
 import numpy as np
-from xgboost import XGBClassifier, XGBRegressor
+import shap
+from xgboost import XGBRegressor
 
-from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssessor import StandardAssessor
 
 
-class XGBoostAssesor(StandardAssesor):
+class XGBoostAssessor(StandardAssessor):
     def estimateImportance(self, trainIdxes, testIdxes, testResponds, target):
         totalObjects = len(target)
         totalAttempts = len(trainIdxes)

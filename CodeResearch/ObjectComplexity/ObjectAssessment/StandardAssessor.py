@@ -1,8 +1,8 @@
 import numpy as np
 
-from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssessor import BaseObjectAssessor
 
-class StandardAssesor(BaseObjectAssesor):
+class StandardAssessor(BaseObjectAssessor):
     def estimate(self, trainIdxes, testIdxes, testResponds, target):
         easiness = self.estimateEasiness(trainIdxes, testIdxes, testResponds, target)
         importance = self.estimateImportance(trainIdxes, testIdxes, testResponds, target)
@@ -18,8 +18,6 @@ class StandardAssesor(BaseObjectAssesor):
 
         objectsCorrect = np.zeros(totalObjects)
         objectsUsed = np.zeros(totalObjects)
-
-        easinessList = []
 
         for i in range(totalAttempts):
             curTestIdx = testIdxes[i]

@@ -11,10 +11,10 @@ from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner
     DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
-from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssesor import BaseObjectAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment.BaseObjectAssessor import BaseObjectAssessor
 
 class LearnerBasedHardnessCalculator(BaseHardnessCalculator):
-    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssesor, nAttempts, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
+    def __init__(self, learner: BaseLearner, assesor: BaseObjectAssessor, nAttempts, dataTransformer: BaseDataProcessor, logger: BaseLogger, minimumIterations: int = 2):
         self.dataTransformer = dataTransformer
         self.minimumIterations = minimumIterations
         self.logger = logger

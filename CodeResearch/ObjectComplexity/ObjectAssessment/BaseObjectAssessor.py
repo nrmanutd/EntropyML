@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class BaseObjectAssesor(ABC):
+class BaseObjectAssessor(ABC):
     @abstractmethod
     def estimate(self, trainIdxes, testIdxes, testResponds, target):
         pass

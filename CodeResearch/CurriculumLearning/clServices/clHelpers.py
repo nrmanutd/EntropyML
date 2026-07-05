@@ -22,6 +22,7 @@ from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEn
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.StubHardnessCalculator import StubHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.PredefinedPrioritizer import PredefinedPrioritizer
@@ -65,26 +66,41 @@ def extractMetric(s):
 
     return s[start + 1:end]
 
+
 def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
+
     if method == 'h_inc':
         return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
 
     metric = extractMetric(method)
+    if method.contains('_inc') and not method.contains('h&'):
+        return lambda: createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor)
+
     return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
                                                              diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
                                                              dataProcessor)
 
 def createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
-    a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
+    a = HardnessFactory.createAssesor(AssesorEnum.EasinessOnly)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 
     return hc
 
+def createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor):
+    hc = StubHardnessCalculator()
+    dcLearner = learnerCreator(diversityEpochs)
+    scoreCalculator = createScoreCalculator(metric)
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts,
+                                                                                     batchSize, scoreCalculator,
+                                                                                     dataProcessor, logger))
+
+    return hc
+
 def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
-    a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
+    a = HardnessFactory.createAssesor(AssesorEnum.EasinessOnly)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 

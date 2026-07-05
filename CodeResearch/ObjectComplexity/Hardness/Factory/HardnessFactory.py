@@ -8,9 +8,10 @@ from CodeResearch.ObjectComplexity.Hardness import BaseHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.ExpandingDatasetHardnessCalculator import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory import LearnerEnum, AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
-from CodeResearch.ObjectComplexity.ObjectAssessment import BaseObjectAssesor
-from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssesor import StandardAssesor
-from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssesor import XGBoostAssesor
+from CodeResearch.ObjectComplexity.ObjectAssessment import BaseObjectAssessor
+from CodeResearch.ObjectComplexity.ObjectAssessment.EasinessOnlyAssessor import EasinessOnlyAssessor
+from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssessor import StandardAssessor
+from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssessor import XGBoostAssessor
 
 
 class HardnessFactory:
@@ -49,11 +50,14 @@ class HardnessFactory:
         raise ValueError(f'Unsupported type of learner: {learner}')
 
     @staticmethod
-    def createAssesor(assesor: AssesorEnum.AssesorEnum) -> BaseObjectAssesor.BaseObjectAssesor:
+    def createAssesor(assesor: AssesorEnum.AssesorEnum) -> BaseObjectAssessor.BaseObjectAssessor:
         if assesor == AssesorEnum.AssesorEnum.Standard:
-            return StandardAssesor()
+            return StandardAssessor()
 
         if assesor == AssesorEnum.AssesorEnum.ShapXGBoost:
-            return XGBoostAssesor()
+            return XGBoostAssessor()
+
+        if assesor == AssesorEnum.AssesorEnum.EasinessOnly:
+            return EasinessOnlyAssessor()
 
         raise ValueError(f'Unsupported type of learner: {assesor}')
