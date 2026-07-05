@@ -1,6 +1,5 @@
 import numpy as np
 
-from CodeResearch.CurriculumLearning.clServices.BaselineModelsContainer import BaselineModelsContainer
 from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
