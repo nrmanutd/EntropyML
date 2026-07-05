@@ -27,8 +27,8 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
-taskNames = ['mnist_epoch']
+taskNames = ['cifar_epoch', 'cifar100_epoch']
+#taskNames = ['mnist_epoch']
 firstClasses = [-1, -1, -1]
 secondClasses = [-1, -1, -1]
 
