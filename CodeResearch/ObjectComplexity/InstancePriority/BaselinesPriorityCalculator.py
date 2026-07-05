@@ -3,6 +3,7 @@ import math
 import numpy as np
 import torch
 
+from CodeResearch.Helpers.Logger.BaseLogger import BaseLogger
 from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
 from CodeResearch.LearningFramework.NeuralNetwork.BaseScoreCalculator import BaseScoreCalculator
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
@@ -11,7 +12,8 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class BaselinesPriorityCalculator(BasePriorityCalculator):
-    def __init__(self, nAttempts: int, betas, batchSize: int, dataTransformer: BaseDataProcessor, scoreCalculator:BaseScoreCalculator, device, learnerCreator=None):
+    def __init__(self, nAttempts: int, betas, batchSize: int, dataTransformer: BaseDataProcessor, scoreCalculator:BaseScoreCalculator, device, logger: BaseLogger, learnerCreator=None):
+        self.logger = logger
         self.device = device
         self.scoreCalculator = scoreCalculator
         self.dataTransformer = dataTransformer
@@ -31,11 +33,15 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
 
         scores = np.zeros(len(target), dtype=np.float32)
         for i in range(self.nAttempts):
+            self.logger.logDebug(f'Training baseline model {i}/{self.nAttempts}...')
             learner = self.learnerCreator()
             model = learner.train(dataSet, target, np.full(len(target), 1.0 / len(target)))
 
+            self.logger.logDebug(f'Trained model, now sampling...')
             batches = sampler.sample()
+            self.logger.logDebug(f'Sampled, now calculating scores...')
             currentScores = self.scoreCalculator.calculateScore(model, batches, self.device)
+            self.logger.logDebug(f'Finished calculating scores.')
 
             scores += np.asarray(currentScores, dtype=np.float32)
 
