@@ -9,17 +9,18 @@ from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.GradNormScoreCalculator import GradNormScoreCalculator
 from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler import PredefinedWithFixedTestSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedTestSampler import RandomWithFixedTestSampler
 from CodeResearch.ObjectComplexity.Diversity.IncrementalObjectDiversifier import IncrementalObjectDiversifier
-from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
-from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
-# from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
@@ -27,13 +28,6 @@ from CodeResearch.ObjectComplexity.InstancePriority.PredefinedPrioritizer import
 from CodeResearch.ObjectComplexity.InstancePriority.RepeatingPrioritizer import RepeatingPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.multiPrioritiesCalculator import MultiPrioritiesCalculator
 
-
-def createKSHardnessCalculator(nAttempts, fraction):
-    hc = KSHardnessCalculator(nAttempts, fraction)
-    hc = ExpandingDatasetHardnessCalculator.ExpandingDatasetHardnessCalculator(hc)
-    hc = HardnessCorrector(hc)
-
-    return hc
 
 def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses, epochs, hidden_sizes, dAttempts, dbatchSize, dEpochs, dHidden_sizes, isLearnerBased: bool):
     l = TorchMLPLearner(input_dim=nFeatures, num_classes=nClasses, hidden_sizes=hidden_sizes, epochs=epochs, update_epochs=dEpochs)
@@ -50,41 +44,73 @@ def createLearnerBasedHardnessCalculator(nAttempts, logger, nFeatures, nClasses,
 
     return hc
 
-def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, metric, learnerCreator, dataProcessor):
+def createScoreCalculator(metric: str):
+    if metric == "EL2N":
+        return EL2NScoreCalculator()
+    elif metric == "GradNorm":
+        return GradNormScoreCalculator()
+    elif metric == 'cos':
+        return CosDistanceScoreCalculator()
+    elif metric == 'entropy':
+        return EntropyScoreCalculator()
+    else:
+        raise ValueError(f'Incorrect metric type: {metric}')
+
+def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
+    if method == 'h_inc':
+        return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
+
+    metric = method.split('&')[1].split('_')[0]
+    return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
+                                                             diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
+                                                             dataProcessor)
+
+def createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
+    l = learnerCreator(easinessEpochs)
+    a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
+
+    hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
+
+    return hc
+
+def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.ShapXGBoost)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 
     dcLearner = learnerCreator(diversityEpochs)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, 128, metric, dataProcessor, logger))
+    scoreCalculator = createScoreCalculator(metric)
+    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, batchSize, scoreCalculator, dataProcessor, logger))
 
     return hc
 
-def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, nAttempts, dataTransformer, learnerCreator):
+def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, nAttempts, batchSize, dataTransformer, learnerCreator):
     if m == 'rand':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False,
                                             False, False)
     if not m.contains('_inc'):
-        return BaselinesPriorityCalculator(nAttempts, betas, 128, m, dataTransformer, learnerCreator)
+        scoreCalculator = createScoreCalculator(m)
+        device = learnerCreator().learner.device
+        return BaselinesPriorityCalculator(nAttempts, betas, batchSize, dataTransformer, scoreCalculator, device, learnerCreator)
 
     if m == 'h_inc':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
                                          True, False)
 
-    if not m.contains('h&'):
-        return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True,
+    if m.contains('h&'):
+        return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
+                                         False, True)
+
+    return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True,
                                             False, False)
-
-    return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
-                                     False, True)
-
 
 
 def createIncrementalLearnerHC(attempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
     hc = IncrementalHardnessCalculator(l, attempts, 128, dataProcessor, logger)
     return hc
+
 
 def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
@@ -93,6 +119,7 @@ def createLearnerHCForChain(easinessAttempts, logger, easinessEpochs, learnerCre
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
     return hc
 
+
 def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
     prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False, False, True)
     prioritizer = RepeatingPrioritizer(repeats, prioritizer)
@@ -100,12 +127,14 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFull
 
     return sampler
 
+
 def createPredefinedSampler(x, y, xtest, ytest, repeats, priorities, probs, logger):
     prioritizer = PredefinedPrioritizer(priorities, probs)
     prioritizer = RepeatingPrioritizer(repeats, prioritizer)
 
     sampler = PredefinedWithFixedTestSampler(x, y, xtest, ytest, prioritizer, logger)
     return sampler
+
 
 def createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger):
     prioritizer = MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False, False, True)

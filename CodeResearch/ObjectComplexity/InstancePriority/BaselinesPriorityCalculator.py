@@ -3,32 +3,29 @@ import math
 import numpy as np
 import torch
 
-from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
-from CodeResearch.ObjectComplexity.Diversity.DiversifierHelpers import centered_grad_norm_head_linear_two_pass, \
-    grad_norm_head_linear_one_pass, el2n_scores, cosine_to_mean_grad_head_linear_two_pass, \
-    centered_grad_norm_head_linear_two_pass_entropy_loss
+from CodeResearch.LearningFramework.NeuralNetwork.BaseScoreCalculator import BaseScoreCalculator
+from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
 from CodeResearch.ObjectComplexity.InstancePriority.basePriorityCalculator import BasePriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
 
 class BaselinesPriorityCalculator(BasePriorityCalculator):
-    def __init__(self, nAttempts: int, betas, batchSize: int, metric: str, dataTransformer: BaseDataProcessor, learnerCreator=None):
+    def __init__(self, nAttempts: int, betas, batchSize: int, dataTransformer: BaseDataProcessor, scoreCalculator:BaseScoreCalculator, device, learnerCreator=None):
+        self.device = device
+        self.scoreCalculator = scoreCalculator
         self.dataTransformer = dataTransformer
-        self.metric = metric
         self.nAttempts = nAttempts
         self.betas = betas
         self.batchSize = batchSize
         self.learnerCreator = learnerCreator
 
     def calculatePriority(self, dataSet, target):
-
         p = self.dataTransformer.estimateDataTransformationParameters(dataSet, target)
         ds, t = self.dataTransformer.applyParametersToData(dataSet, target, p)
 
-        device = self.learnerCreator().learner.device
-        xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
-        yb = torch.as_tensor(t, dtype=torch.int64, device=device)
+        xb = torch.as_tensor(ds, dtype=torch.float32, device=self.device)
+        yb = torch.as_tensor(t, dtype=torch.int64, device=self.device)
         
         sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
 
@@ -38,16 +35,7 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
             model = learner.train(dataSet, target, np.full(len(target), 1.0 / len(target)))
 
             batches = sampler.sample()
-            if self.metric == "EL2N":
-                currentScores = el2n_scores(model, batches, device)
-            elif self.metric == "GradNorm":
-                currentScores = grad_norm_head_linear_one_pass(model, batches, device)
-            elif self.metric == 'cos':
-                currentScores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
-            elif self.metric == 'entropy':
-                currentScores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)#todo: check if the logic is correct
-            else:
-                raise ValueError(f'Incorrect metric type: {self.metric}')
+            currentScores = self.scoreCalculator.calculateScore(model, batches, self.device)
 
             scores += np.asarray(currentScores, dtype=np.float32)
 

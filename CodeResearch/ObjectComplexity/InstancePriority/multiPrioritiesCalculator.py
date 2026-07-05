@@ -57,7 +57,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
                     probs.append(resProbs[i])
 
             if self.useBoth:
-                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance')
+                resIdxes, resProbs = self.calculateChain(dataSet, target, alpha, 'easiness&importance', firstBetaPriorityType='easiness')
 
                 for i in range(len(resIdxes)):
                     resultPriorities.append(resIdxes[i])
@@ -140,8 +140,7 @@ class MultiPrioritiesCalculator(BasePriorityCalculator):
             restIdx = np.array([i for i in range(nObjects) if i not in ci], dtype=np.int64)
             fraction = deltaBeta * alpha * nObjects / len(restIdx)
 
-            shouldUseLearnerBased = True if k == 0 else False
-            hc = self.hcBuilder(shouldUseLearnerBased)
+            hc = self.hcBuilder()
 
             importance, easiness = hc.calculateHardness(dataSet[restIdx], target[restIdx],
                                                              dataSet[currentIdx], target[currentIdx], fraction)

@@ -4,7 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createSampler, createSamplerWithTest
+    createLearnerHC, filterDataSetByFraction, createSampler, createSamplerWithTest, createScoreCalculator
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
@@ -27,6 +27,7 @@ shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
 nArrays = len(baseLabels) * (len(loggingBetas))
 
+batchSize = 128
 nSamples = 2000
 alphas = np.array([1])
 fraction = 0.5
@@ -133,7 +134,8 @@ for i in range(2, len(taskNames)):
 
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
-    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, 'GradNorm', scoreLearnerBuilder, dataProcessor)
+    scoreCalculator = createScoreCalculator('GradNorm')
+    hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, scoreCalculator, scoreLearnerBuilder, dataProcessor)
     sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
     #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 

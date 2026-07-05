@@ -4,7 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createPrioritizer, savePriorities
+    createLearnerHC, filterDataSetByFraction, createPrioritizer, savePriorities, createHCBuilder
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
@@ -14,12 +14,11 @@ nIterations = 3
 nEasinessAttempts = 50
 diversityAttempts = 30
 
-#betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
+batchSize = 128
 
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
-
 
 nSamples = 2000
 alphas = np.array([1])
@@ -107,23 +106,24 @@ for i in range(0, len(taskNames)):
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 
-    for m in methods_to_iterate:
-        logger.logDebug(f'Generating priorities for method {m}, task {taskName}...')
+    for method in methods_to_iterate:
+        logger.logDebug(f'Generating priorities for method {method}, task {taskName}...')
 
-        prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{m}_{noincrementEpochs}_{noincrementAttempts}_NN'
-        hcBuilder = lambda shouldUseLearner: createLearnerHC(nEasinessAttempts, logger, easinessEpochs,
-                                                             diversityAttempts, diversityEpochs, m, scoreLearnerBuilder,
-                                                             dataProcessor)
-        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, noincrementAttempts, dataProcessor, targetLearnerCreator)
+        prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{method}_{noincrementEpochs}_{noincrementAttempts}_NN'
+
+        hcBuilder = createHCBuilder(method, nEasinessAttempts, logger, easinessEpochs,
+                                                             diversityAttempts, diversityEpochs, batchSize, scoreLearnerBuilder, dataProcessor)
+
+        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, method, noincrementAttempts, batchSize, dataProcessor, targetLearnerCreator)
 
         for i in range(nIterations):
-            logger.logDebug(f'Calculating priorities for metric {m}, iteration # {i} ({nIterations})')
+            logger.logDebug(f'Calculating priorities for metric {method}, iteration # {i} ({nIterations})')
             pp, pprobs = prioritizer.calculatePriority(x, y)
 
             for k in range(len(pp)):
                 resultPriorities.append(pp[k])
                 resultProbs.append(pprobs[k])
 
-            logger.logDebug(f'Finished calculating priorities for metric {m}, task {taskName}, iteration #{i}')
-            savePriorities(resultPriorities, resultProbs, prefix, betas, taskName, m)
+            logger.logDebug(f'Finished calculating priorities for metric {method}, task {taskName}, iteration #{i}')
+            savePriorities(resultPriorities, resultProbs, prefix, betas, taskName, method)
             logger.logDebug(f'Saved priorities')
