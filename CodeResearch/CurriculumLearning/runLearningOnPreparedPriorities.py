@@ -15,7 +15,7 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch
 
 folder = 'mnist_epoch'
-repeats = 1
+repeats = 5
 
 currentFolder = Path(folder)
 files = sorted(currentFolder.glob('*.zip'))
