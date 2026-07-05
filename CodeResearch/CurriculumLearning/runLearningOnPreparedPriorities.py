@@ -32,7 +32,7 @@ for file in files:
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
 
-        targetEpochs = 100
+        targetEpochs = 60
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
