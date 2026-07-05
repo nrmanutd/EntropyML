@@ -24,7 +24,7 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
         self.learnerCreator = learnerCreator
         self.trainedModelsIteratorIdx = 0
 
-        if len(trainedModelsList) != 0 and len(trainedModelsList) != nAttempts:
+        if len(trainedModelsList) != 0 and len(trainedModelsList) % nAttempts != 0:
             raise ValueError(f'Incorrect trainedModelsList length: got {len(trainedModelsList)} and nAttempts={nAttempts}')
 
     def calculatePriority(self, dataSet, target):
