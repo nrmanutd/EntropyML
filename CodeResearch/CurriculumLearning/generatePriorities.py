@@ -8,7 +8,7 @@ from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, 
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.05
+datasetFraction = 1
 nIterations = 3
 
 nEasinessAttempts = 50
