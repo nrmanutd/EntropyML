@@ -682,16 +682,32 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
     """
     batches: итератор по батчам, возвращает (xb, yb, idx) или (xb, yb)
             важно: порядок в pass1 и pass2 должен совпадать.
-    Возвращает scores numpy [N] для centered_grad_norm по голове (W и bias).
+
+    Возвращает:
+        scores numpy [N]
+
+    Смысл score:
+        score_i = ||grad_i|| * max_c softmax(logits_i)[c]
+
+    где:
+        ||grad_i|| — норма градиента CE loss по линейной голове model.head
+                    для истинной метки y_i;
+
+        max_c softmax(logits_i)[c] — вероятность лучшего класса по версии модели,
+                                     то есть confidence самой модели.
+
+    Важно:
+    - batches должен быть перезапускаемым, потому что функция проходит по нему два раза.
+    - Фактически centered-часть в текущей реализации отключена:
+      mean_M / mean_g не считаются, используется обычная per-object grad norm.
     """
     model.eval()
+
     head = model.head
     if not isinstance(head, nn.Linear):
         raise TypeError("Works only for model.head = nn.Linear(H, C)")
 
-    # ---------- PASS 1: считаем средний градиент по W и по bias ----------
-    sum_M = None          # [C, H]
-    sum_g = None          # [C] (для bias)
+    # ---------- PASS 1: считаем только общее число объектов ----------
     n_total = 0
 
     for batch in batches:
@@ -701,45 +717,13 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
             xb, yb = batch
 
         n_total += len(yb)
-        continue
 
-        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
-        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
-
-        feat = model.features(xb)
-        feat = model.pool(feat).flatten(1)          # [B, H]
-        logits = head(feat)                         # [B, C]
-
-        g = torch.softmax(logits, dim=1)            # [B, C]
-        g[torch.arange(g.size(0), device=device), yb] -= 1.0  # p - onehot
-
-        # sum_M += g^T @ feat  (это сумма outer по всем объектам батча)
-        # g: [B,C], feat:[B,H] -> (g.T @ feat): [C,H]
-        M_batch = g.transpose(0, 1) @ feat          # [C, H]
-
-        if sum_M is None:
-            sum_M = M_batch
-            sum_g = g.sum(dim=0)                    # [C]
-        else:
-            sum_M += M_batch
-            sum_g += g.sum(dim=0)
-
-        n_total += g.size(0)
-
-        # освобождение временных
-        del xb, yb, feat, logits, g, M_batch
-
-    #mean_M = sum_M / max(n_total, 1)                # [C, H]
-    #mean_g = sum_g / max(n_total, 1)                # [C]  (для bias)
-    #norm_mean_M2 = (mean_M * mean_M).sum()          # скаляр
-    #norm_mean_g2 = (mean_g * mean_g).sum()          # скаляр
-
-    # ---------- PASS 2: считаем scores без materialize grad_W ----------
+    # ---------- PASS 2: считаем grad norm * model confidence ----------
     scores = np.empty(n_total, dtype=np.float32)
-    pos = 0
-    loss_all = np.empty(n_total, dtype=np.float32)
+    confidence_all = np.empty(n_total, dtype=np.float32)
 
-    # важно: batches должен быть "перезапускаемым" (или заранее сохранён список батчей)
+    pos = 0
+
     for batch in batches:
         if len(batch) == 3:
             xb, yb, _idx = batch
@@ -753,50 +737,39 @@ def centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
         feat = model.pool(feat).flatten(1)          # [B, H]
         logits = head(feat)                         # [B, C]
 
-        #loss_i = F.cross_entropy(logits, yb, reduction='none')
-        #loss_i = entropy_from_logits(logits)
-        #loss_i = easiness_from_logits(logits, yb)
-        loss_i = (torch.argmax(logits, dim=1) == yb).to(torch.int64)
+        probs = torch.softmax(logits, dim=1)        # [B, C]
 
-        g = torch.softmax(logits, dim=1)            # [B, C]
+        # Вероятность лучшего класса по версии модели:
+        # max_c p(c | x)
+        best_prob = probs.max(dim=1).values         # [B]
+
+        # Градиент CE loss по logits:
+        # g = p - onehot(y)
+        g = probs.clone()
         g[torch.arange(g.size(0), device=device), yb] -= 1.0
 
-        # ||outer||_F^2 = ||g||^2 * ||feat||^2
+        # ||grad_W||_F^2 = ||g||^2 * ||feat||^2
         g2 = (g * g).sum(dim=1)                     # [B]
         f2 = (feat * feat).sum(dim=1)               # [B]
-        norm_outer2 = g2 * f2                       # [B]
+        score2 = g2 * f2                            # [B]
 
-        # <outer, mean_M> = g^T (mean_M feat)
-        #Mf = feat @ mean_M.t()                      # [B, C]  (feat:[B,H], mean_M^T:[H,C])
-        #inner = (g * Mf).sum(dim=1)                 # [B]
-
-        # centered norm по W
-        score2 = norm_outer2# + norm_mean_M2 - 2.0 * inner  # [B]
-
-        # если учитываем bias: grad_b = g
-        # centered bias term: ||g - mean_g||^2 = ||g||^2 + ||mean_g||^2 - 2 g·mean_g
+        # Если есть bias: ||grad_b||^2 = ||g||^2
         if head.bias is not None:
-            #inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)   # [B]
-            score2 = score2 + g2# + norm_mean_g2 - 2.0 * inner_b
+            score2 = score2 + g2
 
-        score = torch.sqrt(torch.clamp(score2, min=0.0))      # [B]
+        grad_norm = torch.sqrt(torch.clamp(score2, min=0.0))  # [B]
 
-        bsz = score.numel()
-        scores[pos:pos+bsz] = score.detach().cpu().numpy()
-        loss_all[pos:pos+bsz] = loss_i.cpu().numpy()
+        bsz = grad_norm.numel()
+
+        scores[pos:pos + bsz] = grad_norm.detach().cpu().numpy().astype(np.float32)
+        confidence_all[pos:pos + bsz] = best_prob.detach().cpu().numpy().astype(np.float32)
+
         pos += bsz
 
-        del xb, yb, feat, logits, g, g2, f2, norm_outer2, score2, score, loss_i#, Mf, inner,
+        del xb, yb, feat, logits, probs, best_prob, g
+        del g2, f2, score2, grad_norm
 
-    #for logits entropy
-    #easiness = 1 - loss_all
-
-    #for cross entropy
-    #easiness = np.exp(-loss_all)
-
-    easiness = loss_all
-
-    return scores * easiness
+    return scores * confidence_all
 
 def entropy_from_logits(logits: torch.Tensor) -> torch.Tensor:
     B, C = logits.shape
