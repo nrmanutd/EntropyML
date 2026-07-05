@@ -1,5 +1,6 @@
 import numpy as np
 
+from CodeResearch.CurriculumLearning.clServices.BaselineModelsContainer import BaselineModelsContainer
 from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
@@ -104,6 +105,7 @@ for i in range(0, len(taskNames)):
 
     methods_to_iterate = methods
     #methods_to_iterate = ['rand']
+    BaselineModelsContainer.TrainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 

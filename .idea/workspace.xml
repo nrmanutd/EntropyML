@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="fixed logic">
-      <change afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clServices/BaselineModelsContainer.py" afterDir="false" />
+    <list default="true" id="123a028b-1dd8-4929-9348-98e7e6fab559" name="Changes" comment="added models cache for baseline calculator">
       <change beforePath="$PROJECT_DIR$/.idea/Science.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Science.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/BaselinesPriorityCalculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/ObjectComplexity/InstancePriority/BaselinesPriorityCalculator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clServices/clHelpers.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/clServices/clHelpers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/generatePriorities.py" beforeDir="false" afterPath="$PROJECT_DIR$/CodeResearch/CurriculumLearning/generatePriorities.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,29 +50,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.multiPrioritiesCalculator.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runCLEpochExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runCLExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runProteinsExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runProteinsHardnessCalculationExample.executor&quot;: &quot;Run&quot;,
-    &quot;Python.runShapExperiment.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showLogsWithProcessing.executor&quot;: &quot;Run&quot;,
-    &quot;Python.showSignificantDeltas.executor&quot;: &quot;Run&quot;,
-    &quot;Python.visualizeComplexity.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.generatePriorities.executor": "Run",
+    "Python.multiPrioritiesCalculator.executor": "Run",
+    "Python.runCLEpochExperiment.executor": "Run",
+    "Python.runCLExperiment.executor": "Run",
+    "Python.runProteinsExperiment.executor": "Run",
+    "Python.runProteinsHardnessCalculationExample.executor": "Run",
+    "Python.runShapExperiment.executor": "Run",
+    "Python.showLogsWithProcessing.executor": "Run",
+    "Python.showSignificantDeltas.executor": "Run",
+    "Python.visualizeComplexity.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;module&quot;,
-      &quot;repository&quot;
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
     ]
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -88,14 +89,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1759219386538</updated>
-    </task>
-    <task id="LOCAL-00058" summary="added chain logic">
-      <option name="closed" value="true" />
-      <created>1768426242074</created>
-      <option name="number" value="00058" />
-      <option name="presentableId" value="LOCAL-00058" />
-      <option name="project" value="LOCAL" />
-      <updated>1768426242074</updated>
     </task>
     <task id="LOCAL-00059" summary="tested chain logic">
       <option name="closed" value="true" />
@@ -481,7 +474,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782675404422</updated>
     </task>
-    <option name="localTasksCounter" value="107" />
+    <task id="LOCAL-00107" summary="added models cache for baseline calculator">
+      <option name="closed" value="true" />
+      <created>1783271534362</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1783271534362</updated>
+    </task>
+    <option name="localTasksCounter" value="108" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -509,7 +510,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed chain logic" />
     <MESSAGE value="fixed chain logic - update changed to train" />
     <MESSAGE value="changed to entropy" />
     <MESSAGE value="changed to true probability" />
@@ -534,7 +534,8 @@
     <MESSAGE value="refactored repeating" />
     <MESSAGE value="added EL2N and GraNd" />
     <MESSAGE value="fixed logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed logic" />
+    <MESSAGE value="added models cache for baseline calculator" />
+    <option name="LAST_COMMIT_MESSAGE" value="added models cache for baseline calculator" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
