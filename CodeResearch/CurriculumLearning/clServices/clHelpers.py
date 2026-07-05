@@ -56,11 +56,20 @@ def createScoreCalculator(metric: str):
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 
+def extractMetric(s):
+    start = s.find('&')
+
+    end = s.find('_', start + 1)
+    if end == -1:
+        end = len(s)
+
+    return s[start + 1:end]
+
 def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
     if method == 'h_inc':
         return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
 
-    metric = method.split('&')[1].split('_')[0]
+    metric = extractMetric(method)
     return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
                                                              diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
                                                              dataProcessor)

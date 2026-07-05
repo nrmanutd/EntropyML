@@ -29,8 +29,7 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         importance = np.zeros(len(t))
 
         if baseDataSet is None or len(baseTarget) == 0:
-            return importance
-            #raise ValueError('Incremental hardness calculator shouldnt be used with empty baseDataSet ')
+            raise ValueError('Incremental hardness calculator shouldnt be used with empty baseDataSet ')
 
         p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
         learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
