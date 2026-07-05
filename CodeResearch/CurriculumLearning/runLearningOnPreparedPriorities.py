@@ -14,7 +14,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch
 
-datasetFraction = 0.05
+datasetFraction = 1
 folder = 'mnist_epoch'
 repeats = 5
 
