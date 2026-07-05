@@ -66,9 +66,6 @@ for i in range(0, len(taskNames)):
     dataProcessor = learnerFactory.getDataPreprocessor()
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
 
-    resultPriorities = []
-    resultProbs = []
-
     methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e']
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
@@ -85,6 +82,9 @@ for i in range(0, len(taskNames)):
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 
     for method in methods_to_iterate:
+        resultPriorities = []
+        resultProbs = []
+
         logger.logDebug(f'Generating priorities for method {method}, task {taskName}...')
 
         prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{method}_{noincrementEpochs}_{noincrementAttempts}_NN'
