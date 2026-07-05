@@ -14,6 +14,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch
 
+datasetFraction = 0.05
 folder = 'mnist_epoch'
 repeats = 5
 
@@ -25,17 +26,17 @@ for file in files:
 
     if taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, 1)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, 1)
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
 
-        targetEpochs = 35
+        targetEpochs = 100
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSetByFraction(x, y, 1)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, 1)
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
@@ -43,8 +44,8 @@ for file in files:
         targetEpochs = 200
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
-        x, y = filterDataSetByFraction(x, y, 1)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, 1)
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
