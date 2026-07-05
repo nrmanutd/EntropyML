@@ -867,7 +867,7 @@ def savePriorities(resultPriorities, resultProbs, prefix, baseLabels, taskName, 
     #    json.dump(payload, f, ensure_ascii=False, indent=2)
 
 
-    zip_path = f"{taskName}\\priorities_{safe_prefix}.zip"
+    zip_path = f"{taskName}//priorities_{safe_prefix}.zip"
 
     with zipfile.ZipFile(
             zip_path,
