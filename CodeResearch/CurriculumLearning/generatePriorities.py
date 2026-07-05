@@ -9,7 +9,7 @@ from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, 
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.05
 nIterations = 3
 
 nEasinessAttempts = 50
@@ -27,60 +27,38 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['cifar_epoch', 'cifar100_epoch']
+taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
 #taskNames = ['mnist_epoch']
-firstClasses = [-1, -1, -1]
-secondClasses = [-1, -1, -1]
 
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
     taskName = taskNames[i]
-    firstClass = firstClasses[i]
-    secondClass = secondClasses[i]
 
-    if taskName == 'mnist_epoch' and firstClass == -1:
+    if taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
-    elif taskName == 'mnist_epoch':
-        x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
-
-        nClasses = len(np.unique(y))
-        learnerFactory = MnistLearnerFactory(nClasses)
-    elif taskName == 'cifar100_epoch' and firstClass == -1:
-        x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
-
-        nClasses = len(np.unique(y))
-        learnerFactory = Cifar100LearnerFactory(nClasses)
+        noincrementEpochs = 20
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
+        x, y = filterDataSetByFraction(x, y, datasetFraction)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
-    elif taskName == 'cifar_epoch' and firstClass == -1:
+        noincrementEpochs = 40
+    elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction)
         xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
-    elif taskName == 'cifar_epoch':
-        x, y, xtest, ytest = loadCifar10_torch()
-        x, y = filterDataSet(x, y, datasetFraction, firstClass, secondClass)
-        xtest, ytest = filterDataSet(xtest, ytest, datasetFraction, firstClass, secondClass)
-
-        nClasses = len(np.unique(y))
-        learnerFactory = Cifar10LearnerFactory(nClasses)
+        noincrementEpochs = 40
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
@@ -96,7 +74,6 @@ for i in range(0, len(taskNames)):
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
 
-    noincrementEpochs = 40
     noincrementAttempts = 10
     easinessEpochs = 20
     diversityEpochs = 20
@@ -104,8 +81,7 @@ for i in range(0, len(taskNames)):
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
     methods_to_iterate = methods
-    #methods_to_iterate = ['rand']
-    BaselineModelsContainer.TrainedModelsList = []
+    trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 
@@ -117,7 +93,7 @@ for i in range(0, len(taskNames)):
         hcBuilder = createHCBuilder(method, nEasinessAttempts, logger, easinessEpochs,
                                                              diversityAttempts, diversityEpochs, batchSize, scoreLearnerBuilder, dataProcessor)
 
-        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, method, noincrementAttempts, batchSize, dataProcessor, targetLearnerCreator)
+        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, method, noincrementAttempts, batchSize, dataProcessor, targetLearnerCreator, trainedModelsList)
 
         for i in range(nIterations):
             logger.logDebug(f'Calculating priorities for metric {method}, iteration # {i} ({nIterations})')

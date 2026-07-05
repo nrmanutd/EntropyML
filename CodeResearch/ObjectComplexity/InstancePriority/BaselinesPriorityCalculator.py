@@ -22,6 +22,7 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
         self.betas = betas
         self.batchSize = batchSize
         self.learnerCreator = learnerCreator
+        self.trainedModelsIteratorIdx = 0
 
         if len(trainedModelsList) != 0 and len(trainedModelsList) != nAttempts:
             raise ValueError(f'Incorrect trainedModelsList length: got {len(trainedModelsList)} and nAttempts={nAttempts}')
@@ -39,15 +40,15 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
         for i in range(self.nAttempts):
             learner = self.learnerCreator()
 
-            if len(self.trainedModelsList) <= i:
-                self.logger.logDebug(f'Training baseline model {i}/{self.nAttempts}...')
+            if len(self.trainedModelsList) <= self.trainedModelsIteratorIdx:
+                self.logger.logDebug(f'Training baseline model {i}/{self.nAttempts}/{self.trainedModelsIteratorIdx}...')
                 m = learner.train(dataSet, target, np.full(len(target), 1.0 / len(target)))
                 self.logger.logDebug(f'Trained model...')
                 self.trainedModelsList.append(m)
             else:
-                self.logger.logDebug(f'Getting from cache already trained model {i}/{self.nAttempts}...')
+                self.logger.logDebug(f'Getting from cache already trained model {i}/{self.nAttempts}/{self.trainedModelsIteratorIdx}...')
 
-            model = self.trainedModelsList[i]
+            model = self.trainedModelsList[self.trainedModelsIteratorIdx]
 
             self.logger.logDebug(f'Sampling data...')
             batches = sampler.sample()
@@ -56,6 +57,7 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
             self.logger.logDebug(f'Finished calculating scores.')
 
             scores += np.asarray(currentScores, dtype=np.float32)
+            self.trainedModelsIteratorIdx += 1
 
         idxes = np.argsort(scores)[::-1]
 

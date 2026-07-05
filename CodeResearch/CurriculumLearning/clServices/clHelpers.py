@@ -7,7 +7,6 @@ from scipy import stats
 from sklearn.feature_selection import mutual_info_regression
 from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.CurriculumLearning.clServices.BaselineModelsContainer import BaselineModelsContainer
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
@@ -102,14 +101,14 @@ def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts,
 
     return hc
 
-def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, nAttempts, batchSize, dataTransformer, learnerCreator):
+def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, m, nonIncrementAttempts, batchSize, dataTransformer, learnerCreator, trainedModelsList):
     if m == 'rand':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False,
                                             False, False)
     if '_inc' not in m:
         scoreCalculator = createScoreCalculator(m)
         device = learnerCreator().learner.device
-        return BaselinesPriorityCalculator(nAttempts, betas, batchSize, dataTransformer, scoreCalculator, device, logger, BaselineModelsContainer.TrainedModelsList, learnerCreator)
+        return BaselinesPriorityCalculator(nonIncrementAttempts, betas, batchSize, dataTransformer, scoreCalculator, device, logger, trainedModelsList, learnerCreator)
 
     if m == 'h_inc':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, False,
