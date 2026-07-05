@@ -13,6 +13,7 @@ from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator imp
 from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormScoreCalculator import GradNormScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.TargetClassCalculator import TargetClassCalculator
 from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler import PredefinedWithFixedTestSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedTestSampler import RandomWithFixedTestSampler
@@ -54,6 +55,10 @@ def createScoreCalculator(metric: str):
         return CosDistanceScoreCalculator()
     elif metric == 'entropy':
         return EntropyScoreCalculator()
+    elif metric == 'h':
+        return TargetClassCalculator(easinessBetter=True)
+    elif metric == 'e':
+        return TargetClassCalculator(easinessBetter=False)
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 
@@ -65,20 +70,6 @@ def extractMetric(s):
         end = len(s)
 
     return s[start + 1:end]
-
-
-def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
-
-    if method == 'h_inc':
-        return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
-
-    metric = extractMetric(method)
-    if method.contains('_inc') and not method.contains('h&'):
-        return lambda: createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor)
-
-    return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
-                                                             diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
-                                                             dataProcessor)
 
 def createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)
@@ -130,6 +121,20 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
     return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True,
                                             False, False)
 
+def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
+    if method == 'rand':
+        return lambda: StubHardnessCalculator()
+
+    if method == 'h_inc':
+        return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
+
+    metric = extractMetric(method)
+    if method.contains('_inc') and not method.contains('h&'):
+        return lambda: createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor)
+
+    return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
+                                                             diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
+                                                             dataProcessor)
 
 def createIncrementalLearnerHC(attempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)

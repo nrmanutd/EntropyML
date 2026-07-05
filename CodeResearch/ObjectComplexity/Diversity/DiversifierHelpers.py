@@ -427,6 +427,78 @@ def grad_norm_head_linear_one_pass(
     return np.concatenate(scores_list, axis=0)
 
 @torch.no_grad()
+def prediction_correct_head_linear_one_pass(
+    model,
+    batches,
+    device,
+    *,
+    include_bias=True,
+    feature_fn=None,
+    input_dtype=torch.float32,
+):
+    """
+    Возвращает per-object индикатор правильной классификации по линейной голове model.head.
+
+    Возвращает:
+        scores: np.ndarray [N], dtype float32
+
+    Где:
+        1.0 — целевой класс угадан:
+              argmax_c p(c | x) == y
+
+        0.0 — целевой класс не угадан:
+              argmax_c p(c | x) != y
+
+    Важно:
+    - scores идут строго в порядке прохождения объектов через batches.
+    - Если нужен порядок датасета, dataloader должен иметь shuffle=False.
+    - Если dataloader shuffle=True, возвращаемый порядок будет порядком текущего прохода.
+    - Функция не использует autograd.
+    - Работает для model.head = nn.Linear(H, C).
+
+    Примечание:
+    - include_bias оставлен в сигнатуре для совместимости, но здесь не используется.
+    - Для argmax softmax считать не нужно:
+      argmax(softmax(logits)) == argmax(logits).
+    """
+    model.eval()
+
+    if not hasattr(model, "head"):
+        raise AttributeError("Expected model.head to exist.")
+
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError("Works only for model.head = nn.Linear(H, C).")
+
+    if feature_fn is None:
+        feature_fn = _extract_features_default
+
+    scores_list = []
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = xb.to(device=device, dtype=input_dtype, non_blocking=True)
+        yb = yb.to(device=device, dtype=torch.long, non_blocking=True)
+
+        feat = feature_fn(model, xb)        # [B, H]
+        logits = head(feat)                # [B, C]
+
+        pred = torch.argmax(logits, dim=1) # [B]
+
+        # 1.0 если угадали, 0.0 если ошиблись
+        scores = (pred == yb).to(torch.float32)
+
+        scores_list.append(scores.detach().cpu().numpy().astype(np.float32))
+
+        del xb, yb, feat, logits, pred, scores
+
+    if len(scores_list) == 0:
+        return np.empty(0, dtype=np.float32)
+
+    return np.concatenate(scores_list, axis=0)
+
+@torch.no_grad()
 def el2n_scores(
     model,
     batches,
