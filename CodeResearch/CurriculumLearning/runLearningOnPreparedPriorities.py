@@ -30,8 +30,6 @@ for file in files:
         learnerFactory = MnistLearnerFactory(nClasses)
 
         targetEpochs = 35
-        easinessEpochs = 20
-        diversityEpochs = 20
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
         x, y = filterDataSetByFraction(x, y, 1)
@@ -41,8 +39,6 @@ for file in files:
         learnerFactory = Cifar100LearnerFactory(nClasses)
 
         targetEpochs = 200
-        easinessEpochs = 20
-        diversityEpochs = 20
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, 1)
@@ -52,8 +48,6 @@ for file in files:
         learnerFactory = Cifar10LearnerFactory(nClasses)
 
         targetEpochs = 200
-        easinessEpochs = 20
-        diversityEpochs = 20
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
@@ -62,7 +56,7 @@ for file in files:
     nIterations = len(priorities)
     baseLabels = [method]
 
-    prefix = f'{prefix}_{targetEpochs}_{easinessEpochs}_{diversityEpochs}'
+    prefix = f'{prefix}_{targetEpochs}'
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nIterations, repeats, nArrays, betas, baseLabels)
 
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
