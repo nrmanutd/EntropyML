@@ -4,7 +4,7 @@ from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Ci
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, \
-    createLearnerHC, filterDataSetByFraction, createPrioritizer, savePriorities, createHCBuilder
+    filterDataSetByFraction, createPrioritizer, savePriorities, createHCBuilder
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
@@ -26,7 +26,8 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+taskNames = ['mnist_epoch']
 firstClasses = [-1, -1, -1]
 secondClasses = [-1, -1, -1]
 
@@ -101,8 +102,8 @@ for i in range(0, len(taskNames)):
 
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
-    #methods_to_iterate = methods
-    methods_to_iterate = ['rand']
+    methods_to_iterate = methods
+    #methods_to_iterate = ['rand']
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 
