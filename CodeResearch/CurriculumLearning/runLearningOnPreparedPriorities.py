@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 from pathlib import Path
 
@@ -53,7 +55,10 @@ for file in files:
 
     nFeatures = x.shape[1]
     nArrays = len(betas)
-    nIterations = len(priorities)
+    if len(priorities) % nArrays != 0:
+        raise ValueError(f'Incorrect length of priorities ({len(priorities)}) and nArrays ({nArrays})')
+
+    nIterations = math.ceil(len(priorities) / nArrays)
     baseLabels = [method]
 
     prefix = f'{prefix}_{targetEpochs}'
@@ -65,7 +70,7 @@ for file in files:
     compositeLearner = CompositeLearner(EpochLearner(targetEpochs, targetLearner), logger)
     generalLearner = GeneralLearningEstimator(nIterations, logger)
 
-    sampler = createPredefinedSampler(x, y, xtest, ytest, repeats, priorities, probs, logger)
+    sampler = createPredefinedSampler(x, y, xtest, ytest, repeats, nIterations, priorities, probs, logger)
 
     logger.logDebug(f'Starting task {prefix}')
     generalLearner.estimateLearner(sampler, compositeLearner)

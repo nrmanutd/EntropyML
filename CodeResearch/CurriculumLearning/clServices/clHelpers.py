@@ -158,8 +158,8 @@ def createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFull
     return sampler
 
 
-def createPredefinedSampler(x, y, xtest, ytest, repeats, priorities, probs, logger):
-    prioritizer = PredefinedPrioritizer(priorities, probs)
+def createPredefinedSampler(x, y, xtest, ytest, repeats, nIterations, priorities, probs, logger):
+    prioritizer = PredefinedPrioritizer(priorities, probs, nIterations)
     prioritizer = RepeatingPrioritizer(repeats, prioritizer)
 
     sampler = PredefinedWithFixedTestSampler(x, y, xtest, ytest, prioritizer, logger)
