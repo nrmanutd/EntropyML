@@ -12,7 +12,8 @@ from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator i
 
 
 class BaselinesPriorityCalculator(BasePriorityCalculator):
-    def __init__(self, nAttempts: int, betas, batchSize: int, dataTransformer: BaseDataProcessor, scoreCalculator:BaseScoreCalculator, device, logger: BaseLogger, learnerCreator=None):
+    def __init__(self, nAttempts: int, betas, batchSize: int, dataTransformer: BaseDataProcessor, scoreCalculator:BaseScoreCalculator, device, logger: BaseLogger, trainedModelsList, learnerCreator=None):
+        self.trainedModelsList = trainedModelsList
         self.logger = logger
         self.device = device
         self.scoreCalculator = scoreCalculator
@@ -21,6 +22,9 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
         self.betas = betas
         self.batchSize = batchSize
         self.learnerCreator = learnerCreator
+
+        if len(trainedModelsList) != 0 and len(trainedModelsList) != nAttempts:
+            raise ValueError(f'Incorrect trainedModelsList length: got {len(trainedModelsList)} and nAttempts={nAttempts}')
 
     def calculatePriority(self, dataSet, target):
         p = self.dataTransformer.estimateDataTransformationParameters(dataSet, target)
@@ -33,11 +37,19 @@ class BaselinesPriorityCalculator(BasePriorityCalculator):
 
         scores = np.zeros(len(target), dtype=np.float32)
         for i in range(self.nAttempts):
-            self.logger.logDebug(f'Training baseline model {i}/{self.nAttempts}...')
             learner = self.learnerCreator()
-            model = learner.train(dataSet, target, np.full(len(target), 1.0 / len(target)))
 
-            self.logger.logDebug(f'Trained model, now sampling...')
+            if len(self.trainedModelsList) <= i:
+                self.logger.logDebug(f'Training baseline model {i}/{self.nAttempts}...')
+                m = learner.train(dataSet, target, np.full(len(target), 1.0 / len(target)))
+                self.logger.logDebug(f'Trained model...')
+                self.trainedModelsList.append(m)
+            else:
+                self.logger.logDebug(f'Getting from cache already trained model {i}/{self.nAttempts}...')
+
+            model = self.trainedModelsList[i]
+
+            self.logger.logDebug(f'Sampling data...')
             batches = sampler.sample()
             self.logger.logDebug(f'Sampled, now calculating scores...')
             currentScores = self.scoreCalculator.calculateScore(model, batches, self.device)
