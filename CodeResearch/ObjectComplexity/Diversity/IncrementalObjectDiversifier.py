@@ -53,11 +53,6 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             batches = sampler.sample()
             scores = self.scoreCalculator.calculateScore(model, batches, device)
 
-            #todo: check if centered_grad equal to GraNd
-            #scores = centered_grad_norm_head_linear_two_pass(model, batches, device) #todo: hack to make it compatible with updatable optimizer
-            #scores = cosine_to_mean_grad_head_linear_two_pass(model, batches, device)
-            #scores = centered_grad_norm_head_linear_two_pass_entropy_loss(model, batches, device)
-
             importance += scores
             scoresList.append(np.array(importance))
 

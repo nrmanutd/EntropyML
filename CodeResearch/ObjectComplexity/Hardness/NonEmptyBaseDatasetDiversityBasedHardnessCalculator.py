@@ -1,17 +1,18 @@
 from typing import Callable
-
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.Hardness.BaseHardnessCalculator import BaseHardnessCalculator
 
 
-class DiversityBasedHardnessCalculator(BaseHardnessCalculator):
-
-    def  __init__(self, hc: BaseHardnessCalculator, dcCreator: Callable[..., BaseObjectDiversifier]):
+class NonEmptyBaseDatasetDiversityBasedHardnessCalculator(BaseHardnessCalculator):
+    def __init__(self, hc: BaseHardnessCalculator, dcCreator: Callable[..., BaseObjectDiversifier]):
         self.dcCreator = dcCreator
         self.hc = hc
 
     def calculateHardness(self, dataSet, target, baseDataSet, baseTarget, alpha):
         importance, easiness = self.hc.calculateHardness(dataSet, target, baseDataSet, baseTarget, alpha)
+
+        if baseDataSet is None or len(baseTarget) == 0:
+            return importance, easiness
 
         dc = self.dcCreator(easiness)
         importance = dc.calculateObjectDiversity(dataSet, target, baseDataSet, baseTarget, alpha)

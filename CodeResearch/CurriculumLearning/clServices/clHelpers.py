@@ -23,6 +23,8 @@ from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEn
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
 from CodeResearch.ObjectComplexity.Hardness.IncrementalHardnessCalculator import IncrementalHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
+from CodeResearch.ObjectComplexity.Hardness.NonEmptyBaseDatasetDiversityBasedHardnessCalculator import \
+    NonEmptyBaseDatasetDiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.StubHardnessCalculator import StubHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
@@ -83,7 +85,7 @@ def createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batc
     hc = StubHardnessCalculator()
     dcLearner = learnerCreator(diversityEpochs)
     scoreCalculator = createScoreCalculator(metric)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts,
+    hc = NonEmptyBaseDatasetDiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts,
                                                                                      batchSize, scoreCalculator,
                                                                                      dataProcessor, logger))
 
@@ -97,7 +99,7 @@ def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts,
 
     dcLearner = learnerCreator(diversityEpochs)
     scoreCalculator = createScoreCalculator(metric)
-    hc = DiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, batchSize, scoreCalculator, dataProcessor, logger))
+    hc = NonEmptyBaseDatasetDiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, batchSize, scoreCalculator, dataProcessor, logger))
 
     return hc
 
