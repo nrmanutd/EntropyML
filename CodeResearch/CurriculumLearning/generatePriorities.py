@@ -8,7 +8,7 @@ from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, 
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.05
 nIterations = 3
 
 nEasinessAttempts = 50
@@ -69,6 +69,7 @@ for i in range(0, len(taskNames)):
     methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e']
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc']
     methods_addedHardness = ['h&GradNormOrig_inc', 'h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
+    temp_methods = ['rand', 'h&GradNormOrig_inc', 'h&GradNorm_inc']
 
     noincrementAttempts = 10
     easinessEpochs = 20
@@ -76,7 +77,7 @@ for i in range(0, len(taskNames)):
 
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
-    methods_to_iterate = methods_addedHardness
+    methods_to_iterate = temp_methods
     trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
