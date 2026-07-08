@@ -26,8 +26,7 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
-taskNames = ['cifar_epoch']
+taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
 
 logger = SimpleLogger()
 
@@ -72,7 +71,7 @@ for i in range(0, len(taskNames)):
     dataProcessor = learnerFactory.getDataPreprocessor()
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
 
-    methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e']
+    methods = ['GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e'] #todo: add rand
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
 
@@ -80,7 +79,7 @@ for i in range(0, len(taskNames)):
 
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
-    methods_to_iterate = ['h&GradNorm_inc']
+    methods_to_iterate = methods_addedHardness
     trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
