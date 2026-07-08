@@ -76,7 +76,7 @@ for i in range(0, len(taskNames)):
 
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
-    methods_to_iterate = methods_inc
+    methods_to_iterate = methods_addedHardness
     trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')

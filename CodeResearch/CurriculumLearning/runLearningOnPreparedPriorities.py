@@ -1,4 +1,5 @@
 import math
+import re
 
 import numpy as np
 from pathlib import Path
@@ -15,11 +16,19 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch
 
 datasetFraction = 1
-folder = 'mnist_epoch'
+folder = 'gold_v2\\cifar_epoch'
 repeats = 5
-
 currentFolder = Path(folder)
-files = sorted(currentFolder.glob('*.zip'))
+
+prefixPattern = re.compile(r'^.*_h_GradNorm_inc_.*\.zip')
+
+files = sorted([
+    f for f in currentFolder.glob('*.zip')
+    if prefixPattern.match(f.name)
+])
+
+print(files)
+pass
 
 for file in files:
     priorities, probs, prefix, taskName, betas, method = loadPriorities(file)
