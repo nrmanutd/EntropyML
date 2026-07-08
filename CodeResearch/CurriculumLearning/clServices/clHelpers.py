@@ -12,6 +12,7 @@ from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLear
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.GradNormCustomScoreCalculator import GradNormCustomScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormScoreCalculator import GradNormScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.TargetClassCalculator import TargetClassCalculator
 from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler import PredefinedWithFixedTestSampler
@@ -53,6 +54,8 @@ def createScoreCalculator(metric: str):
         return EL2NScoreCalculator()
     elif metric == "GradNorm":
         return GradNormScoreCalculator()
+    elif metric == "GradNormOrig":
+        return GradNormCustomScoreCalculator()
     elif metric == 'cos':
         return CosDistanceScoreCalculator()
     elif metric == 'entropy':
