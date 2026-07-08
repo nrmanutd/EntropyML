@@ -20,23 +20,20 @@ folder = 'gold_v2\\cifar_epoch'
 repeats = 5
 currentFolder = Path(folder)
 
-prefixPattern = re.compile(r'^.*_h_GradNorm_inc_.*\.zip')
+prefixPattern = re.compile(r'^.*\.zip')
 
 files = sorted([
     f for f in currentFolder.glob('*.zip')
     if prefixPattern.match(f.name)
 ])
 
-print(files)
-pass
-
 for file in files:
     priorities, probs, prefix, taskName, betas, method = loadPriorities(file)
 
     if taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
 
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
@@ -44,8 +41,8 @@ for file in files:
         targetEpochs = 60
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)

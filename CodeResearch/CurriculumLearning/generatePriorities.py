@@ -8,7 +8,7 @@ from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSet, 
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 0.05
+datasetFraction = 1
 nIterations = 3
 
 nEasinessAttempts = 50
@@ -36,20 +36,24 @@ for i in range(0, len(taskNames)):
 
     if taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
 
         nClasses = len(np.unique(y))
         learnerFactory = MnistLearnerFactory(nClasses)
         noincrementEpochs = 20
+        easinessEpochs = 15
+        diversityEpochs = 15
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar100LearnerFactory(nClasses)
         noincrementEpochs = 40
+        easinessEpochs = 40
+        diversityEpochs = 40
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
         x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
@@ -58,6 +62,8 @@ for i in range(0, len(taskNames)):
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)
         noincrementEpochs = 40
+        easinessEpochs = 40
+        diversityEpochs = 40
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
@@ -68,16 +74,13 @@ for i in range(0, len(taskNames)):
 
     methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e']
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc']
-    methods_addedHardness = ['h&GradNormOrig_inc', 'h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
-    temp_methods = ['rand', 'h&GradNormOrig_inc', 'h&GradNorm_inc']
+    methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc']
 
     noincrementAttempts = 10
-    easinessEpochs = 20
-    diversityEpochs = 20
 
     targetLearnerCreator = lambda: learnerFactory.createTargetLearner(noincrementEpochs)
 
-    methods_to_iterate = temp_methods
+    methods_to_iterate = ['h&GradNorm_inc']
     trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
