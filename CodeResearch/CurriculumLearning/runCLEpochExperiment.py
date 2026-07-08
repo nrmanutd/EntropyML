@@ -11,7 +11,7 @@ from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearn
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.dataSets import loadCifar100_torch, loadCifar10_torch, loadMnist_torch
 
-datasetFraction = 1
+datasetFraction = 0.05
 nIterations = 3
 
 nEasinessAttempts = 50
@@ -21,8 +21,11 @@ repeats = 3
 #betas = [0.05, 0.1, 0.15, 0.2, 0.25, 0.5]
 betas = [0.05, 0.1, 0.2, 0.5]
 #betas = [1]
-#baseLabels = ['l', 'h&i_inc']
-baseLabels = ['h&i_inc']
+baseLabels = ['l', 'h&i_inc']
+#metric = 'GradNormOrig'
+metric = 'GradNorm'
+
+#baseLabels = ['h&i_inc']
 #baseLabels = ['GraNd']
 shouldEstimateForFullSet = False
 loggingBetas = betas if shouldEstimateForFullSet is False else [1]
@@ -124,7 +127,7 @@ for i in range(1, len(taskNames)):
 
     nFeatures = x.shape[1]
 
-    prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_NN'
+    prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{repeats}_{nArrays}_{targetEpochs}_{firstClass}_{secondClass}_GraNd_NN'
     logger = EpochLearnerLogger(targetEpochs, taskName, prefix, nEasinessAttempts, repeats, nArrays, loggingBetas, baseLabels)
 
     targetLearner = learnerFactory.createTargetLearner(targetEpochs)
@@ -136,7 +139,7 @@ for i in range(1, len(taskNames)):
     #standard
     scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
 
-    hcBuilder = lambda : createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, 'GradNormOrig', scoreLearnerBuilder, dataProcessor)
+    hcBuilder = lambda : createLearnerHC(nEasinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, metric, scoreLearnerBuilder, dataProcessor)
     sampler = createSamplerWithTest(x, y, xtest, ytest, alphas, betas, trainAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
     #sampler = createSampler(x, y, alphas, betas, testAlpha, repeats, shouldEstimateForFullSet, hcBuilder, logger)
 
