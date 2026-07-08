@@ -53,8 +53,8 @@ for file in files:
         targetEpochs = 200
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction)
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
 
         nClasses = len(np.unique(y))
         learnerFactory = Cifar10LearnerFactory(nClasses)

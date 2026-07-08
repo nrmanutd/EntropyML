@@ -223,11 +223,11 @@ def filterDataSet(x, y, alpha, firstClass, secondClass):
 
     return x[idx], tt
 
-def filterDataSetByFraction(x, y, alpha):
+def filterDataSetByFraction(x, y, alpha, randomState=None):
     enc = LabelEncoder()
     target = enc.fit_transform(np.ravel(y))
 
-    idx, restIdx = stratified_split_indices_with_min(target, alpha)
+    idx, restIdx = stratified_split_indices_with_min(target, alpha, random_state=randomState)
 
     tt = enc.fit_transform(np.ravel(target[idx]))
 
