@@ -12,8 +12,10 @@ from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLear
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.ForgettingScoreCalculator import ForgettingScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormCustomScoreCalculator import GradNormCustomScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormScoreCalculator import GradNormScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.KCenteredScoreCalculator import KCenteredScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.TargetClassCalculator import TargetClassCalculator
 from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler import PredefinedWithFixedTestSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
@@ -64,6 +66,10 @@ def createScoreCalculator(metric: str):
         return TargetClassCalculator(easinessBetter=True)
     elif metric == 'e':
         return TargetClassCalculator(easinessBetter=False)
+    elif metric == 'k-centered':
+        return KCenteredScoreCalculator()
+    elif metric == 'forgetting':
+        return ForgettingScoreCalculator()
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 
