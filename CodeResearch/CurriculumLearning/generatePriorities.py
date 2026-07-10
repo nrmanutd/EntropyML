@@ -23,7 +23,8 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+taskNames = ['cifar_epoch', 'cifar100_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
@@ -36,8 +37,9 @@ for i in range(0, len(taskNames)):
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cos_to_train_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
-    #restMethods = ['forgetting', 'k-centered_inc', 'h&k-centered_inc']
-    restMethods = ['cos_to_train_inc']
+    restMethods = ['forgetting', 'k-centered_inc', 'h&k-centered_inc', 'cos_to_train_inc']
+    #restMethods = ['cos_to_train_inc']
+    #restMethods = ['h&GradNorm_inc']
 
     methods_to_iterate = restMethods
     trainedModelsList = []
