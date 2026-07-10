@@ -21,6 +21,8 @@ from CodeResearch.LearningFramework.Samplers.PredefinedWithFixedTestSampler impo
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedLengthSampler import RandomWithFixedLengthSampler
 from CodeResearch.LearningFramework.Samplers.RandomWithFixedTestSampler import RandomWithFixedTestSampler
 from CodeResearch.ObjectComplexity.Diversity.IncrementalObjectDiversifier import IncrementalObjectDiversifier
+from CodeResearch.ObjectComplexity.Hardness.CombinedDiversityBasedHardnessCalculator import \
+    CombinedDiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.DiversityBasedHardnessCalculator import DiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEnum
 from CodeResearch.ObjectComplexity.Hardness.Factory.HardnessFactory import HardnessFactory
@@ -90,23 +92,27 @@ def createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator
 
     return hc
 
-def createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor):
-    hc = StubHardnessCalculator()
-    dcLearner = learnerCreator(diversityEpochs)
+def createLearnerOnlyImportance(logger, easinessEpochs, easinessAttempts, diversityEpochs, diversityAttempts, batchSize, metric, hardnessScoringLearnerCreator, diversityScoringLearnerCreator, dataProcessor):
+    l = hardnessScoringLearnerCreator(easinessEpochs)
+    a = HardnessFactory.createAssesor(AssesorEnum.EasinessOnly)
+
+    hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
+
+    dcLearner = diversityScoringLearnerCreator(diversityEpochs)
     scoreCalculator = createScoreCalculator(metric)
-    hc = NonEmptyBaseDatasetDiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts,
+    hc = CombinedDiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts,
                                                                                      batchSize, scoreCalculator,
                                                                                      dataProcessor, logger))
 
     return hc
 
-def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator, dataProcessor):
-    l = learnerCreator(easinessEpochs)
+def createLearnerHC(easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, metric, scoringHardnessLearnerCreator, scoringDiversityLearnerCreator, dataProcessor):
+    l = scoringHardnessLearnerCreator(easinessEpochs)
     a = HardnessFactory.createAssesor(AssesorEnum.EasinessOnly)
 
     hc = LearnerBasedHardnessCalculator(l, a, easinessAttempts, dataProcessor, logger)
 
-    dcLearner = learnerCreator(diversityEpochs)
+    dcLearner = scoringDiversityLearnerCreator(diversityEpochs)
     scoreCalculator = createScoreCalculator(metric)
     hc = NonEmptyBaseDatasetDiversityBasedHardnessCalculator(hc, lambda x: IncrementalObjectDiversifier(dcLearner, diversityAttempts, batchSize, scoreCalculator, dataProcessor, logger))
 
@@ -132,20 +138,20 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
     return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, False, True,
                                             False, False)
 
-def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, learnerCreator, dataProcessor):
+def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, scoringHardnessLearnerCreator, scoringDiversityLearnerCreator, dataProcessor):
     if method == 'rand':
         return lambda: StubHardnessCalculator()
 
     if method == 'h_inc':
-        return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, learnerCreator, dataProcessor)
+        return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, scoringHardnessLearnerCreator, dataProcessor)
 
     metric = extractMetric(method)
     if '_inc' in method and 'h&' not in method:
-        return lambda: createLearnerOnlyImportance(logger, diversityEpochs, diversityAttempts, batchSize, metric, learnerCreator, dataProcessor)
+        return lambda: createLearnerOnlyImportance(logger, easinessEpochs, easinessAttempts, diversityEpochs, diversityAttempts, batchSize, metric, scoringHardnessLearnerCreator, scoringDiversityLearnerCreator, dataProcessor)
 
     return lambda: createLearnerHC(easinessAttempts, logger, easinessEpochs,
-                                                             diversityAttempts, diversityEpochs, batchSize, metric, learnerCreator,
-                                                             dataProcessor)
+                                   diversityAttempts, diversityEpochs, batchSize, metric, scoringHardnessLearnerCreator, scoringDiversityLearnerCreator,
+                                   dataProcessor)
 
 def createIncrementalLearnerHC(attempts, logger, easinessEpochs, learnerCreator, dataProcessor):
     l = learnerCreator(easinessEpochs)

@@ -48,10 +48,13 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             if i%10 == 0:
                 self.logger.logDebug(f'Calculating incremental step for #{i} of {self.nAttempts} attempts')
 
+            self.logger.logDebug('Training learner...')
             model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
+            self.logger.logDebug('Learner is trained. Sampling and calculating score...')
 
             batches = sampler.sample()
             scores = self.scoreCalculator.calculateScore(model, batches, device)
+            self.logger.logDebug('Score is calculated.')
 
             importance += scores
             scoresList.append(np.array(importance))

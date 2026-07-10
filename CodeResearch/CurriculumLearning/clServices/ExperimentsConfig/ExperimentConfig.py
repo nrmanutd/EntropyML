@@ -15,6 +15,8 @@ class ExperimentConfig:
 
     noincrementAttempts: Optional[int] = None
 
-    scoreLearnerBuilder: Optional[Callable[[int], TorchModelLearner]] = None
+    scoreDiversityLearnerBuilder: Optional[Callable[[int], TorchModelLearner]] = None
+    scoreHardnessLearnerBuilder: Optional[Callable[[int], TorchModelLearner]] = None
+
     targetLearnerCreator: Optional[Callable[[int], TorchModelLearner]] = None
     dataProcessor: Optional[BaseDataProcessor] = None

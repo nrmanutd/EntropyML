@@ -1,4 +1,5 @@
 from CodeResearch.LearningFramework.DataProcessing.BaseDataProcessor import BaseDataProcessor
+from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.Learners.baseLearner import BaseLearner
 
 

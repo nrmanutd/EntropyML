@@ -73,11 +73,12 @@ def getExperimentConfig(taskName: str, method: str, nClasses: int):
 
     config.noincrementAttempts = 10
     config.dataProcessor = learnerFactory.getDataPreprocessor()
-    config.targetLearnerCreator = lambda: learnerFactory.createTargetLearner(config.noincrementEpochs)
+    config.targetForScoringLearnerCreator = lambda: learnerFactory.createTargetForScoringLearner(config.noincrementEpochs)
+    config.scoreHardnessLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
 
     if 'k-centered' in method:
-        config.scoreLearnerBuilder = lambda e: learnerFactory.createTargetLearner(e)
+        config.scoreDiversityLearnerBuilder = lambda e: learnerFactory.createTargetForScoringLearner(e)
     else:
-        config.scoreLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
+        config.scoreDiversityLearnerBuilder = lambda e: learnerFactory.createScoreLearner(e)
 
     return config

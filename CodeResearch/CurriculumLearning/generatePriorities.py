@@ -23,7 +23,8 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
+taskNames = ['mnist_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
@@ -36,7 +37,8 @@ for i in range(0, len(taskNames)):
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
-    restMethods = ['forgetting', 'k-centered_inc', 'h&k-centered_inc']
+    #restMethods = ['forgetting', 'k-centered_inc', 'h&k-centered_inc']
+    restMethods = ['h&k-centered_inc']
 
     methods_to_iterate = restMethods
     trainedModelsList = []
@@ -44,6 +46,7 @@ for i in range(0, len(taskNames)):
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')
 
     for method in methods_to_iterate:
+
         resultPriorities = []
         resultProbs = []
 
@@ -56,9 +59,9 @@ for i in range(0, len(taskNames)):
         prefix = f'{taskName}_{nIterations}_{nEasinessAttempts}_{fraction}_{datasetFraction}_{method}_{currentConfig.noincrementEpochs}_{currentConfig.noincrementAttempts}_NN'
 
         hcBuilder = createHCBuilder(method, nEasinessAttempts, logger, currentConfig.easinessEpochs,
-                                                             diversityAttempts, currentConfig.diversityEpochs, batchSize, currentConfig.scoreLearnerBuilder, currentConfig.dataProcessor)
+                                    diversityAttempts, currentConfig.diversityEpochs, batchSize, currentConfig.scoreHardnessLearnerBuilder, currentConfig.scoreDiversityLearnerBuilder, currentConfig.dataProcessor)
 
-        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, method, currentConfig.noincrementAttempts, batchSize, currentConfig.dataProcessor, currentConfig.targetLearnerCreator, currentModelsList)
+        prioritizer = createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, method, currentConfig.noincrementAttempts, batchSize, currentConfig.dataProcessor, currentConfig.targetForScoringLearnerCreator, currentModelsList)
 
         for i in range(nIterations):
             logger.logDebug(f'Calculating priorities for metric {method}, iteration # {i} ({nIterations})')

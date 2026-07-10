@@ -19,6 +19,10 @@ class PyTorchCVCLLearnersFactory(BaseCLLearnersFactory):
 
         return learner
 
+    def createTargetForScoringLearner(self, parameters):
+        learner = self.createTargetLearner_int(parameters)
+        return learner
+
     @abstractmethod
     def createScoreLearner_int(self, epochs):
         pass

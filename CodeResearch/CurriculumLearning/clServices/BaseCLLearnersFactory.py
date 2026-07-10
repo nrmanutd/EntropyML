@@ -16,5 +16,9 @@ class BaseCLLearnersFactory(ABC):
         pass
 
     @abstractmethod
+    def createTargetForScoringLearner(self, parameters):
+        pass
+
+    @abstractmethod
     def getDataPreprocessor(self):
         pass
