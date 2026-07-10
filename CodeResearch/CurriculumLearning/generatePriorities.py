@@ -33,7 +33,7 @@ for i in range(0, len(taskNames)):
     nClasses = len(np.unique(y))
 
     methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e', 'forgetting'] #todo: add rand
-    methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc']
+    methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cos_to_train_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
     #restMethods = ['forgetting', 'k-centered_inc', 'h&k-centered_inc']

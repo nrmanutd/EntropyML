@@ -10,6 +10,8 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceToTrainScoreCalculator import \
+    CosDistanceToTrainScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.ForgettingScoreCalculator import ForgettingScoreCalculator
@@ -72,6 +74,8 @@ def createScoreCalculator(metric: str):
         return KCenteredScoreCalculator()
     elif metric == 'forgetting':
         return ForgettingScoreCalculator()
+    elif metric == 'cos_to_train_inc':
+        return CosDistanceToTrainScoreCalculator()
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 

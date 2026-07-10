@@ -9,6 +9,7 @@ from CodeResearch.LearningFramework.Learners.DataTransformationParametersLearner
 from CodeResearch.LearningFramework.Learners.TorchLearner import TorchLearner
 from CodeResearch.LearningFramework.NeuralNetwork.BaseScoreCalculator import BaseScoreCalculator
 from CodeResearch.LearningFramework.Samplers.Batches.randomAllsetSampler import RandomAllsetSampler
+from CodeResearch.LearningFramework.Samplers.baseSampler import BaseSampler
 from CodeResearch.ObjectComplexity.Diversity.BaseObjectDiversifier import BaseObjectDiversifier
 from CodeResearch.ObjectComplexity.InstancePriority.standardPriorityCalculator import StandardPriorityCalculator
 
@@ -24,8 +25,6 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         self.batchSize = batchSize
 
     def calculateObjectDiversity(self, ds, t, baseDataSet, baseTarget, alpha):
-        device = self.learner.device
-
         importance = np.zeros(len(t))
 
         if baseDataSet is None or len(baseTarget) == 0:
@@ -34,12 +33,9 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         p = self.dataTransformer.estimateDataTransformationParameters(baseDataSet, baseTarget)
         learner = DataTransformationParametersLearner(self.learner, p, self.dataTransformer)
 
-        ds, t = self.dataTransformer.applyParametersToData(ds, t, p)
+        testSampler = self.getSampler(ds, t, p)
+        trainSampler = self.getSampler(baseDataSet, baseTarget, p)
 
-        xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
-        yb = torch.as_tensor(t, dtype=torch.int64, device=device)
-
-        sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
         scoresList = []
         currentCounter = 0
 
@@ -52,8 +48,9 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
             model = learner.train(baseDataSet, baseTarget, np.full(len(baseTarget), 1.0 / len(baseTarget)))
             self.logger.logDebug('Learner is trained. Sampling and calculating score...')
 
-            batches = sampler.sample()
-            scores = self.scoreCalculator.calculateScore(model, batches, device)
+            testBatches = testSampler.sample()
+            trainBatches = trainSampler.sample()
+            scores = self.scoreCalculator.calculateScoreDifferentBatches(model, trainBatches, testBatches, self.learner.device)
             self.logger.logDebug('Score is calculated.')
 
             importance += scores
@@ -74,3 +71,13 @@ class IncrementalObjectDiversifier(BaseObjectDiversifier):
         self.logger.logDebug(f'Finished calculating additional diversification for alpha = {alpha}')
 
         return importance
+
+    def getSampler(self, ds, t, p) -> BaseSampler:
+        device = self.learner.device
+        ds, t = self.dataTransformer.applyParametersToData(ds, t, p)
+
+        xb = torch.as_tensor(ds, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(t, dtype=torch.int64, device=device)
+
+        sampler = RandomAllsetSampler(xb, yb, self.batchSize, StandardPriorityCalculator())
+        return sampler
