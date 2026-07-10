@@ -124,7 +124,7 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
                                             False, False)
     if '_inc' not in m:
         scoreCalculator = createScoreCalculator(m)
-        device = learnerCreator().learner.device
+        device = learnerCreator().device
         return BaselinesPriorityCalculator(nonIncrementAttempts, betas, batchSize, dataTransformer, scoreCalculator, device, logger, trainedModelsList, learnerCreator)
 
     if m == 'h_inc':
