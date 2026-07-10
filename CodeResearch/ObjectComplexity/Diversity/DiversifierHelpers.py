@@ -563,6 +563,144 @@ def el2n_scores(
 
     return scores
 
+
+@torch.no_grad()
+def grad_norm_times_positive_cos_to_train_mean_grad_head_linear_two_pass(
+    model,
+    train_batches,
+    batches,
+    device,
+    eps: float = 1e-12,
+):
+    """
+    Считает для каждого объекта из batches score:
+
+        score_i = ||grad_i|| * max(cos(grad_i, mean_grad_train), 0)
+
+    где:
+        grad_i          — per-object градиент loss по линейной голове model.head
+                          для объекта из batches;
+        mean_grad_train — средний градиент по объектам из train_batches,
+                          то есть по той совокупности, на которой модель уже обучалась.
+
+    Эквивалентно:
+
+        score_i = max(<grad_i, mean_grad_train> / ||mean_grad_train||, 0)
+
+    Возвращает:
+        scores: np.ndarray [N], dtype float32
+
+    Порядок scores соответствует порядку объектов в batches.
+    """
+
+    model.eval()
+
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError("Works only for model.head = nn.Linear(H, C)")
+
+    def _unpack_batch(batch):
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+        return xb, yb
+
+    def _extract_features(model, xb):
+        feat = model.features(xb)
+
+        if hasattr(model, "pool") and model.pool is not None:
+            feat = model.pool(feat)
+
+        feat = feat.flatten(1)
+        return feat
+
+    # ------------------------------------------------------------------
+    # PASS 1: mean_grad_train по train_batches
+    # ------------------------------------------------------------------
+    sum_M = None   # [C, H] = sum_i outer(g_i, feat_i)
+    sum_g = None   # [C]    = sum_i g_i для bias
+    n_train = 0
+
+    for batch in train_batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = _extract_features(model, xb)          # [B, H]
+        logits = head(feat)                          # [B, C]
+
+        g = torch.softmax(logits, dim=1)             # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0
+
+        M_batch = g.transpose(0, 1) @ feat           # [C, H]
+        g_batch = g.sum(dim=0)                       # [C]
+
+        if sum_M is None:
+            sum_M = M_batch
+            sum_g = g_batch
+        else:
+            sum_M += M_batch
+            sum_g += g_batch
+
+        n_train += g.size(0)
+
+        del xb, yb, feat, logits, g, M_batch, g_batch
+
+    if n_train == 0:
+        raise ValueError("train_batches is empty: cannot compute mean train gradient.")
+
+    mean_M = sum_M / n_train                         # [C, H]
+    mean_g = sum_g / n_train                         # [C]
+
+    norm_mean2 = (mean_M * mean_M).sum()
+
+    if head.bias is not None:
+        norm_mean2 = norm_mean2 + (mean_g * mean_g).sum()
+
+    norm_mean = torch.sqrt(torch.clamp(norm_mean2, min=0.0))
+    norm_mean = torch.clamp(norm_mean, min=eps)
+
+    # ------------------------------------------------------------------
+    # PASS 2: score_i для объектов из batches
+    # ------------------------------------------------------------------
+    scores_list = []
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = torch.as_tensor(xb, dtype=torch.float32, device=device)
+        yb = torch.as_tensor(yb, dtype=torch.int64, device=device)
+
+        feat = _extract_features(model, xb)          # [B, H]
+        logits = head(feat)                          # [B, C]
+
+        g = torch.softmax(logits, dim=1)             # [B, C]
+        g[torch.arange(g.size(0), device=device), yb] -= 1.0
+
+        # <grad_W(i), mean_M>
+        Mf = feat @ mean_M.t()                       # [B, C]
+        inner = (g * Mf).sum(dim=1)                  # [B]
+
+        # bias term: <grad_b(i), mean_g>
+        if head.bias is not None:
+            inner_b = (g * mean_g.unsqueeze(0)).sum(dim=1)
+            inner = inner + inner_b
+
+        # score_i = ||grad_i|| * max(cos(grad_i, mean_grad_train), 0)
+        #         = max(<grad_i, mean_grad_train> / ||mean_grad_train||, 0)
+        score = torch.clamp(inner / norm_mean, min=0.0)  # [B]
+
+        scores_list.append(score.detach().cpu().numpy().astype(np.float32))
+
+        del xb, yb, feat, logits, g, Mf, inner, score
+
+    if len(scores_list) == 0:
+        return np.empty(0, dtype=np.float32)
+
+    return np.concatenate(scores_list, axis=0).astype(np.float32)
+
 @torch.no_grad()
 def cosine_to_mean_grad_head_linear_two_pass(model, batches, device, eps: float = 1e-12):
     """
