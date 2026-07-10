@@ -23,8 +23,7 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
-taskNames = ['mnist_epoch']
+taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
