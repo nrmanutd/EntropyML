@@ -701,6 +701,537 @@ def grad_norm_times_positive_cos_to_train_mean_grad_head_linear_two_pass(
 
     return np.concatenate(scores_list, axis=0).astype(np.float32)
 
+
+@torch.no_grad()
+def chg_shapley_to_train_mean_grad_head_linear_two_pass(
+    model,
+    train_batches,
+    batches,
+    device,
+):
+    """
+    Рассчитывает CHG Shapley score для объектов-кандидатов из batches.
+
+    Используемая адаптация формулы из статьи:
+
+        x_i = h_i * grad_i,
+        h_i = loss_i,
+
+        alpha = mean_{i in train_batches}(x_i).
+
+    Здесь:
+        grad_i — per-object градиент CrossEntropy loss
+                 по параметрам линейной головы model.head;
+
+        h_i    — индивидуальный CrossEntropy loss объекта,
+                 не участвующий в backpropagation;
+
+        N      — множество объектов-кандидатов из batches;
+
+        alpha  — средний CHG-градиент уже выбранного
+                 обучающего множества train_batches.
+
+    Utility кандидатов:
+
+        U(S) = ||alpha||^2
+               - ||mean_{i in S}(x_i) - alpha||^2.
+
+    Возвращает:
+        scores: np.ndarray [N], dtype float32.
+
+    Значения могут быть как положительными, так и отрицательными.
+    Для отбора наиболее ценных объектов нужно сортировать scores
+    по убыванию.
+
+    Важно:
+        1. batches проходит дважды и должен быть повторно итерируемым,
+           например DataLoader, а не одноразовым generator.
+        2. Для соответствия scores порядку датасета используйте
+           shuffle=False.
+        3. Между двумя проходами не должны применяться случайные
+           аугментации, меняющие представление объектов.
+    """
+
+    model.eval()
+
+    head = model.head
+    if not isinstance(head, nn.Linear):
+        raise TypeError(
+            "Works only for model.head = nn.Linear(H, C)"
+        )
+
+    # ------------------------------------------------------------------
+    # Вспомогательные функции
+    # ------------------------------------------------------------------
+
+    def _unpack_batch(batch):
+        if len(batch) == 3:
+            xb, yb, _idx = batch
+        else:
+            xb, yb = batch
+
+        return xb, yb
+
+    def _extract_features(model, xb):
+        """
+        Извлечение признаков для архитектуры:
+
+            model.features
+            -> model.pool, если он существует
+            -> flatten
+            -> model.head
+        """
+        feat = model.features(xb)
+
+        if hasattr(model, "pool") and model.pool is not None:
+            feat = model.pool(feat)
+
+        return feat.flatten(1)
+
+    def _get_chg_components(xb, yb):
+        """
+        Возвращает:
+
+            feat: [B, H]
+
+            weighted_g: [B, C]
+
+        Для CrossEntropy:
+
+            g_i = softmax(logits_i) - one_hot(y_i)
+
+        является градиентом loss по logits.
+
+        CHG использует:
+
+            x_i = h_i * grad_i,
+
+        поэтому weighted_g соответствует h_i * g_i.
+        """
+
+        feat = _extract_features(model, xb)          # [B, H]
+        logits = head(feat)                          # [B, C]
+
+        log_probs = torch.log_softmax(logits, dim=1)
+
+        row_idx = torch.arange(
+            logits.size(0),
+            device=logits.device,
+        )
+
+        # h_i = индивидуальный CrossEntropy loss.
+        # Функция находится под @torch.no_grad(), поэтому h_i
+        # автоматически не участвует в дифференцировании.
+        hardness = -log_probs[row_idx, yb]           # [B]
+
+        # g_i = d loss_i / d logits_i
+        g = log_probs.exp()                          # softmax
+        g[row_idx, yb] -= 1.0                       # [B, C]
+
+        # Для каждого объекта это h_i * градиент по logits.
+        weighted_g = g * hardness.unsqueeze(1)       # [B, C]
+
+        return feat, weighted_g
+
+    def _per_object_x_norm2(feat, weighted_g):
+        """
+        x_i состоит из градиента по W и, при наличии, по bias:
+
+            x_W(i) = weighted_g_i outer feat_i
+            x_b(i) = weighted_g_i
+
+        Поэтому:
+
+            ||x_W(i)||_F^2
+                = ||weighted_g_i||^2 * ||feat_i||^2.
+        """
+
+        g_norm2 = (weighted_g * weighted_g).sum(dim=1)
+        feat_norm2 = (feat * feat).sum(dim=1)
+
+        norm2 = g_norm2 * feat_norm2
+
+        if head.bias is not None:
+            norm2 = norm2 + g_norm2
+
+        return norm2
+
+    def _chg_coefficients(n):
+        """
+        Коэффициенты формулы (4).
+
+        Итоговая формула представляется как:
+
+            phi_j =
+                c_x2       * ||x_j||^2
+              + c_Tx       * <T, x_j>
+              + c_T2       * ||T||^2
+              + c_Q        * Q
+              + c_xalpha   * <x_j, alpha>
+              + c_Talpha   * <T, alpha>,
+
+        где:
+
+            T = sum_i x_i,
+            Q = sum_i ||x_i||^2.
+
+        Формула статьи содержит (n - 2) в знаменателях.
+        Для n=1 и n=2 ниже используются непосредственно
+        вычисленные точные коэффициенты.
+        """
+
+        if n < 1:
+            raise ValueError("n must be positive")
+
+        if n == 1:
+            # phi_j = U({j}) = 2<x_j, alpha> - ||x_j||^2
+            return (
+                -1.0,   # c_x2
+                0.0,    # c_Tx
+                0.0,    # c_T2
+                0.0,    # c_Q
+                2.0,    # c_xalpha
+                0.0,    # c_Talpha
+            )
+
+        if n == 2:
+            return (
+                -0.75,  # c_x2
+                -0.25,  # c_Tx
+                0.0,    # c_T2
+                0.375,  # c_Q
+                2.0,    # c_xalpha
+                -0.5,   # c_Talpha
+            )
+
+        # Гармонические суммы вычисляются в float64.
+        k = np.arange(1, n + 1, dtype=np.float64)
+
+        H1 = np.sum(1.0 / k, dtype=np.float64)
+        H2 = np.sum(1.0 / (k * k), dtype=np.float64)
+
+        inv_n = 1.0 / n
+
+        # Повторяющееся выражение из формулы (4):
+        #
+        # 2 * sum(1/k) - 2 * sum(1/k^2) - 1 + 1/n
+        B = 2.0 * H1 - 2.0 * H2 - 1.0 + inv_n
+
+        denominator_1 = n * (n - 1)
+        denominator_2 = n * (n - 1) * (n - 2)
+
+        c_x2 = (
+            -H2 / n
+            + (
+                2.0 * H1
+                - 3.0 * H2
+                + inv_n
+            ) / denominator_1
+            + 2.0 * B / denominator_2
+        )
+
+        c_Tx = (
+            -2.0
+            * (
+                H1
+                - H2
+                - inv_n
+                + inv_n * inv_n
+            )
+            / ((n - 1) * (n - 2))
+        )
+
+        c_T2 = B / denominator_2
+
+        c_Q = (
+            (H2 - inv_n) / denominator_1
+            - B / denominator_2
+        )
+
+        c_xalpha = (
+            2.0
+            * (H1 - inv_n)
+            / (n - 1)
+        )
+
+        c_Talpha = (
+            -2.0
+            * (H1 - 1.0)
+            / denominator_1
+        )
+
+        return (
+            float(c_x2),
+            float(c_Tx),
+            float(c_T2),
+            float(c_Q),
+            float(c_xalpha),
+            float(c_Talpha),
+        )
+
+    # ==================================================================
+    # PASS A: вычисляем alpha по уже выбранному train_batches
+    # ==================================================================
+
+    alpha_M_sum = None   # sum_i h_i * outer(g_i, feat_i), [C, H]
+    alpha_g_sum = None   # sum_i h_i * g_i, [C]
+    n_train = 0
+
+    for batch in train_batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = torch.as_tensor(
+            xb,
+            dtype=torch.float32,
+            device=device,
+        )
+        yb = torch.as_tensor(
+            yb,
+            dtype=torch.int64,
+            device=device,
+        ).view(-1)
+
+        feat, weighted_g = _get_chg_components(xb, yb)
+
+        M_batch = weighted_g.transpose(0, 1) @ feat
+        g_batch = weighted_g.sum(dim=0)
+
+        if alpha_M_sum is None:
+            alpha_M_sum = M_batch
+            alpha_g_sum = g_batch
+        else:
+            alpha_M_sum += M_batch
+            alpha_g_sum += g_batch
+
+        n_train += weighted_g.size(0)
+
+        del (
+            xb,
+            yb,
+            feat,
+            weighted_g,
+            M_batch,
+            g_batch,
+        )
+
+    if n_train == 0:
+        raise ValueError(
+            "train_batches is empty: cannot compute alpha."
+        )
+
+    alpha_M = alpha_M_sum / n_train                  # [C, H]
+    alpha_g = alpha_g_sum / n_train                  # [C]
+
+    # ==================================================================
+    # PASS 1 по кандидатам:
+    #
+    # T = sum_i x_i
+    # Q = sum_i ||x_i||^2
+    # ==================================================================
+
+    T_M = None                                       # [C, H]
+    T_g = None                                       # [C]
+
+    # Скалярные агрегаты сохраняем в float64.
+    Q = torch.zeros(
+        (),
+        dtype=torch.float64,
+        device=device,
+    )
+
+    n_candidates = 0
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = torch.as_tensor(
+            xb,
+            dtype=torch.float32,
+            device=device,
+        )
+        yb = torch.as_tensor(
+            yb,
+            dtype=torch.int64,
+            device=device,
+        ).view(-1)
+
+        feat, weighted_g = _get_chg_components(xb, yb)
+
+        M_batch = weighted_g.transpose(0, 1) @ feat
+        g_batch = weighted_g.sum(dim=0)
+
+        if T_M is None:
+            T_M = M_batch
+            T_g = g_batch
+        else:
+            T_M += M_batch
+            T_g += g_batch
+
+        x_norm2 = _per_object_x_norm2(
+            feat,
+            weighted_g,
+        )
+
+        Q += x_norm2.double().sum()
+        n_candidates += weighted_g.size(0)
+
+        del (
+            xb,
+            yb,
+            feat,
+            weighted_g,
+            M_batch,
+            g_batch,
+            x_norm2,
+        )
+
+    if n_candidates == 0:
+        return np.empty(0, dtype=np.float32)
+
+    # ||T||^2
+    T_norm2 = (
+        T_M.double() * T_M.double()
+    ).sum()
+
+    # <T, alpha>
+    T_alpha = (
+        T_M.double() * alpha_M.double()
+    ).sum()
+
+    if head.bias is not None:
+        T_norm2 = T_norm2 + (
+            T_g.double() * T_g.double()
+        ).sum()
+
+        T_alpha = T_alpha + (
+            T_g.double() * alpha_g.double()
+        ).sum()
+
+    (
+        c_x2,
+        c_Tx,
+        c_T2,
+        c_Q,
+        c_xalpha,
+        c_Talpha,
+    ) = _chg_coefficients(n_candidates)
+
+    # Эти три слагаемых одинаковы для всех j.
+    # Они не влияют на ранжирование, но включаются, чтобы вернуть
+    # полный Shapley value из теоремы.
+    common_offset = (
+        c_T2 * T_norm2
+        + c_Q * Q
+        + c_Talpha * T_alpha
+    )
+
+    # ==================================================================
+    # PASS 2 по кандидатам:
+    #
+    # Для каждого j нужны:
+    #   ||x_j||^2
+    #   <T, x_j>
+    #   <x_j, alpha>
+    # ==================================================================
+
+    scores_list = []
+    n_scored = 0
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = torch.as_tensor(
+            xb,
+            dtype=torch.float32,
+            device=device,
+        )
+        yb = torch.as_tensor(
+            yb,
+            dtype=torch.int64,
+            device=device,
+        ).view(-1)
+
+        feat, weighted_g = _get_chg_components(xb, yb)
+
+        # --------------------------------------------------------------
+        # ||x_j||^2
+        # --------------------------------------------------------------
+        x_norm2 = _per_object_x_norm2(
+            feat,
+            weighted_g,
+        ).double()
+
+        # --------------------------------------------------------------
+        # <T, x_j>
+        #
+        # Для весов головы:
+        #
+        # <outer(weighted_g_j, feat_j), T_M>
+        #   = <weighted_g_j, T_M @ feat_j>
+        # --------------------------------------------------------------
+        T_projection = feat @ T_M.t()                # [B, C]
+        T_x = (
+            weighted_g * T_projection
+        ).sum(dim=1)
+
+        # --------------------------------------------------------------
+        # <x_j, alpha>
+        # --------------------------------------------------------------
+        alpha_projection = feat @ alpha_M.t()        # [B, C]
+        x_alpha = (
+            weighted_g * alpha_projection
+        ).sum(dim=1)
+
+        if head.bias is not None:
+            T_x = T_x + (
+                weighted_g * T_g.unsqueeze(0)
+            ).sum(dim=1)
+
+            x_alpha = x_alpha + (
+                weighted_g * alpha_g.unsqueeze(0)
+            ).sum(dim=1)
+
+        # --------------------------------------------------------------
+        # Полная формула CHG Shapley
+        # --------------------------------------------------------------
+        score = (
+            c_x2 * x_norm2
+            + c_Tx * T_x.double()
+            + c_xalpha * x_alpha.double()
+            + common_offset
+        )
+
+        scores_list.append(
+            score.cpu().numpy().astype(np.float32)
+        )
+
+        n_scored += score.numel()
+
+        del (
+            xb,
+            yb,
+            feat,
+            weighted_g,
+            x_norm2,
+            T_projection,
+            T_x,
+            alpha_projection,
+            x_alpha,
+            score,
+        )
+
+    if n_scored != n_candidates:
+        raise RuntimeError(
+            "The second pass over batches returned a different "
+            "number of objects. batches must be re-iterable; "
+            "do not pass a one-shot generator."
+        )
+
+    return np.concatenate(
+        scores_list,
+        axis=0,
+    ).astype(np.float32)
+
 @torch.no_grad()
 def cosine_to_mean_grad_head_linear_two_pass(model, batches, device, eps: float = 1e-12):
     """

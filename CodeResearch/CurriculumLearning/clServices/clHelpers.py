@@ -9,6 +9,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Helpers.permutationHelpers import stratified_split_indices_with_min
 from CodeResearch.LearningFramework.Learners.TorchMLPLearner import TorchMLPLearner
+from CodeResearch.LearningFramework.NeuralNetwork.CHGScoreCalculator import CHGScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceScoreCalculator import CosDistanceScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceToTrainScoreCalculator import \
     CosDistanceToTrainScoreCalculator
@@ -76,6 +77,8 @@ def createScoreCalculator(metric: str):
         return ForgettingScoreCalculator()
     elif metric == 'cos_to_train_inc':
         return CosDistanceToTrainScoreCalculator()
+    elif metric == 'chg_inc':
+        return CHGScoreCalculator()
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 
