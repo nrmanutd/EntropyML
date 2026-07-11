@@ -75,9 +75,9 @@ def createScoreCalculator(metric: str):
         return KCenteredScoreCalculator()
     elif metric == 'forgetting':
         return ForgettingScoreCalculator()
-    elif metric == 'cos_to_train_inc':
+    elif metric == 'cosToTrain':
         return CosDistanceToTrainScoreCalculator()
-    elif metric == 'chg_inc':
+    elif metric == 'chg':
         return CHGScoreCalculator()
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
