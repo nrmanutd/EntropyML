@@ -192,6 +192,60 @@ def loadCifar100_torch(root="./data"):
     return Xtr, ytr, Xte, yte
 
 
+def loadSVHN_torch(root="./data", normalize_to_01=True):
+    """
+    Загружает стандартные train и test части SVHN без split='extra'.
+
+    Возвращает:
+        Xtr: [73257, 3, 32, 32], float32
+        ytr: [73257], int64
+        Xte: [26032, 3, 32, 32], float32
+        yte: [26032], int64
+
+    Примечания:
+        - transforms.ToTensor() преобразует изображения в диапазон [0, 1].
+        - torchvision автоматически преобразует исходную метку 10,
+          обозначающую цифру 0, в метку 0.
+        - Параметр normalize_to_01 оставлен для совместимости с
+          loadCifar10_torch. Как и в исходной функции, он не меняет результат.
+    """
+    transform = transforms.ToTensor()
+
+    ds_tr = datasets.SVHN(
+        root=root,
+        split="train",
+        download=True,
+        transform=transform,
+    )
+
+    ds_te = datasets.SVHN(
+        root=root,
+        split="test",
+        download=True,
+        transform=transform,
+    )
+
+    Xtr = torch.stack(
+        [ds_tr[i][0] for i in range(len(ds_tr))],
+        dim=0,
+    )
+    ytr = torch.tensor(
+        [ds_tr[i][1] for i in range(len(ds_tr))],
+        dtype=torch.int64,
+    )
+
+    Xte = torch.stack(
+        [ds_te[i][0] for i in range(len(ds_te))],
+        dim=0,
+    )
+    yte = torch.tensor(
+        [ds_te[i][1] for i in range(len(ds_te))],
+        dtype=torch.int64,
+    )
+
+    # ToTensor уже преобразовал изображения в float32 и диапазон [0, 1].
+    return Xtr, ytr, Xte, yte
+
 def load_images_from_df(df):
     images = df.iloc[:, 1:].values.astype('float32')
     images = images.reshape(-1, 28, 28, 1)

@@ -8,24 +8,23 @@ from CodeResearch.CurriculumLearning.clServices.ExperimentsConfig.ExperimentConf
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory, \
     MnistForgettingLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSetByFraction
-from CodeResearch.dataSets import loadMnist_torch, loadCifar10_torch, loadCifar100_torch
+from CodeResearch.dataSets import loadMnist_torch, loadCifar10_torch, loadCifar100_torch, loadSVHN_torch
 
 
 def getDataset(taskName: str, datasetFraction, seed: int):
     if taskName == 'mnist_epoch':
         x, y, xtest, ytest = loadMnist_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction, seed)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, seed)
     elif taskName == 'cifar100_epoch':
         x, y, xtest, ytest = loadCifar100_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction, seed)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, seed)
     elif taskName == 'cifar_epoch':
         x, y, xtest, ytest = loadCifar10_torch()
-        x, y = filterDataSetByFraction(x, y, datasetFraction, seed)
-        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, seed)
+    elif taskName == 'svhn_epoch':
+        x, y, xtest, ytest = loadSVHN_torch()
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
+
+    x, y = filterDataSetByFraction(x, y, datasetFraction, seed)
+    xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, seed)
 
     return x, y, xtest, ytest
 
