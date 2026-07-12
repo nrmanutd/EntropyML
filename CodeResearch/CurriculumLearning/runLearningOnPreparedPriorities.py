@@ -7,16 +7,17 @@ from pathlib import Path
 from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.SVHNLearnerFactory import SVHNLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import loadPriorities, filterDataSetByFraction, \
     createPredefinedSampler
 from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLearner
 from CodeResearch.LearningFramework.Learners.epochLearner import EpochLearner
 from CodeResearch.LearningFramework.Loggers.EpochLearnerLogger import EpochLearnerLogger
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
-from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch
+from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch, loadSVHN_torch
 
 datasetFraction = 1
-folder = 'gold_v2\\cifar_epoch'
+folder = 'gold_v3\\cifar_epoch'
 repeats = 5
 currentFolder = Path(folder)
 
@@ -57,6 +58,15 @@ for file in files:
         learnerFactory = Cifar10LearnerFactory(nClasses)
 
         targetEpochs = 200
+    elif taskName == 'svhn_epoch':
+        x, y, xtest, ytest = loadSVHN_torch()
+        x, y = filterDataSetByFraction(x, y, datasetFraction, 42)
+        xtest, ytest = filterDataSetByFraction(xtest, ytest, datasetFraction, 42)
+
+        nClasses = len(np.unique(y))
+        learnerFactory = SVHNLearnerFactory(nClasses)
+
+        targetEpochs = 100
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
