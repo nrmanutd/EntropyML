@@ -37,7 +37,7 @@ for i in range(0, len(taskNames)):
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cosToTrain_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc', 'chg_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
-    restMethods = ['rand', 'EL2N', 'GradNorm', 'EL2N_inc', 'GradNorm_inc', 'cosToTrain_inc', 'k-centered_inc', 'chg_inc', 'h_inc', 'forgetting']
+    restMethods = ['EL2N_inc', 'rand', 'EL2N', 'GradNorm', 'GradNorm_inc', 'cosToTrain_inc', 'k-centered_inc', 'chg_inc', 'h_inc', 'forgetting']
 
     methods_to_iterate = restMethods
     trainedModelsList = []
