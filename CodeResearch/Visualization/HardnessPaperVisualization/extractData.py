@@ -203,6 +203,80 @@ def extractAndSave(folder, task, targetLength, fraction, protocol, startIdx=0):
                                    10, ylabel, title)
 
 
+def get_type(filename):
+    """
+    Извлекает тип обучения (переменную forgetting) из имени файла.
+    Ищет подстроку после 'NN_<число>_' до открывающей скобки с долей.
+    Если такой шаблон не найден, возвращает последнее слово, оканчивающееся на 'forgetting'.
+    """
+    # Шаблон: NN_цифры_тип (доля)
+    #match = re.search(r'standard_([a-zA-Z_]+)\s*\(\d+\.\d+\)', filename)
+    match = re.search(r'standard_([^ (]+)\s*\(\d+\.\d+\)', filename)
+    if match:
+        learning_type = match.group(1)  # 'chg_inc'
+        print(learning_type)
+
+    print(match)
+    if match:
+        print(match.group(1))
+        return match.group(1)
+
+    # Запасной вариант: найти любое слово, содержащее 'forgetting' (берём последнее)
+    fallback = re.findall(r'([a-zA-Z_]+forgetting)', filename)
+    if fallback:
+        return fallback[-1]
+    return None
+
+
+def collect_labels(folder_path, task_name, fraction):
+    print(task_name)
+    print(folder_path)
+    """
+    Собирает список типов обучения (forgetting) для всех файлов в папке,
+    у которых совпадают task_name и fraction.
+    """
+    labels = []
+    files = []
+    # Преобразуем долю в строку для поиска (например, '0.1' -> '(0.1)')
+    fraction_str = f"({fraction})"
+
+    for filename in os.listdir(folder_path):
+        print(filename)
+        # Проверяем наличие задачи и доли в имени файла
+        if task_name in filename and fraction_str in filename and ".zip" not in filename:
+            print(filename)
+            ftype = get_type(filename)
+            print(ftype)
+            if ftype:
+                labels.append(ftype)
+                files.append(filename)
+
+    print(files)
+    return files, labels
+
+
+def extractDataAndSave(folder, task, fraction, startIdx=0):
+    targetFolder = f'{folder}/{task}_epoch'
+    files, labels = collect_labels(targetFolder, f'{task}_epoch', fraction)
+    print(files)
+    errors = []
+
+    for file in files:
+        print(f'{targetFolder}/{file}')
+        rr = deserialize_labeles_list_of_arrays(f'{targetFolder}/{file}')
+        errors.append(rr[0])
+
+    #labels = preprocessLabels(labels)
+    title, ylabel = getPlottingParameters(task, "fixed test", fraction)
+
+    xAxis = range(len(errors[0]))
+
+    plot_multi_errors_vs_alpha_std(errors, xAxis, labels, targetFolder, f'{task}_{fraction}', len(labels),
+                                   startIdx, ylabel, title)
+    plot_multi_errors_vs_alpha_std(errors, xAxis, labels, targetFolder, f'{task}_{fraction}_10', len(labels),
+                                   10, ylabel, title)
+
+
 
 
 

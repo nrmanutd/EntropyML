@@ -1,23 +1,21 @@
-from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractAndSave, make_grid
+from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractAndSave, make_grid, \
+    extractDataAndSave
 
-folder = '..\\..\\CurriculumLearning\\gold'
-task = ['MNIST', 'CIFAR 10', 'CIFAR 100']
-targetLength = [80, 40, 40]
-fraction = ['0.1', '0.2', '0.5']
-protocol = ['fixed test', 'random subset']
+folder = '..\\..\\CurriculumLearning\\gold_v3'
+#task = ['cifar', 'cifar100', 'svhn', 'mnist']
+task=['cifar100']
+fraction = ['0.05', '0.1', '0.2', '0.5']
 
 for it in range(len(task)):
     for f in fraction:
-        for p in protocol:
-            t = task[it]
-            tl = targetLength[it]
-            extractAndSave(folder, t, tl, f, p)
+        t = task[it]
+        extractDataAndSave(folder, t, f)
 
 for t in task:
     files = []
-    for p in protocol:
-        for f in fraction:
-            curFile = f"{t.lower()}\\{t.lower()}_{p}_{f}_errors.png"
-            files.append(curFile)
+    for f in fraction:
+        curFile = f"{folder}\\{t}_epoch\\{t.lower()}_{f}_errors.png"
+        files.append(curFile)
 
-    make_grid(files, t)
+    print(files)
+    make_grid(files, f'{folder}\\{t}_epoch\\grid_pictures.png', nrows=1, ncols=4)
