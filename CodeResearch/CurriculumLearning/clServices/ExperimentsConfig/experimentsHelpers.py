@@ -7,6 +7,8 @@ from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cif
 from CodeResearch.CurriculumLearning.clServices.ExperimentsConfig.ExperimentConfig import ExperimentConfig
 from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import MnistLearnerFactory, \
     MnistForgettingLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.SVHNLearnerFactory import SVHNLearnerFactory, \
+    SVHNForgettingLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSetByFraction
 from CodeResearch.dataSets import loadMnist_torch, loadCifar10_torch, loadCifar100_torch, loadSVHN_torch
 
@@ -59,6 +61,15 @@ def getLearnerFactoryAndFillConfig(taskName: str, method: str, nClasses: int, co
             return Cifar10ForgettingLearnerFactory(nClasses), config
 
         return Cifar10LearnerFactory(nClasses), config
+    elif taskName == 'svhn_epoch':
+        config.noincrementEpochs = 20
+        config.easinessEpochs = 20
+        config.diversityEpochs = 20
+
+        if shouldUseForgetting:
+            return SVHNForgettingLearnerFactory(nClasses), config
+
+        return SVHNLearnerFactory(nClasses), config
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
