@@ -199,16 +199,29 @@ class BossModelLearner(TorchModelLearner):
         )
 
     def _forward_features(
-        self,
-        model: nn.Module,
-        xb: torch.Tensor,
+            self,
+            model: nn.Module,
+            xb: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Извлекает выход предпоследнего слоя.
-        """
-        if self.feature_fn is not None:
-            return self.feature_fn(model, xb)
+        Возвращает признаки перед последним классификационным слоем.
 
+        Поддерживает:
+        1. явно переданный feature_fn;
+        2. model.forward_features(x);
+        3. интерфейс model.features -> model.pool -> flatten -> model.head;
+        4. MLP вида model.layers, где последний слой является классификатором.
+        """
+
+        # На случай torch.compile.
+        model = getattr(model, "_orig_mod", model)
+
+        # 1. Пользовательская функция имеет наивысший приоритет.
+        if self.feature_fn is not None:
+            features = self.feature_fn(model, xb)
+            return features.flatten(1) if features.ndim > 2 else features
+
+        # 2. Явный метод модели.
         forward_features = getattr(
             model,
             "forward_features",
@@ -216,11 +229,60 @@ class BossModelLearner(TorchModelLearner):
         )
 
         if callable(forward_features):
-            return forward_features(xb)
+            features = forward_features(xb)
+            return features.flatten(1) if features.ndim > 2 else features
+
+        # 3. Ваш основной интерфейс CNN:
+        #    features -> pool -> flatten -> head.
+        features_module = getattr(
+            model,
+            "features",
+            None,
+        )
+
+        if isinstance(features_module, nn.Module):
+            features = features_module(xb)
+
+            pool_module = getattr(
+                model,
+                "pool",
+                None,
+            )
+
+            if isinstance(pool_module, nn.Module):
+                features = pool_module(features)
+
+            return features.flatten(start_dim=1)
+
+        # 4. Ваш простой MLP:
+        #    model.layers = Sequential(..., final Linear).
+        layers_module = getattr(
+            model,
+            "layers",
+            None,
+        )
+
+        if isinstance(layers_module, nn.Sequential):
+            layers = list(layers_module.children())
+
+            if len(layers) < 2:
+                raise ValueError(
+                    "model.layers must contain at least "
+                    "one feature layer and one classifier layer."
+                )
+
+            # Последний слой считаем классификационной головой.
+            features = xb
+
+            for layer in layers[:-1]:
+                features = layer(features)
+
+            return features.flatten(1) if features.ndim > 2 else features
 
         raise AttributeError(
-            "Pass feature_fn=... or implement "
-            "model.forward_features(x)."
+            "Cannot extract penultimate features. "
+            "Expected one of: feature_fn, forward_features(), "
+            "model.features, or model.layers."
         )
 
     def _extract_features(
