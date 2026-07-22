@@ -3,7 +3,7 @@ from CodeResearch.Visualization.HardnessPaperVisualization.extractData import ex
 
 folder = '..\\..\\CurriculumLearning\\gold_v3'
 #task = ['cifar', 'cifar100', 'svhn', 'mnist']
-task=['mnist']
+task=['cifar100']
 fraction = ['0.05', '0.1', '0.2', '0.5']
 
 for it in range(len(task)):

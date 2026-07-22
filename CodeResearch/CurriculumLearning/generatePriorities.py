@@ -5,7 +5,7 @@ from CodeResearch.CurriculumLearning.clServices.ExperimentsConfig.experimentsHel
 from CodeResearch.CurriculumLearning.clServices.clHelpers import createPrioritizer, savePriorities, createHCBuilder
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 
-datasetFraction = 1
+datasetFraction = 0.05
 nIterations = 3
 
 nEasinessAttempts = 50
@@ -23,8 +23,7 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch']
-taskNames = ['svhn_epoch']
+taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
@@ -33,11 +32,11 @@ for i in range(0, len(taskNames)):
     x, y, xtest, ytest = getDataset(taskName, datasetFraction, 42)
     nClasses = len(np.unique(y))
 
-    methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e', 'forgetting'] #todo: add rand
+    methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e', 'forgetting', 'boss'] #todo: add rand
     methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cosToTrain_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc', 'chg_inc']
     methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
-    restMethods = ['EL2N_inc', 'rand', 'EL2N', 'GradNorm', 'GradNorm_inc', 'cosToTrain_inc', 'k-centered_inc', 'chg_inc', 'h_inc', 'forgetting']
+    restMethods = ['boss']
 
     methods_to_iterate = restMethods
     trainedModelsList = []

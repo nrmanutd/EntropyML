@@ -35,6 +35,7 @@ from CodeResearch.ObjectComplexity.Hardness.NonEmptyBaseDatasetDiversityBasedHar
     NonEmptyBaseDatasetDiversityBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.StubHardnessCalculator import StubHardnessCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.BaselinesPriorityCalculator import BaselinesPriorityCalculator
+from CodeResearch.ObjectComplexity.InstancePriority.BossPriorityCalculator import BossPriorityCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.ChainMultiPrioritiesCalculator import ChainMultiPrioritiesCalculator
 from CodeResearch.ObjectComplexity.InstancePriority.PredefinedPrioritizer import PredefinedPrioritizer
 from CodeResearch.ObjectComplexity.InstancePriority.RepeatingPrioritizer import RepeatingPrioritizer
@@ -129,6 +130,9 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
     if m == 'rand':
         return MultiPrioritiesCalculator(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet, True, False,
                                             False, False)
+    if m == 'boss':
+        return BossPriorityCalculator(betas, learnerCreator, logger)
+
     if '_inc' not in m:
         scoreCalculator = createScoreCalculator(m)
         device = learnerCreator().device
@@ -148,6 +152,9 @@ def createPrioritizer(hcBuilder, logger, alphas, betas, shouldEstimateForFullSet
 def createHCBuilder(method, easinessAttempts, logger, easinessEpochs, diversityAttempts, diversityEpochs, batchSize, scoringHardnessLearnerCreator, scoringDiversityLearnerCreator, dataProcessor):
     if method == 'rand':
         return lambda: StubHardnessCalculator()
+
+    if method == 'boss':
+        return lambda: -1
 
     if method == 'h_inc':
         return lambda: createLearnerOnlyHC(easinessAttempts, logger, easinessEpochs, scoringHardnessLearnerCreator, dataProcessor)
