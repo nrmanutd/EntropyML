@@ -17,11 +17,11 @@ from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearn
 from CodeResearch.dataSets import loadMnist_torch, loadCifar100_torch, loadCifar10_torch, loadSVHN_torch
 
 datasetFraction = 1
-folder = 'gold_v3\\cifar_epoch'
+folder = 'mnist_epoch'
 repeats = 5
 currentFolder = Path(folder)
 
-prefixPattern = re.compile(r'^.*\.zip')
+prefixPattern = re.compile(r'^priorities_mnist_epoch_3_50_0.5_1_boss_5_10_NN\.zip')
 
 files = sorted([
     f for f in currentFolder.glob('*.zip')
