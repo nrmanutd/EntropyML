@@ -202,6 +202,23 @@ def extractAndSave(folder, task, targetLength, fraction, protocol, startIdx=0):
     plot_multi_errors_vs_alpha_std(errorsProcessed, xAxis, labels, task, f'{task}_{protocol}_{fraction}_10', len(labels),
                                    10, ylabel, title)
 
+def getFileForConcreteTask(folder, task, fraction, method):
+    targetFolder = f'{folder}/{task}_epoch'
+    fraction_str = f"({fraction})"
+
+    files = []
+    for filename in os.listdir(targetFolder):
+        # Проверяем наличие задачи и доли в имени файла
+        if fraction_str in filename and ".txt" in filename and method in filename:
+            ftype = get_type(filename)
+
+            if ftype == method:
+                files.append(filename)
+
+    if len(files) > 1:
+        raise ValueError(f'Incorrect number of detected files: {files}')
+
+    return files[0]
 
 def get_type(filename):
     """
@@ -213,45 +230,32 @@ def get_type(filename):
     #match = re.search(r'standard_([a-zA-Z_]+)\s*\(\d+\.\d+\)', filename)
     match = re.search(r'standard_([^ (]+)\s*\(\d+\.\d+\)', filename)
     if match:
-        learning_type = match.group(1)  # 'chg_inc'
-        print(learning_type)
-
-    print(match)
-    if match:
-        print(match.group(1))
         return match.group(1)
 
-    # Запасной вариант: найти любое слово, содержащее 'forgetting' (берём последнее)
-    fallback = re.findall(r'([a-zA-Z_]+forgetting)', filename)
-    if fallback:
-        return fallback[-1]
     return None
 
 
 def collect_labels(folder_path, task_name, fraction):
     print(task_name)
     print(folder_path)
-    """
-    Собирает список типов обучения (forgetting) для всех файлов в папке,
-    у которых совпадают task_name и fraction.
-    """
+
     labels = []
     files = []
     # Преобразуем долю в строку для поиска (например, '0.1' -> '(0.1)')
     fraction_str = f"({fraction})"
+    allowedMethods = ['chg_inc', 'forgetting', 'rand', 'boss', 'EL2N', 'GradNorm', 'h&GradNorm_inc', 'h', 'k-centered']
+    allowedMethods = list(f'_{x}_' for x in allowedMethods)
+
+    prohibitedMethods = ['_GradNorm_inc_', '_EL2N_inc_', '_h_inc_']
 
     for filename in os.listdir(folder_path):
-        print(filename)
         # Проверяем наличие задачи и доли в имени файла
-        if task_name in filename and fraction_str in filename and ".zip" not in filename:
-            print(filename)
+        if task_name in filename and fraction_str in filename and ".zip" not in filename and any(s in filename for s in allowedMethods) and not any(s in filename for s in prohibitedMethods):
             ftype = get_type(filename)
-            print(ftype)
             if ftype:
                 labels.append(ftype)
                 files.append(filename)
 
-    print(files)
     return files, labels
 
 

@@ -5,7 +5,7 @@ from CodeResearch.CurriculumLearning.clServices.ExperimentsConfig.experimentsHel
 from CodeResearch.CurriculumLearning.clServices.clHelpers import createPrioritizer, savePriorities, createHCBuilder
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
 
-datasetFraction = 0.05
+datasetFraction = 1
 nIterations = 3
 
 nEasinessAttempts = 50

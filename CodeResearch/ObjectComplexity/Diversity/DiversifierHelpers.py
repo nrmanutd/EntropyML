@@ -427,6 +427,158 @@ def grad_norm_head_linear_one_pass(
     return np.concatenate(scores_list, axis=0)
 
 @torch.no_grad()
+def prediction_correct_and_grad_norm_head_linear_one_pass(
+    model,
+    batches,
+    device,
+    *,
+    include_bias=True,
+    feature_fn=None,
+    input_dtype=torch.float32,
+):
+    """
+    За один проход по датасету вычисляет:
+
+        h_scores:
+            индикатор правильной классификации:
+            1.0, если argmax(logits) == y, иначе 0.0.
+
+        grad_norm_scores:
+            per-object норму градиента cross-entropy loss
+            по параметрам линейной головы model.head.
+
+    Возвращает:
+        h_scores:         np.ndarray [N], dtype float32
+        grad_norm_scores: np.ndarray [N], dtype float32
+
+    Порядок объектов соответствует порядку прохождения batches.
+
+    Для линейной головы:
+        logits = W f + b
+        g = softmax(logits) - onehot(y)
+
+        ||grad_W||^2 = ||g||^2 ||f||^2
+
+        ||grad_b||^2 = ||g||^2,
+        если include_bias=True и bias присутствует.
+    """
+    model.eval()
+
+    if not hasattr(model, "head"):
+        raise AttributeError("Expected model.head to exist.")
+
+    head = model.head
+
+    if not isinstance(head, nn.Linear):
+        raise TypeError(
+            "This function works only for model.head = nn.Linear(H, C)."
+        )
+
+    if feature_fn is None:
+        feature_fn = _extract_features_default
+
+    use_bias = include_bias and (head.bias is not None)
+
+    result_list = []
+
+    for batch in batches:
+        xb, yb = _unpack_batch(batch)
+
+        xb = xb.to(
+            device=device,
+            dtype=input_dtype,
+            non_blocking=True,
+        )
+        yb = yb.to(
+            device=device,
+            dtype=torch.long,
+            non_blocking=True,
+        )
+
+        # Один общий forward pass.
+        feat = feature_fn(model, xb)          # [B, H]
+        logits = head(feat)                   # [B, C]
+
+        # ---------------------------------------------------------
+        # 1. Correctness / h
+        # ---------------------------------------------------------
+        pred = torch.argmax(logits, dim=1)
+
+        h_scores = (pred == yb).to(torch.float32)  # [B]
+
+        # ---------------------------------------------------------
+        # 2. GradNorm по линейной голове
+        # ---------------------------------------------------------
+        probs = F.softmax(logits, dim=1)      # [B, C]
+
+        # Для g = p - onehot(y):
+        #
+        # ||g||^2
+        # = sum_c p_c^2 - 2 p_y + 1
+        #
+        # Это позволяет не создавать clone(probs) и не изменять
+        # элемент целевого класса in-place.
+        p_target = probs.gather(
+            dim=1,
+            index=yb.unsqueeze(1),
+        ).squeeze(1)                          # [B]
+
+        g2 = probs.square().sum(dim=1) - 2.0 * p_target + 1.0
+        g2 = torch.clamp(g2, min=0.0)         # защита от round-off
+
+        f2 = feat.square().sum(dim=1)          # [B]
+
+        if use_bias:
+            # g2 * f2 + g2 = g2 * (f2 + 1)
+            grad_score2 = g2 * (f2 + 1.0)
+        else:
+            grad_score2 = g2 * f2
+
+        grad_norm_scores = torch.sqrt(
+            torch.clamp(grad_score2, min=0.0)
+        )
+
+        # Один перенос GPU -> CPU вместо двух отдельных переносов.
+        batch_result = torch.stack(
+            [h_scores, grad_norm_scores],
+            dim=1,
+        )
+
+        result_list.append(
+            batch_result.cpu().numpy().astype(
+                np.float32,
+                copy=False,
+            )
+        )
+
+        del (
+            xb,
+            yb,
+            feat,
+            logits,
+            pred,
+            h_scores,
+            probs,
+            p_target,
+            g2,
+            f2,
+            grad_score2,
+            grad_norm_scores,
+            batch_result,
+        )
+
+    if len(result_list) == 0:
+        empty = np.empty(0, dtype=np.float32)
+        return empty, empty.copy()
+
+    result = np.concatenate(result_list, axis=0)
+
+    h_scores = result[:, 0]
+    grad_norm_scores = result[:, 1]
+
+    return h_scores, grad_norm_scores
+
+@torch.no_grad()
 def prediction_correct_head_linear_one_pass(
     model,
     batches,
