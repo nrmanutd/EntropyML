@@ -16,6 +16,8 @@ from CodeResearch.LearningFramework.NeuralNetwork.CosDistanceToTrainScoreCalcula
 from CodeResearch.LearningFramework.NeuralNetwork.EL2NScoreCalculator import EL2NScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.EntropyScoreCalculator import EntropyScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.ForgettingScoreCalculator import ForgettingScoreCalculator
+from CodeResearch.LearningFramework.NeuralNetwork.GradNormAndHardnessScoreCalculator import \
+    GradNormAndHardnessScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormCustomScoreCalculator import GradNormCustomScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.GradNormScoreCalculator import GradNormScoreCalculator
 from CodeResearch.LearningFramework.NeuralNetwork.KCenteredScoreCalculator import KCenteredScoreCalculator
@@ -80,6 +82,8 @@ def createScoreCalculator(metric: str):
         return CosDistanceToTrainScoreCalculator()
     elif metric == 'chg':
         return CHGScoreCalculator()
+    elif metric == 'hGradNorm':
+        return GradNormAndHardnessScoreCalculator()
     else:
         raise ValueError(f'Incorrect metric type: {metric}')
 
