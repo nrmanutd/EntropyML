@@ -1,0 +1,27 @@
+\begin{table}[t]
+    \centering
+    \caption{
+Summary of pairwise comparisons between H\&GradNorm and its ablated
+variants across the 16 dataset--budget configurations. Wins and losses
+are counted from the perspective of H\&GradNorm: a win indicates that
+the 95\% hierarchical bootstrap confidence interval for
+H\&GradNorm minus the ablated variant lies entirely above zero, whereas
+a loss indicates that it lies entirely below zero. Otherwise, no
+statistically significant difference is detected. Classification is
+based on the unrounded confidence bounds.
+}
+    \label{tab:win_tie_loss_ablation}
+
+    \setlength{\tabcolsep}{8pt}
+    \renewcommand{\arraystretch}{1.15}
+
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Baseline}
+        &
+        \textbf{Wins}
+        &
+        \textbf{No sig. diff.}
+        &
+        \textbf{Losses}
+        \\

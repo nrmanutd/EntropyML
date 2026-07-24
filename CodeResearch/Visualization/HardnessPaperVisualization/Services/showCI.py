@@ -1,6 +1,6 @@
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.ciStatisticsExtractor import extractAulcCI, extractAccCI, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.ciStatisticsExtractor import extractAulcCI, extractAccCI, \
     saveCIToFile
 
 folder = '..\\..\\CurriculumLearning\\gold'

@@ -1,5 +1,4 @@
-from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractAndSave, make_grid, \
-    make_2plus1_grid
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.extractData import extractAndSave, make_grid
 
 folder = '..\\..\\CurriculumLearning\\extragold'
 task = ['CIFAR 10']

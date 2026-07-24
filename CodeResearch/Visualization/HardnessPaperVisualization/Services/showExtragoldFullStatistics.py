@@ -1,6 +1,6 @@
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.statisticsExtractor import extractConcreteStatistics, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.statisticsExtractor import extractConcreteStatistics, \
     estimateDelta, saveDataToFile
 
 folder = '..\\..\\CurriculumLearning\\extragold'

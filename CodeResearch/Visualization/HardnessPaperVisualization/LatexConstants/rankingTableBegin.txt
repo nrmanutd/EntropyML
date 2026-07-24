@@ -1,0 +1,27 @@
+\begin{table}[t]
+    \centering
+    \caption{
+        Summary of pairwise comparisons across the 16 dataset--budget
+        configurations. A win indicates that the 95\% hierarchical
+        bootstrap confidence interval for H\&GradNorm minus the
+        baseline lies entirely above zero; a loss indicates that it
+        lies entirely below zero. Otherwise, no statistically
+        significant difference is detected.
+    }
+    \label{tab:win_tie_loss}
+
+    \setlength{\tabcolsep}{8pt}
+    \renewcommand{\arraystretch}{1.15}
+
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{Baseline}
+        &
+        \textbf{Wins}
+        &
+        \textbf{No sig. diff.}
+        &
+        \textbf{Losses}
+        \\
+        \midrule
+

@@ -1,9 +1,7 @@
-import math
-
 import numpy as np
 from typing import Tuple, Optional
 
-from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractTask, extractFilesForParameters
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.extractData import extractTask, extractFilesForParameters
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
 
 def extractArea(arr):

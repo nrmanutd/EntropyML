@@ -1,7 +1,7 @@
 import os
 import re
 
-from CodeResearch.Visualization.HardnessPaperVisualization.dataPreprocessor import preprocessDataCut, preprocessLabels, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.dataPreprocessor import preprocessLabels, \
     getPlottingParameters, preprocessDataExpand
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
 from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha_std
@@ -123,9 +123,7 @@ def extractFilesForParameters(r, fraction, protocol, mode=None):
 
     return resultFiles
 
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from pathlib import Path
+
 def make_grid(image_paths, out_path, nrows=2, ncols=3, dpi=300, title=None):
     assert len(image_paths) == nrows * ncols, "Need exactly nrows*ncols images"
     fig, axes = plt.subplots(nrows, ncols, dpi=dpi)

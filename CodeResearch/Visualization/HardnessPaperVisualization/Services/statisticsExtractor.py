@@ -1,11 +1,11 @@
 import math
-import os
+from pathlib import Path
 
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.ciStatisticsExtractor import hierarchical_bootstrap_ci
-from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractTask, extractFilesForParameters, \
-    get_type, getFileForConcreteTask
+from CodeResearch.Visualization.HardnessPaperVisualization.LatexConstants import constants
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.ciStatisticsExtractor import hierarchical_bootstrap_ci
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.extractData import getFileForConcreteTask
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
 
 def extractConcreteCI(folder, task, fraction, method, targetMethod):
@@ -139,7 +139,7 @@ def getMethodVisualizationName(method):
         return 'CHG'
     elif method == 'forgetting':
         return 'Forgetting'
-    elif method == 'k-centered':
+    elif method == 'k-centered_inc':
         return '$k$-centered'
     elif method == 'boss':
         return 'BOSS'
@@ -156,19 +156,32 @@ def fmt(x):
     s = f"{x:.1f}"
     return s
 
-def saveRanksToFile(ranksTable, methods, fileName):
+def saveRanksToFile(ranksTable, methods, fileName, tableBegin, tableEnd):
+    file_path = Path(fileName)
+    parent_dir = file_path.parent
+    parent_dir.mkdir(parents=True, exist_ok=True)
+
     s = ranksTable.shape
 
     with open(fileName, 'w', encoding='utf=8') as file:
+        file.write(tableBegin)
+        file.write('\n')
         file.write('\\midrule\n')
         for i in range(s[0]):
             methodName = getMethodVisualizationName(methods[i])
             file.write(f'{methodName} & {ranksTable[i, 0]:.0f} & {ranksTable[i, 1]:.0f} & {ranksTable[i, 2]:.0f} \\\\\n')
 
-def saveCIToFile(ciTable, tasks, fractions, fileName):
+        file.write(tableEnd)
+
+def saveCIToFile(ciTable, tasks, fractions, fileName, tableBegin, tableEnd):
+    file_path = Path(fileName)
+    parent_dir = file_path.parent
+    parent_dir.mkdir(parents=True, exist_ok=True)
+
     s = ciTable.shape
 
     with open(fileName, 'w', encoding='utf=8') as file:
+        file.write(tableBegin)
         for i in range(s[0]):
             taskName = getDatasetVisualizationName(tasks[i])
             file.write('\\midrule\n')
@@ -192,10 +205,20 @@ def saveCIToFile(ciTable, tasks, fractions, fileName):
 
                 file.write('\\\\\n')
 
-def saveAccuraciesToFile(meanTable, bestDelta, stdTable, tasks, fractions, fileName):
+        file.write(tableEnd)
+
+
+def saveAccuraciesToFile(meanTable, bestDelta, stdTable, tasks, fractions, fileName, tableBegin, tableEnd):
+    file_path = Path(fileName)
+    parent_dir = file_path.parent
+    parent_dir.mkdir(parents=True, exist_ok=True)
+
     s = meanTable.shape
 
     with open(fileName, 'w', encoding='utf=8') as file:
+        file.write(tableBegin)
+        file.write('\n')
+
         for i in range(s[0]):
             taskName = getDatasetVisualizationName(tasks[i])
             file.write('\\midrule\n')
@@ -220,6 +243,8 @@ def saveAccuraciesToFile(meanTable, bestDelta, stdTable, tasks, fractions, fileN
                         file.write(f'& ${cur: .1f} \\pm {std: .1f}{dagger}$\n')
 
                 file.write('\\\\\n')
+
+        file.write(tableEnd)
 
 def saveDataToFile(meanTable, bestDelta, stdTable, tasks, fractions,  fileName):
     s = meanTable.shape

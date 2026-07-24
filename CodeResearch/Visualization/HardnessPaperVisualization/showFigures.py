@@ -1,4 +1,4 @@
-from CodeResearch.Visualization.HardnessPaperVisualization.extractData import extractAndSave, make_grid, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.extractData import make_grid, \
     extractDataAndSave
 
 folder = '..\\..\\CurriculumLearning\\gold_final'

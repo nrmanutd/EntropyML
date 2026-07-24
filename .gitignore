@@ -175,3 +175,17 @@ cython_debug/
 **/*.tar..gz
 src/curml/
 data/cifar-10-python.tar.gz
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/accuracyTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationAccuracyTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationAccuracyTableEnd.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationCITableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationCITableEnd.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationRankingTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ablationRankingTableEnd.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/accuracyTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/accuracyTableEnd.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ciTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/ciTableEnd.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/rankingTableBegin.txt
+!/CodeResearch/Visualization/HardnessPaperVisualization/LatexConstants/rankingTableEnd.txt

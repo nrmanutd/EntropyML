@@ -1,10 +1,10 @@
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.statisticsExtractor import extractConcreteStatistics, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.statisticsExtractor import extractConcreteStatistics, \
     estimateTopTwo, saveAccuraciesToFile, extractConcreteCI, saveCIToFile, saveRanksToFile
 
 
-def evaluateAndSaveAccuracyTable(folder, task, fraction, method, fileName):
+def evaluateAndSaveAccuracyTable(folder, task, fraction, method, fileName, tableBegin, tableEnd):
     meanTable = np.zeros((len(task), len(fraction), len(method)))
     stdTable = np.zeros((len(task), len(fraction), len(method)))
 
@@ -19,12 +19,10 @@ def evaluateAndSaveAccuracyTable(folder, task, fraction, method, fileName):
                 meanTable[it, iif, im] = best
                 stdTable[it, iif, im] = std
 
-    topMethods = np.zeros((len(task), len(fraction), 2))  # top 2
-
     bestDelta = estimateTopTwo(meanTable)
-    saveAccuraciesToFile(meanTable, bestDelta, stdTable, task, fraction, fileName)
+    saveAccuraciesToFile(meanTable, bestDelta, stdTable, task, fraction, fileName, tableBegin, tableEnd)
 
-def evaluateAndSaveCITableAndRankingsTable(folder, task, fraction, method, targetMethod, fileName, ranksFileName):
+def evaluateAndSaveCITableAndRankingsTable(folder, task, fraction, method, targetMethod, fileName, ranksFileName, latexMarkup):
     ciTable = np.zeros((len(task), len(fraction), len(method), 2))
     ranksTable = np.zeros((len(method), 3))
 
@@ -48,5 +46,5 @@ def evaluateAndSaveCITableAndRankingsTable(folder, task, fraction, method, targe
 
                 ranksTable[im, idx] += 1
 
-    saveCIToFile(ciTable, task, fraction, fileName)
-    saveRanksToFile(ranksTable, method, ranksFileName)
+    saveCIToFile(ciTable, task, fraction, fileName, latexMarkup['ciBegin'], latexMarkup['ciEnd'])
+    saveRanksToFile(ranksTable, method, ranksFileName, latexMarkup['rankBegin'], latexMarkup['rankEnd'])

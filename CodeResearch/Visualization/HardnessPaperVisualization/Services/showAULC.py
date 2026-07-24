@@ -1,6 +1,6 @@
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.aulcStatisticsExtractor import extractAulc, saveAulcToFile, \
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.aulcStatisticsExtractor import extractAulc, saveAulcToFile, \
     estimateAulcDelta
 
 folder = '..\\..\\CurriculumLearning\\gold'
