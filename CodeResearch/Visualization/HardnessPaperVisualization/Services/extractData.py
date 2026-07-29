@@ -3,8 +3,11 @@ import re
 
 from CodeResearch.Visualization.HardnessPaperVisualization.Services.dataPreprocessor import preprocessLabels, \
     getPlottingParameters, preprocessDataExpand
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.helpers import getMethodVisualizationName, \
+    getDatasetVisualizationName
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
-from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha_std
+from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha_std, \
+    save_learning_curve_figure
 
 
 def extractFiles(folder, task, mode):
@@ -255,6 +258,30 @@ def collect_labels(folder_path, task_name, fraction):
                 files.append(filename)
 
     return files, labels
+
+
+def extractDataAndSavePng(folder, task, fraction, methods, outputFolder):
+    files = []
+    labels = []
+    for method in methods:
+        file = getFileForConcreteTask(folder, task, fraction, method)
+
+        labels.append(getMethodVisualizationName(method))
+        files.append(file)
+
+    targetFolder = f'{folder}/{task}_epoch'
+
+    errors = []
+
+    for file in files:
+        rr = deserialize_labeles_list_of_arrays(f'{targetFolder}/{file}')
+        errors.append(rr[0])
+
+    title = f"{getDatasetVisualizationName(task)} ({100*float(fraction):.0f}% training subset)"
+    fileName = f'{task}_{fraction}_epoch.png'
+    save_learning_curve_figure(errors, labels, 0, outputFolder, fileName, title)
+
+    return f'{outputFolder}/{fileName}'
 
 
 def extractDataAndSave(folder, task, fraction, startIdx=0):

@@ -2,7 +2,9 @@ from CodeResearch.Visualization.HardnessPaperVisualization.LatexConstants import
 from CodeResearch.Visualization.HardnessPaperVisualization.Services.visualizationHelpers import \
     evaluateAndSaveCITableAndRankingsTable
 
-folder = '..\\..\\CurriculumLearning\\gold_final'
+#folder = '..\\..\\CurriculumLearning\\gold_final'
+folder = ''
+
 task = ['mnist', 'cifar', 'cifar100', 'svhn']
 fraction = ['0.05', '0.1', '0.2', '0.5']
 

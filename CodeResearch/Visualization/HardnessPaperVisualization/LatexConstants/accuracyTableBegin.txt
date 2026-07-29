@@ -1,24 +1,12 @@
 \begin{table*}[t]
     \centering
 
-    \caption{
-Test accuracy for different subset-selection methods and data budgets.
-Results are reported in percent as mean $\pm$ standard deviation over
-15 runs. The best result in each row is shown in bold, and the
-second-best result is underlined.
-    }
-    \label{tab:main_results}
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.15}
 
-    % Расстояние между содержимым соседних колонок
-    \setlength{\tabcolsep}{5pt}
-
-    % Высота строк
-    \renewcommand{\arraystretch}{1.20}
-
-    \resizebox{\textwidth}{!}{%
     \begin{tabular}{
-        C{1.45cm}
-        C{1.00cm}
+        C{1.65cm}
+        C{1.10cm}
         C{1.45cm}
         C{1.45cm}
         C{1.45cm}
@@ -26,7 +14,7 @@ second-best result is underlined.
         C{1.60cm}
         C{1.60cm}
         C{1.45cm}
-        C{2.05cm}
+        C{2.15cm}
     }
         \toprule
 

@@ -1,10 +1,8 @@
 from sklearn import datasets
-import numpy as np
 
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
 from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
-from CodeResearch.dataSets import make_random, make_xor, loadMnist, make_spirals
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
 
 nSamples = 10000

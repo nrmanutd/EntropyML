@@ -23,7 +23,7 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch']
+taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch', 'tinyImageNet_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
@@ -32,13 +32,13 @@ for i in range(0, len(taskNames)):
     x, y, xtest, ytest = getDataset(taskName, datasetFraction, 42)
     nClasses = len(np.unique(y))
 
-    methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e', 'forgetting', 'boss'] #todo: add rand
-    methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cosToTrain_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc', 'chg_inc']
-    methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
+    #methods = ['rand', 'GradNorm', 'EL2N', 'cos', 'entropy', 'h', 'e', 'forgetting', 'boss'] #todo: add rand
+    #methods_inc = ['GradNorm_inc', 'EL2N_inc', 'cos_inc', 'cosToTrain_inc', 'entropy_inc', 'h_inc', 'e_inc', 'k-centered_inc', 'chg_inc']
+    #methods_addedHardness = ['h&GradNorm_inc', 'h&EL2N_inc', 'h&cos_inc', 'h&entropy_inc', 'h&k-centered_inc']
 
-    restMethods = ['hGradNorm']
+    methods = ['rand', 'GradNorm', 'EL2N', 'h', 'hGradNorm', 'forgetting', 'boss', 'GradNorm_inc', 'EL2N_inc', 'k-centered_inc', 'chg_inc', 'h_inc', 'h&GradNorm_inc']
 
-    methods_to_iterate = restMethods
+    methods_to_iterate = methods
     trainedModelsList = []
 
     logger.logDebug(f'Task = {taskName}, {methods_to_iterate}')

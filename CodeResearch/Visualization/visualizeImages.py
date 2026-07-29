@@ -1,14 +1,8 @@
-import math
-import os
-
-import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pyplot as plt
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.datasets import mnist
 import numpy as np
 
-from CodeResearch.dataSets import loadMnist, load_raw_fashionmnist
+from CodeResearch.Datasets.dataSets import load_raw_fashionmnist
 
 
 def get_image_of_index(i, target):

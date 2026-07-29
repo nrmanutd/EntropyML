@@ -3,10 +3,7 @@ import pandas as pd
 
 from CodeResearch.DataExperiments.Megamarket.extractDataToStrings import extractDataToStrings
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
-from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
-from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
-from CodeResearch.dataSets import load_megamarket
-from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
+from CodeResearch.Datasets.dataSets import load_megamarket
 
 x, y = load_megamarket('../../Data/megamarket/sampled_10k.parquet')
 

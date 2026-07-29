@@ -1,24 +1,13 @@
 \begin{table*}[t]
     \centering
 
-    \caption{
-        95\% hierarchical bootstrap confidence intervals for the
-        difference in test accuracy between the full H\&GradNorm
-        criterion and each ablated variant. Confidence intervals are
-        reported in percentage points (pp). Bold intervals lie entirely
-        above zero, underlined intervals lie entirely below zero, and
-        unformatted intervals include zero. Statistical significance is
-        determined using the unrounded confidence bounds.
-    }
-    \label{tab:ablation_bootstrap_ci}
-
     \setlength{\tabcolsep}{7pt}
     \renewcommand{\arraystretch}{1.20}
 
-    \begin{adjustbox}{max width=\textwidth,center}
     \begin{tabular}{
         C{1.60cm}
         C{1.10cm}
+        C{2.20cm}
         C{2.20cm}
         C{2.20cm}
         C{2.20cm}
@@ -30,12 +19,14 @@
         &
         \textbf{Budget}
         &
-        $\boldsymbol{h}$
+        $\mathbf{h}$
         &
         \textbf{GraND}
         &
-        $\boldsymbol{h_{\mathrm{inc}}}$
+        $\boldsymbol{h\times\mathrm{GraND}}$
         &
-        $\boldsymbol{\mathrm{GraND}_{\mathrm{inc}}}$
+        $\mathbf{h_{\mathrm{inc}}}$
+        &
+        $\textbf{GraNd}_{\mathrm{\mathbf{inc}}}$
         \\
 

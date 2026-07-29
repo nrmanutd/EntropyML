@@ -243,3 +243,211 @@ def plot_multi_errors_vs_alpha_std(errors_nested, alphas, labels, resultsFolder,
     std_plot_path = os.path.join(resultsFolder, f"{taskName}_std.png")
     plt.savefig(std_plot_path, format='png', dpi=500, bbox_inches='tight')
     plt.close(fig2)
+
+import os
+from typing import List, Sequence, Union, Optional
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def save_learning_curve_figure(
+    method_epoch_runs: Sequence[Sequence[Sequence[float]]],
+    labels: Sequence[str],
+    main_method: Union[int, str],
+    save_dir: str,
+    file_name: str,
+    title: str,
+    *,
+    accuracy_in_01: bool = True,
+    dpi: int = 300,
+    figsize=(7.0, 5.0),
+    main_band_alpha: float = 0.18,
+    show_legend: bool = True,
+    legend_loc: str = "best",
+    add_grid: bool = True,
+) -> str:
+    """
+    Draws and saves one learning-curve figure.
+
+    Parameters
+    ----------
+    method_epoch_runs :
+        Data for all methods.
+
+        Expected structure:
+            method_epoch_runs[m][e] = array-like of accuracies
+            for method m at epoch e across runs.
+
+        In other words:
+            - outer level: methods
+            - second level: epochs
+            - third level: runs
+
+        Example shape in conceptual form:
+            n_methods x n_epochs x n_runs
+
+        For each method, the number of epochs must be the same.
+        For each epoch within a method, the number of runs should also
+        be the same (typically 15, but can be 10, etc.).
+
+    labels :
+        Names of methods to display in the plot.
+        Must have the same length as method_epoch_runs.
+
+    main_method :
+        Either:
+            - integer index of the main method, or
+            - string label of the main method.
+
+        This method will be plotted with a thicker line and with
+        a shaded mean ± std band.
+
+    save_dir :
+        Directory where the figure will be saved.
+
+    file_name :
+        Name of the output image file, e.g. "svhn_20.png".
+
+    title :
+        Plot title, e.g. "SVHN, budget 20%".
+
+    accuracy_in_01 :
+        If True, assumes accuracies are in [0, 1] and converts them
+        to percentages.
+        If False, assumes accuracies are already in percent.
+
+    dpi :
+        Resolution of the saved image.
+
+    figsize :
+        Figure size passed to matplotlib.
+
+    main_band_alpha :
+        Transparency of the shaded std band for the main method.
+
+    show_legend :
+        Whether to display legend.
+
+    legend_loc :
+        Legend location.
+
+    add_grid :
+        Whether to draw a light grid.
+
+    Returns
+    -------
+    saved_path : str
+        Full path to the saved image.
+    """
+
+    if len(method_epoch_runs) != len(labels):
+        raise ValueError(
+            "method_epoch_runs and labels must have the same length."
+        )
+
+    if len(method_epoch_runs) == 0:
+        raise ValueError("method_epoch_runs must not be empty.")
+
+    # Resolve main method index
+    if isinstance(main_method, str):
+        if main_method not in labels:
+            raise ValueError(
+                f"main_method='{main_method}' is not present in labels."
+            )
+        main_idx = labels.index(main_method)
+    else:
+        main_idx = int(main_method)
+        if not (0 <= main_idx < len(labels)):
+            raise ValueError("main_method index is out of range.")
+
+    # Convert all methods to numpy arrays and validate shapes
+    processed = []
+    n_epochs_expected: Optional[int] = None
+
+    for method_idx, method_data in enumerate(method_epoch_runs):
+        arr = np.asarray(method_data, dtype=np.float64)
+
+        if arr.ndim != 2:
+            raise ValueError(
+                f"Method '{labels[method_idx]}' must be a 2D structure "
+                f"with shape [n_epochs, n_runs], but got shape {arr.shape}."
+            )
+
+        n_epochs, n_runs = arr.shape
+
+        if n_epochs == 0 or n_runs == 0:
+            raise ValueError(
+                f"Method '{labels[method_idx]}' has an empty data array."
+            )
+
+        if not np.all(np.isfinite(arr)):
+            raise ValueError(
+                f"Method '{labels[method_idx]}' contains NaN or inf values."
+            )
+
+        if n_epochs_expected is None:
+            n_epochs_expected = n_epochs
+        elif n_epochs != n_epochs_expected:
+            raise ValueError(
+                "All methods must have the same number of epochs. "
+                f"Expected {n_epochs_expected}, got {n_epochs} for "
+                f"'{labels[method_idx]}'."
+            )
+
+        if accuracy_in_01:
+            arr = arr * 100.0
+
+        processed.append(arr)
+
+    epochs = np.arange(1, n_epochs_expected + 1)
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for method_idx, (label, arr) in enumerate(zip(labels, processed)):
+        # arr shape: [n_epochs, n_runs]
+        mean_curve = arr.mean(axis=1)
+        std_curve = arr.std(axis=1, ddof=1) if arr.shape[1] > 1 else np.zeros(arr.shape[0])
+
+        if method_idx == main_idx:
+            line, = ax.plot(
+                epochs,
+                mean_curve,
+                label=label,
+                linewidth=2.8,
+            )
+
+            ax.fill_between(
+                epochs,
+                mean_curve - std_curve,
+                mean_curve + std_curve,
+                alpha=main_band_alpha,
+                color=line.get_color(),
+                linewidth=0.0,
+            )
+        else:
+            ax.plot(
+                epochs,
+                mean_curve,
+                label=label,
+                linewidth=1.5,
+            )
+
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Test Accuracy (%)")
+    ax.set_title(title)
+
+    if add_grid:
+        ax.grid(True, alpha=0.25)
+
+    if show_legend:
+        ax.legend(frameon=False, loc=legend_loc)
+
+    fig.tight_layout()
+
+    os.makedirs(save_dir, exist_ok=True)
+    saved_path = os.path.join(save_dir, file_name)
+    fig.savefig(saved_path, dpi=dpi, bbox_inches="tight")
+    plt.close(fig)
+
+    return saved_path

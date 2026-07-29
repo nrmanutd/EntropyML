@@ -1,10 +1,7 @@
-import math
-
-import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import datasets
 
-from CodeResearch.dataSets import make_spirals, make_random, make_xor
+from CodeResearch.Datasets.dataSets import make_spirals, make_random, make_xor
 
 nSamples = 1000
 

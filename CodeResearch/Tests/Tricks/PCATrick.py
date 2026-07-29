@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from CodeResearch.dataSets import load_proteins
+from CodeResearch.Datasets.dataSets import load_proteins
 
 x, y = load_proteins("../../Data/Proteins/df_master.csv")
 

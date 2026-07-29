@@ -1,5 +1,3 @@
-import numpy as np
-
 from CodeResearch.CurriculumLearning.clServices.Cifar100LearnerFactory import Cifar100LearnerFactory, \
     Cifar100ForgettingLearnerFactory, Cifar100BossLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.Cifar10LearnerFactory import Cifar10LearnerFactory, \
@@ -9,8 +7,11 @@ from CodeResearch.CurriculumLearning.clServices.MnistLearnerFactory import Mnist
     MnistForgettingLearnerFactory, MnistBossLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.SVHNLearnerFactory import SVHNLearnerFactory, \
     SVHNForgettingLearnerFactory, SVHNBossLearnerFactory
+from CodeResearch.CurriculumLearning.clServices.TinyImageNetLearnerFactory import TinyImageNetBossLearnerFactory, \
+    TinyImageNetLearnerFactory, TinyImageNetForgettingLearnerFactory
 from CodeResearch.CurriculumLearning.clServices.clHelpers import filterDataSetByFraction
-from CodeResearch.dataSets import loadMnist_torch, loadCifar10_torch, loadCifar100_torch, loadSVHN_torch
+from CodeResearch.Datasets.dataSets import loadMnist_torch, loadCifar10_torch, loadCifar100_torch, loadSVHN_torch
+from CodeResearch.Datasets.tinyImageNet import loadTinyImageNet_torch
 
 
 def getDataset(taskName: str, datasetFraction, seed: int):
@@ -22,6 +23,8 @@ def getDataset(taskName: str, datasetFraction, seed: int):
         x, y, xtest, ytest = loadCifar10_torch()
     elif taskName == 'svhn_epoch':
         x, y, xtest, ytest = loadSVHN_torch()
+    elif taskName == 'tinyImageNet_epoch':
+        x, y, xtest, ytest = loadTinyImageNet_torch()
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 
@@ -87,6 +90,19 @@ def getLearnerFactoryAndFillConfig(taskName: str, method: str, nClasses: int, co
             return SVHNBossLearnerFactory(nClasses), config
 
         return SVHNLearnerFactory(nClasses), config
+    elif taskName == 'tinyImageNet_epoch':
+        config.noincrementEpochs = 50
+        config.easinessEpochs = 50
+        config.diversityEpochs = 50
+
+        if shouldUseForgetting:
+            return TinyImageNetForgettingLearnerFactory(nClasses), config
+
+        if shouldUseBoss:
+            config.noincrementEpochs = 10
+            return TinyImageNetBossLearnerFactory(nClasses), config
+
+        return TinyImageNetLearnerFactory(nClasses), config
     else:
         raise ValueError(f'Incorrect taskName: {taskName}')
 

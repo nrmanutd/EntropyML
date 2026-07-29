@@ -4,8 +4,7 @@ import numpy as np
 from sklearn import datasets
 
 from CodeResearch.StatisticsAnalyzer.dataLoader import loadData
-from CodeResearch.Visualization.metricCalcultation import calculateMetric
-from CodeResearch.dataSets import make_xor, make_spirals, make_random
+from CodeResearch.Datasets.dataSets import make_xor, make_spirals, make_random
 
 
 # Функция для построения scatter plot

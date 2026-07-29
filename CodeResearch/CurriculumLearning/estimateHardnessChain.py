@@ -13,7 +13,7 @@ from CodeResearch.ObjectComplexity.Hardness.Factory.AssesorEnum import AssesorEn
 from CodeResearch.ObjectComplexity.Hardness.Factory.LearnerEnum import LearnerEnum
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.UsefulObjectsCalculator import UsefulObjectsCalculator
-from CodeResearch.dataSets import loadCifar100
+from CodeResearch.Datasets.dataSets import loadCifar100
 
 nAttempts = 50
 nSamples = 2000

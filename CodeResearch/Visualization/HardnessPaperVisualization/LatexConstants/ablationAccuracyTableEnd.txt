@@ -2,5 +2,12 @@
 
         \bottomrule
     \end{tabular}
-    \end{adjustbox}
+    \caption{
+        Ablation study of the proposed selection criterion.
+        Results are reported as mean test accuracy (\%) $\pm$
+        standard deviation in percentage points over all available
+        runs. The best result in each row is shown in bold, and the
+        second-best result is underlined.
+    }
+    \label{tab:ablation_accuracy}
 \end{table*}

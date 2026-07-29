@@ -3,7 +3,7 @@ from CodeResearch.DataExperiments.Proteins.indexExtractor import getProteinsComp
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
 from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
-from CodeResearch.dataSets import load_proteins
+from CodeResearch.Datasets.dataSets import load_proteins
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
 
 x, y = load_proteins("../../Data/Proteins/df_master.csv")

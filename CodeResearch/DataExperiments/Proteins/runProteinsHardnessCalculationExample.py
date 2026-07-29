@@ -1,18 +1,12 @@
 import numpy as np
-from sklearn.preprocessing import LabelEncoder
 
-from CodeResearch.DataSeparationFramework.Metrics.KSMetric import KSMetric
 from CodeResearch.Helpers.Logger.SimpleLogger import SimpleLogger
-from CodeResearch.LearningFramework.Learners.KSLearner import KSLearner
 from CodeResearch.LearningFramework.Learners.XGBoostLearner import XGBoostLearner
-from CodeResearch.ObjectComplexity.Hardness import ExpandingDatasetHardnessCalculator
-from CodeResearch.ObjectComplexity.Hardness.HardnessCorrector import HardnessCorrector
 from CodeResearch.ObjectComplexity.Hardness.KSHardnessCalculator import KSHardnessCalculator
 from CodeResearch.ObjectComplexity.Hardness.LearnerBasedHardnessCalculator import LearnerBasedHardnessCalculator
 from CodeResearch.ObjectComplexity.ObjectAssessment.StandardAssessor import StandardAssessor
-from CodeResearch.ObjectComplexity.ObjectAssessment.XGBoostAssessor import XGBoostAssessor
-from CodeResearch.Visualization.visualizeAndSaveComplexObjects import plot_with_custom_brightness, extractData
-from CodeResearch.dataSets import load_proteins, generate_lin_reg_dataset
+from CodeResearch.Visualization.visualizeAndSaveComplexObjects import plot_with_custom_brightness
+from CodeResearch.Datasets.dataSets import generate_lin_reg_dataset
 
 #x, y = load_proteins("../../Data/Proteins/df_master.csv")
 x, y = generate_lin_reg_dataset(n_samples=1000, noise=0.1)

@@ -11,7 +11,7 @@ from sklearn.preprocessing import LabelEncoder
 from CodeResearch.DiviserCalculation.diviserHelpers import get_one_bit_indices
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
 from CodeResearch.DiviserCalculation.getDiviserTrueKS import getMaximumDiviserTrueKS
-from CodeResearch.dataSets import make_spirals, make_xor, make_random
+from CodeResearch.Datasets.dataSets import make_spirals, make_xor, make_random
 from CodeResearch.Helpers.permutationHelpers import getDataSetIndexesOfTwoClasses
 
 

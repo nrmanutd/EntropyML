@@ -1,22 +1,13 @@
 \begin{table*}[t]
     \centering
 
-    \caption{
-        Ablation study of the proposed selection criterion.
-        Results are reported as mean test accuracy (\%) $\pm$
-        standard deviation in percentage points over all available
-        runs. The best result in each row is shown in bold, and the
-        second-best result is underlined.
-    }
-    \label{tab:ablation_accuracy}
-
     \setlength{\tabcolsep}{6pt}
     \renewcommand{\arraystretch}{1.20}
 
-    \begin{adjustbox}{max width=\textwidth,center}
     \begin{tabular}{
         C{1.50cm}
         C{1.05cm}
+        C{2.00cm}
         C{2.00cm}
         C{2.00cm}
         C{2.00cm}
@@ -29,13 +20,15 @@
         &
         \textbf{Budget}
         &
-        $\boldsymbol{h}$
+        $\mathbf{h}$
         &
         \textbf{GraND}
         &
-        $\boldsymbol{h_{\mathrm{inc}}}$
+        $\mathbf{h} \times \textbf{GraND}$
         &
-        $\boldsymbol{\mathrm{GraND}_{\mathrm{inc}}}$
+        $\mathbf{h_{\mathrm{inc}}}$
+        &
+        $\textbf{GraNd}_{\mathrm{\mathbf{inc}}}$
         &
         \textbf{H\&GradNorm (Ours)}
         \\

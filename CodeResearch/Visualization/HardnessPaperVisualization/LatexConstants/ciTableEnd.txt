@@ -3,5 +3,13 @@
 
         \bottomrule
     \end{tabular}
-    \end{adjustbox}
+    \caption{
+        95\% hierarchical bootstrap confidence intervals for the difference
+in test accuracy, H\&GradNorm minus each baseline, reported in
+percentage points. Bold intervals lie entirely above zero,
+underlined intervals lie entirely below zero, and unformatted
+intervals include zero. Statistical significance is determined
+using the unrounded confidence bounds.
+    }
+    \label{tab:bootstrap_ci}
 \end{table*}

@@ -1,23 +1,12 @@
 \begin{table*}[t]
     \centering
 
-    \caption{
-        95\% hierarchical bootstrap confidence intervals for the difference
-in test accuracy, H\&GradNorm minus each baseline, reported in
-percentage points. Bold intervals lie entirely above zero,
-underlined intervals lie entirely below zero, and unformatted
-intervals include zero. Statistical significance is determined
-using the unrounded confidence bounds.
-    }
-    \label{tab:bootstrap_ci}
-
     % Те же параметры, что и в основной таблице
     \setlength{\tabcolsep}{5pt}
     \renewcommand{\arraystretch}{1.20}
 
     % Уменьшает таблицу только при необходимости,
     % но никогда не увеличивает ее
-    \begin{adjustbox}{max width=\textwidth,center}
     \begin{tabular}{
         C{1.50cm}
         C{1.05cm}

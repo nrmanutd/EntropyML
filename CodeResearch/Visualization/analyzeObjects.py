@@ -4,7 +4,7 @@ from tensorflow.keras.datasets import mnist
 import numpy as np
 
 from CodeResearch.DiviserCalculation.getDiviserFastNumba import getMaximumDiviserFastNumba
-from CodeResearch.dataSets import loadMnist
+from CodeResearch.Datasets.dataSets import loadMnist
 from CodeResearch.Helpers.permutationHelpers import getDataSetIndexesOfTwoClasses, getDataSetOfTwoClassesCore
 
 

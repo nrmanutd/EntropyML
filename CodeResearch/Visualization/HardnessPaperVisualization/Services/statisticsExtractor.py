@@ -3,10 +3,13 @@ from pathlib import Path
 
 import numpy as np
 
-from CodeResearch.Visualization.HardnessPaperVisualization.LatexConstants import constants
-from CodeResearch.Visualization.HardnessPaperVisualization.Services.ciStatisticsExtractor import hierarchical_bootstrap_ci
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.ciStatisticsExtractor import \
+    hierarchical_bootstrap_ci
 from CodeResearch.Visualization.HardnessPaperVisualization.Services.extractData import getFileForConcreteTask
+from CodeResearch.Visualization.HardnessPaperVisualization.Services.helpers import getMethodVisualizationName, \
+    getDatasetVisualizationName
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
+
 
 def extractConcreteCI(folder, task, fraction, method, targetMethod):
     print(f'{task}, {fraction}, {method} vs {targetMethod}')
@@ -116,42 +119,6 @@ def estimateDelta(meanTable):
 
     return result
 
-def getDatasetVisualizationName(task):
-    if task == 'mnist':
-        return 'MNIST'
-    elif task == 'cifar':
-        return 'CIFAR 10'
-    elif task == 'cifar100':
-        return 'CIFAR 100'
-    elif task == 'svhn':
-        return 'SVHN'
-    else:
-        raise ValueError(f'Incorrect dataset name: {task}')
-
-def getMethodVisualizationName(method):
-    if method == 'rand':
-        return 'Random'
-    elif method == 'EL2N':
-        return 'EL2N'
-    elif method == 'GradNorm':
-        return 'GraND'
-    elif method == 'chg_inc':
-        return 'CHG'
-    elif method == 'forgetting':
-        return 'Forgetting'
-    elif method == 'k-centered_inc':
-        return '$k$-centered'
-    elif method == 'boss':
-        return 'BOSS'
-    elif method == 'GradNorm_inc':
-        return '$\\boldsymbol{\\mathrm{GraND}_{\\mathrm{inc}}}$'
-    elif method == 'h':
-        return 'h'
-    elif method == 'h_inc':
-        return '$\\boldsymbol{h_{\\mathrm{inc}}}$'
-    else:
-        raise ValueError(f'Incorrect method: {method}')
-
 def fmt(x):
     s = f"{x:.1f}"
     return s
@@ -236,11 +203,11 @@ def saveAccuraciesToFile(meanTable, bestDelta, stdTable, tasks, fractions, fileN
                         dagger = ''
 
                     if k == bestDelta[i, j, 0]:
-                        file.write('& $\\mathbf{' + f'{cur: .1f} \\pm {std: .1f}' + '}$\n')
+                        file.write('& $\\mathbf{' + f'{cur: .1f} \\std' + '{' +f'{std:.1f}' + '}}$\n')
                     elif k == bestDelta[i, j, 1]:
-                        file.write('& $\\underline{' + f'{cur: .1f} \\pm {std: .1f}' + '}'+dagger + '$\n')
+                        file.write('& $\\underline{' + f'{cur: .1f} \\std' + '{' + f'{std:.1f}' + '}}'+dagger + '$\n')
                     else:
-                        file.write(f'& ${cur: .1f} \\pm {std: .1f}{dagger}$\n')
+                        file.write(f'& ${cur: .1f} \\std' + '{' + f'{std:.1f}' + '}' + f'{dagger}$\n')
 
                 file.write('\\\\\n')
 

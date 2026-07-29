@@ -1,10 +1,8 @@
-from sklearn import datasets
-
 from CodeResearch.DiviserCalculation.diviserHelpers import prepareDataSet
 from CodeResearch.RuntimeExperiments.runtimeTestCores import runtimeTestCores
 from CodeResearch.RuntimeExperiments.runtimeTestFeatures import runtimeTestFeatures
 from CodeResearch.RuntimeExperiments.runtimeTestSamples import runtimeTestSamples
-from CodeResearch.dataSets import loadMnist, make_random, loadCifar
+from CodeResearch.Datasets.dataSets import loadMnist, loadCifar
 
 
 def runtimeTest(x, y, points, attempts, taskName):

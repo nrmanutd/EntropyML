@@ -6,7 +6,7 @@ from CodeResearch.LearningFramework.Learners.CompositeLearner import CompositeLe
 from CodeResearch.LearningFramework.Learners.NNLearner import NNLearner
 from CodeResearch.LearningFramework.generalLearningEstimator import GeneralLearningEstimator
 from CodeResearch.Visualization.visualizeLearningErrors import plot_multi_errors_vs_alpha
-from CodeResearch.dataSets import loadCifar
+from CodeResearch.Datasets.dataSets import loadCifar
 
 nIterations = 5
 nAttempts = 20

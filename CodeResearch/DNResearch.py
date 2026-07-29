@@ -1,17 +1,12 @@
 import math
-import os
 
 from sklearn import datasets
 import numpy as np
-import pandas as pd
-from tensorflow.keras.datasets import cifar10
-from tensorflow.keras.datasets import mnist
-from tensorflow.keras.utils import to_categorical
 
 from ucimlrepo import fetch_ucirepo
 
 from CodeResearch.calculateAndVisualizeEmpiricalDistribution import calculateAndVisualizeEmpiricalDistribution
-from CodeResearch.dataSets import loadMnist, loadCifar, loadFashionMnist, make_xor, make_spirals, make_random, \
+from CodeResearch.Datasets.dataSets import loadMnist, loadCifar, loadFashionMnist, make_xor, make_spirals, make_random, \
     load_megamarket
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimateAndVisualizeEmpiricalDistributionDelta, \
     estimatePValuesForClassesSeparation

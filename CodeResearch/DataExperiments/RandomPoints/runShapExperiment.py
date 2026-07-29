@@ -1,7 +1,7 @@
 from CodeResearch.Visualization.summarizeExperiments import summarizeExperiments
 from CodeResearch.Visualization.visualizeAndSaveComplexObjects import visualizeAndSaveComplexObjects
 from CodeResearch.Visualization.visualizeAndSaveKSSI import visualizeAndSaveKSSI
-from CodeResearch.dataSets import generate_lin_reg_dataset
+from CodeResearch.Datasets.dataSets import generate_lin_reg_dataset
 from CodeResearch.estimateAndVisualizeEmpiricalDistributionDelta import estimatePValuesForClassesSeparation
 
 nSamples = 1000

@@ -1,10 +1,8 @@
-import numpy as np
 import pandas as pd
 
 from CodeResearch.Visualization.filesExtractor import getLastFile
-from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays, \
-    serialize_labeled_list_of_arrays
-from CodeResearch.dataSets import load_proteins
+from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
+
 
 def getProteinsComplexities(folder, taskName, iterations):
     frequenciesFile = getLastFile(folder, f"^KS_frequency_{taskName}_{iterations}_\d+_\d+_\d+.txt$")

@@ -2,5 +2,15 @@
 
         \bottomrule
     \end{tabular}
-    \end{adjustbox}
+    \caption{
+        95\% hierarchical bootstrap confidence intervals for the
+        difference in test accuracy between the full H\&GradNorm
+        criterion and each ablated variant. Confidence intervals are
+        reported in percentage points (pp). Bold intervals lie entirely
+        above zero, underlined intervals lie entirely below zero, and
+        unformatted intervals include zero. Statistical significance is
+        determined using the unrounded confidence bounds.
+    }
+    \label{tab:ablation_bootstrap_ci}
+
 \end{table*}

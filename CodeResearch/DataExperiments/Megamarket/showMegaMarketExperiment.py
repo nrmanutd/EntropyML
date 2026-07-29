@@ -6,7 +6,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from CodeResearch.Visualization.VisualizeAndSaveCommonTopSubsamples import visualizeAndSaveKSForEachPairFirst
 from CodeResearch.Visualization.saveDataForVisualization import deserialize_labeles_list_of_arrays
-from CodeResearch.dataSets import load_megamarket
+from CodeResearch.Datasets.dataSets import load_megamarket
 
 x, y = load_megamarket("../../Data/megamarket/sampled_10k.parquet")
 

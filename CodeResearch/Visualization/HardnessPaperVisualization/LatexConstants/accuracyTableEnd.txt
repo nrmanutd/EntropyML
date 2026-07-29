@@ -2,5 +2,14 @@
 
         \bottomrule
     \end{tabular}%
-    }
+    \caption{
+Test accuracy in percent, reported as mean $\pm$ standard deviation
+over 15 runs. The best and second-best unrounded means in each row are
+shown in bold and underlined, respectively. A dagger indicates that
+H\&GradNorm is not significantly different from the row-wise best
+method according to the hierarchical bootstrap. At the 5\% budget,
+the H\&GradNorm entry corresponds to its predictability-based
+initialization.
+}
+    \label{tab:main_results}
 \end{table*}
