@@ -23,7 +23,8 @@ fraction = 0.5
 trainAlpha = 1
 testAlpha = 0.5
 
-taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch', 'tinyImageNet_epoch']
+#taskNames = ['mnist_epoch', 'cifar_epoch', 'cifar100_epoch', 'svhn_epoch', 'tinyImageNet_epoch']
+taskNames = ['tinyImageNet_epoch']
 logger = SimpleLogger()
 
 for i in range(0, len(taskNames)):
