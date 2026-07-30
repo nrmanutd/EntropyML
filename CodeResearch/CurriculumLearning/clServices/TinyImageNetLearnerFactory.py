@@ -2,7 +2,7 @@ from CodeResearch.CurriculumLearning.clServices.PyTorchCVCLLearnersFactory impor
 from CodeResearch.LearningFramework.Learners.BossModelLearner import BossModelLearner
 from CodeResearch.LearningFramework.Learners.ForgettingTorchModelLearner import ForgettingTorchModelLearner
 from CodeResearch.LearningFramework.Learners.NNTorchModelLearner import TorchModelLearner
-from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import ResNet18CIFAR, CifarResNet6n2
+from CodeResearch.LearningFramework.NeuralNetwork.PytorchHelpers import ResNet18CIFAR, CifarResNet6n2, ResNet34CIFAR
 
 
 class TinyImageNetLearnerFactory(PyTorchCVCLLearnersFactory):
@@ -11,7 +11,7 @@ class TinyImageNetLearnerFactory(PyTorchCVCLLearnersFactory):
 
     def createScoreLearner_int(self, epochs):
         cifar10_scoring_learner = TorchModelLearner(
-            model_factory=lambda: CifarResNet6n2(num_classes=self.nClasses, n=3, width_mult=1),
+            model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1),
 
             optimizer_name="sgd",
             lr=0.02,  # мягче для scoring
@@ -29,7 +29,7 @@ class TinyImageNetLearnerFactory(PyTorchCVCLLearnersFactory):
 
     def createTargetLearner_int(self, parameters):
         cifar10_target_learner = TorchModelLearner(
-            model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
+            model_factory=lambda: ResNet34CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
             lr=0.1,  # классика CIFAR при bs~128
@@ -54,7 +54,7 @@ class TinyImageNetForgettingLearnerFactory(PyTorchCVCLLearnersFactory):
 
     def createTargetLearner_int(self, parameters):
         cifar10_target_learner = ForgettingTorchModelLearner(
-            model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
+            model_factory=lambda: ResNet34CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
             lr=0.1,  # классика CIFAR при bs~128
@@ -79,7 +79,7 @@ class TinyImageNetBossLearnerFactory(PyTorchCVCLLearnersFactory):
 
     def createTargetLearner_int(self, parameters):
         cifar10_target_learner = BossModelLearner(
-            model_factory=lambda: ResNet18CIFAR(num_classes=self.nClasses, width_mult=1.0),
+            model_factory=lambda: ResNet34CIFAR(num_classes=self.nClasses, width_mult=1.0),
 
             optimizer_name="sgd",
             lr=0.1,  # классика CIFAR при bs~128

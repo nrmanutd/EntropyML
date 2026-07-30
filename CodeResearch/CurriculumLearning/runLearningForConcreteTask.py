@@ -77,7 +77,7 @@ def runLearningForConcreteTask(folder: str):
             nClasses = len(np.unique(y))
             learnerFactory = TinyImageNetLearnerFactory(nClasses)
 
-            targetEpochs = 200
+            targetEpochs = 100
         else:
             raise ValueError(f'Incorrect taskName: {taskName}')
 
